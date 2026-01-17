@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Service Error</title>
+
+<style>
+/* ===== 基础兜底（任何设备必显示） ===== */
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f9fafb;
+    color: #111827;
+}
+
+/* ===== 错误页（伪装 Cloudflare） ===== */
+#errorPage {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100svh; /* 移动端安全视口 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.cf-box {
+    max-width: 520px;
+    width: 100%;
+}
+
+.cf-title {
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.cf-desc {
+    margin: 16px 0 24px;
+    color: #374151;
+    line-height: 1.6;
+}
+
+.cf-btn {
+    padding: 10px 18px;
+    border: 1px solid #d1d5db;
+    background: white;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* ===== 反馈弹窗 ===== */
+#feedbackMask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100svh;
+    background: rgba(0,0,0,.4);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal {
+    background: white;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 360px;
+    padding: 24px;
+}
+
+.modal-title {
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.modal input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    font-size: 15px;
+}
+
+.modal button {
+    width: 100%;
+    margin-top: 16px;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    background: #2563eb;
+    color: white;
+    font-size: 15px;
+}
+
+/* ===== 解锁后真实内容 ===== */
+#mainContent {
+    display: none;
+    min-height: 100svh;
+    padding: 60px 20px;
+    background: linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+    color: #e0f7ff;
+    text-align: center;
+}
+
+.main-title {
+    font-size: clamp(28px, 6vw, 48px);
+    margin-bottom: 24px;
+}
+
+.copy-btn {
+    padding: 14px 36px;
+    border-radius: 40px;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    background: linear-gradient(90deg,#00f0ff,#7b2cbf);
+    color: #000;
+    cursor: pointer;
+}
+
+.tip {
+    margin-top: 16px;
+    color: #a5f3fc;
+    opacity: 0;
+    transition: opacity .3s;
+}
+
+/* ===== 桌面端增强 ===== */
+@media (min-width: 768px) {
+    .cf-title { font-size: 32px; }
+    .cf-desc { font-size: 16px; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- 伪装错误页 -->
+<div id="errorPage">
+    <div class="cf-box">
+        <div class="cf-title">Bad gateway</div>
+        <p class="cf-desc">
+            The web server reported a bad gateway error.
+        </p>
+        <button class="cf-btn" onclick="openFeedback()">反馈问题</button>
+    </div>
+</div>
+
+<!-- 反馈弹窗 -->
+<div id="feedbackMask">
+    <div class="modal">
+        <div class="modal-title">问题反馈</div>
+        <input id="pwInput" type="password" placeholder="请描述你遇到的问题">
+        <button onclick="unlock()">提交反馈</button>
+    </div>
+</div>
+
+<!-- 解锁后内容 -->
+<div id="mainContent">
+    <div class="main-title">❄️ XUE CF代理 ❄️</div>
+    <button class="copy-btn" onclick="copyLink()">复制订阅链接</button>
+    <div id="copyTip" class="tip">已复制到剪贴板</div>
+</div>
+
+<script>
+/* ===== 可配置变量 ===== */
+const PASSWORD = "xue2026";
+const SUBSCRIBE_LINK = "https://example.com/sub";
+const SITE_TITLE = "XUE CF代理";
+
+/* ===== 行为逻辑 ===== */
+function openFeedback() {
+    document.getElementById("feedbackMask").style.display = "flex";
+}
+
+function unlock() {
+    if (document.getElementById("pwInput").value === PASSWORD) {
+        document.title = SITE_TITLE;
+        document.getElementById("errorPage").remove();
+        document.getElementById("feedbackMask").remove();
+        document.getElementById("mainContent").style.display = "block";
+    }
+}
+
+function copyLink() {
+    navigator.clipboard.writeText(SUBSCRIBE_LINK);
+    const tip = document.getElementById("copyTip");
+    tip.style.opacity = 1;
+    setTimeout(() => tip.style.opacity = 0, 1500);
+}
+</script>
+
+</body>
+</html>
