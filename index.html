@@ -6,7 +6,7 @@
 <title>Error 1101</title>
 <style>
   html, body { height:100%; margin:0; padding:0; overflow:hidden; font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:#f4f4f4; }
-  .container { height:100vh; max-width:800px; margin:0 auto; padding:20px 20px 40px; text-align:center; background:#ffffff; color:#000; box-sizing:border-box; overflow:hidden; position:relative; z-index:1; }
+  .container { height:100vh; max-width:800px; margin:0 auto; padding:30px 20px; text-align:center; background:#ffffff; color:#000; box-sizing:border-box; overflow:hidden; position:relative; z-index:1; }
   h1 { font-size:48px; margin:0; color:#ff4d4d; font-weight:bold; background:#ffffff; }
   h2 { font-size:24px; margin:16px 0; color:#444; background:#ffffff; }
   p { font-size:16px; margin:8px 0; opacity:0.9; background:#ffffff; }
@@ -17,15 +17,12 @@
   .feedback-btn:hover { opacity:1; color:#0044cc; }
   #modal, #adminModal, .edit-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:1000; }
   .modal-content { background:#fff; padding:16px; border-radius:12px; width:90%; max-width:280px; text-align:center; position:relative; box-shadow:0 8px 30px rgba(0,0,0,0.3); color:#333; z-index:1001; }
-  .close-btn { position:fixed !important; top:8px !important; right:16px !important; background:none !important; border:none !important; color:#aaa !important; font-size:40px !important; line-height:1 !important; cursor:pointer !important; z-index:10001 !important; pointer-events:auto !important; }
-  .close-btn:hover { color:#fff !important; }
+  .admin-btn, .close-btn { display:none !important; } /* 隐藏原生，避免重复 */
   input { width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:6px; font-size:15px; box-sizing:border-box; }
   button { width:100%; padding:10px; background:#0066ff; color:#fff; border:none; border-radius:6px; font-size:15px; cursor:pointer; margin-top:8px; }
   #realContent { display:none; position:fixed; inset:0; background:linear-gradient(135deg, #0f0c29, #302b63, #24243e); color:#e0f7ff; flex-direction:column; align-items:center; justify-content:center; padding:10px 20px 30px; text-align:center; background-size:cover; background-position:center; background-attachment:fixed; overflow:hidden; z-index:2; }
-  .admin-btn { position:fixed !important; top:8px !important; right:60px !important; background:none !important; border:none !important; color:#aaa !important; font-size:36px !important; cursor:pointer !important; z-index:10000 !important; opacity:0.9; pointer-events:auto !important; }
-  .admin-btn:hover { color:#00d1ff !important; }
-  .header { margin: 0.5rem 0 1rem 0; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; } /* 上移标题和按钮整体 */
-  .main-title { font-size:2.2rem; font-weight:700; letter-spacing:1px; background:linear-gradient(90deg,#00f0ff,#a855f7); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow:0 0 8px rgba(168,85,247,0.5); margin:0.2rem 0; }
+  .header { margin: 0.5rem 0 1rem 0; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; }
+  .main-title { font-size:2.2rem; font-weight:700; letter-spacing:1px; background:linear-gradient(90deg,#00f0ff,#a855f7); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow:0 0 8px rgba(168,85,247,0.5); margin:0.3rem 0; }
   .copy-btn { margin:6px 0; padding:10px 20px; background:linear-gradient(90deg,#00f0ff,#a855f7); border:none; border-radius:50px; font-size:16px; cursor:pointer; color:#000; box-shadow:0 4px 12px rgba(0,240,255,0.3); transition:all 0.3s; white-space:nowrap; display:inline-block; min-width:auto !important; width:auto !important; }
   .copy-btn:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(0,240,255,0.5); }
   .tip { color:#a5f3fc; opacity:0; transition:opacity 0.4s; margin-top:0.5rem; font-size:0.9rem; }
@@ -57,7 +54,6 @@
 <!-- 普通反馈弹窗 -->
 <div id="modal">
   <div class="modal-content">
-    <button class="close-btn" onclick="document.getElementById('modal').style.display='none'">&times;</button>
     <h3>请提交您的反馈意见</h3>
     <input id="pw" type="password" placeholder="描述您遇到的问题">
     <button onclick="checkPassword()">提交</button>
@@ -67,7 +63,6 @@
 <!-- 管理员主面板 -->
 <div id="adminModal">
   <div class="modal-content">
-    <button class="close-btn" onclick="document.getElementById('adminModal').style.display='none'">&times;</button>
     <h3>管理员设置</h3>
     <ul class="settings-list">
       <li onclick="editField('titleText')">修改标题文字</li>
@@ -83,7 +78,6 @@
 <!-- 编辑弹窗 -->
 <div id="editModal" class="edit-modal">
   <div class="modal-content">
-    <button class="close-btn" onclick="document.getElementById('editModal').style.display='none'">&times;</button>
     <h3 id="editTitle">修改</h3>
     <input id="editInput" type="text" placeholder="请输入新值">
     <input id="adminPwForEdit" type="password" placeholder="管理员密码确认">
@@ -100,7 +94,6 @@
   <button class="copy-btn" onclick="copyLink(2)">复制订阅链接 2</button>
   <p id="tip" class="tip"></p>
   <p id="notice" class="notice">马到成功吧</p>
-  <button class="admin-btn" onclick="document.getElementById('adminModal').style.display='flex'">⚙️</button>
 </div>
 
 <script>
@@ -128,62 +121,62 @@ fetch("/api/get-links?" + new Date().getTime())
   })
   .catch(() => {});
 
-// 最终强制定位（只执行一次，避免重复 append）
-function forcePosition() {
-  // 齿轮
-  let adminBtn = document.querySelector('.admin-btn');
-  if (adminBtn && adminBtn.parentNode !== document.body) {
-    document.body.appendChild(adminBtn);
-  }
-  if (adminBtn) {
-    adminBtn.style.position = 'fixed';
-    adminBtn.style.top = '8px';
-    adminBtn.style.right = '60px';
-    adminBtn.style.zIndex = '10000';
-    adminBtn.style.pointerEvents = 'auto';
-  }
+let gearBtn = null;
+let currentCloseBtn = null;
 
-  // 所有叉子
-  document.querySelectorAll('.close-btn').forEach(btn => {
-    if (btn.parentNode !== document.body) {
-      document.body.appendChild(btn);
-    }
-    btn.style.position = 'fixed';
-    btn.style.top = '8px';
-    btn.style.right = '16px';
-    btn.style.zIndex = '10001';
-    btn.style.pointerEvents = 'auto';
-  });
+// 创建齿轮（只一次）
+function createGear() {
+  if (gearBtn) return;
+  gearBtn = document.createElement('button');
+  gearBtn.innerHTML = '⚙️';
+  gearBtn.style.cssText = `
+    position: fixed;
+    top: 8px;
+    right: 60px;
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 36px;
+    cursor: pointer;
+    z-index: 10000;
+    opacity: 0.9;
+  `;
+  gearBtn.onclick = () => {
+    document.getElementById('adminModal').style.display = 'flex';
+    createClose('adminModal'); // 打开管理员面板时创建叉子
+  };
+  document.body.appendChild(gearBtn);
 }
 
-// 只执行一次定位（load + 延迟 + 事件触发时）
-window.addEventListener('load', forcePosition);
-setTimeout(forcePosition, 1000);
-setTimeout(forcePosition, 3000); // 保险
-
-function checkPassword() {
-  const input = document.getElementById('pw').value.trim();
-  if (input === SETTINGS.userPassword) {
-    document.getElementById('modal').style.display = 'none';
-    document.querySelector('.container').style.display = 'none';
-    document.querySelector('.feedback-btn').style.display = 'none';
-    document.getElementById('realContent').style.display = 'flex';
-    forcePosition(); // 解锁后立即定位
-  } else {
-    alert("您的意见已经发送，请等待系统处理！");
-    document.getElementById('modal').style.display = 'none';
-  }
+// 创建关闭叉子（每个弹窗调用一次）
+function createClose(modalId) {
+  if (currentCloseBtn) currentCloseBtn.remove(); // 移除旧的
+  currentCloseBtn = document.createElement('button');
+  currentCloseBtn.innerHTML = '×';
+  currentCloseBtn.style.cssText = `
+    position: fixed;
+    top: 8px;
+    right: 16px;
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 40px;
+    cursor: pointer;
+    z-index: 10001;
+  `;
+  currentCloseBtn.onclick = () => {
+    document.getElementById(modalId).style.display = 'none';
+    if (currentCloseBtn) currentCloseBtn.remove();
+  };
+  document.body.appendChild(currentCloseBtn);
 }
 
-function copyLink(type) {
-  const link = type === 1 ? SETTINGS.sub1 : SETTINGS.sub2;
-  if (!link.trim()) return alert("链接未配置");
-  navigator.clipboard.writeText(link);
-  document.getElementById('tip').textContent = "已复制到剪贴板";
-  document.getElementById('tip').style.opacity = 1;
-  setTimeout(() => document.getElementById('tip').style.opacity = 0, 2000);
-}
+// 页面加载时创建齿轮
+window.addEventListener('load', () => {
+  createGear();
+});
 
+// 打开编辑弹窗时创建叉子
 function editField(field) {
   document.getElementById('adminModal').style.display = 'none';
   document.getElementById('editModal').style.display = 'flex';
@@ -198,7 +191,29 @@ function editField(field) {
   document.getElementById('editTitle').textContent = titles[field];
   document.getElementById('editInput').value = SETTINGS[field];
   document.getElementById('editInput').dataset.field = field;
-  forcePosition(); // 打开弹窗后定位
+  createClose('editModal');
+}
+
+function checkPassword() {
+  const input = document.getElementById('pw').value.trim();
+  if (input === SETTINGS.userPassword) {
+    document.getElementById('modal').style.display = 'none';
+    document.querySelector('.container').style.display = 'none';
+    document.querySelector('.feedback-btn').style.display = 'none';
+    document.getElementById('realContent').style.display = 'flex';
+  } else {
+    alert("您的意见已经发送，请等待系统处理！");
+    document.getElementById('modal').style.display = 'none';
+  }
+}
+
+function copyLink(type) {
+  const link = type === 1 ? SETTINGS.sub1 : SETTINGS.sub2;
+  if (!link.trim()) return alert("链接未配置");
+  navigator.clipboard.writeText(link);
+  document.getElementById('tip').textContent = "已复制到剪贴板";
+  document.getElementById('tip').style.opacity = 1;
+  setTimeout(() => document.getElementById('tip').style.opacity = 0, 2000);
 }
 
 async function saveSingleField() {
