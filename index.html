@@ -3,152 +3,208 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>XUE CF代理</title>
+<title>Loading…</title>
 
 <style>
 * { box-sizing: border-box; }
 
 html, body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: radial-gradient(circle at top, #1e3a8a, #020617);
-    color: #e0f2fe;
-    min-height: 100svh;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  min-height: 100svh;
 }
 
-/* 布局 */
+body {
+  background: #020617;
+  color: #e0f2fe;
+}
+
+/* 背景 */
+.bg {
+  position: fixed;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: blur(0);
+  z-index: -1;
+}
+
+/* 居中卡片 */
 .wrapper {
-    min-height: 100svh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
 }
 
 .card {
-    width: 100%;
-    max-width: 420px;
-    background: rgba(255,255,255,0.06);
-    backdrop-filter: blur(12px);
-    border-radius: 20px;
-    padding: 40px 28px;
-    text-align: center;
-    box-shadow: 0 20px 60px rgba(0,0,0,.4);
+  width: 100%;
+  max-width: 420px;
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(14px);
+  border-radius: 20px;
+  padding: 40px 28px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,.45);
 }
 
-/* 标题 */
 .title {
-    font-size: 28px;
-    font-weight: 600;
-    letter-spacing: .05em;
-    margin-bottom: 28px;
-    text-shadow: 0 0 20px rgba(56,189,248,.6);
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 28px;
+  text-shadow: 0 0 20px rgba(56,189,248,.6);
 }
 
 /* 按钮 */
 .btn {
-    width: 100%;
-    padding: 16px 0;
-    border: none;
-    border-radius: 999px;
-    font-size: 16px;
-    font-weight: 600;
-    color: #020617;
-    background: linear-gradient(90deg, #22d3ee, #a855f7);
-    cursor: pointer;
-    transition: transform .15s ease, box-shadow .15s ease;
+  width: 100%;
+  padding: 16px 0;
+  border: none;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 600;
+  background: linear-gradient(90deg,#22d3ee,#a855f7);
+  color: #020617;
+  cursor: pointer;
 }
 
-.btn + .btn {
-    margin-top: 14px;
-}
-
-.btn:hover {
-    box-shadow: 0 0 30px rgba(168,85,247,.6);
-}
-
-.btn:active {
-    transform: scale(.97);
-}
+.btn + .btn { margin-top: 14px; }
 
 /* 提示 */
 .tip {
-    margin-top: 16px;
-    font-size: 14px;
-    color: #7dd3fc;
-    opacity: 0;
-    transition: opacity .3s ease;
+  margin-top: 16px;
+  font-size: 14px;
+  color: #7dd3fc;
+  opacity: 0;
+  transition: opacity .3s;
 }
 
 /* 说明 */
 .notice {
-    margin-top: 26px;
-    padding-top: 18px;
-    border-top: 1px solid rgba(255,255,255,.15);
-    font-size: 13px;
-    line-height: 1.6;
-    color: rgba(224,242,254,.7);
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255,255,255,.15);
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(224,242,254,.75);
 }
 
-/* 桌面端优化 */
-@media (min-width: 768px) {
-    .card {
-        padding: 48px 36px;
-    }
-    .title {
-        font-size: 32px;
-    }
+/* 密码遮罩 */
+#lock {
+  position: fixed;
+  inset: 0;
+  background: rgba(2,6,23,.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lock-box {
+  background: #020617;
+  border-radius: 16px;
+  padding: 32px;
+  width: 280px;
+  text-align: center;
+}
+
+.lock-box input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  margin-top: 16px;
+}
+
+.lock-box button {
+  margin-top: 16px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #2563eb;
+  color: white;
+}
+
+.err {
+  color: #f87171;
+  font-size: 13px;
+  display: none;
+  margin-top: 10px;
 }
 </style>
 </head>
 
 <body>
 
+<div class="bg" id="bg"></div>
+
+<!-- 密码层 -->
+<div id="lock">
+  <div class="lock-box">
+    <div>请输入访问密码</div>
+    <input id="pw" type="password" placeholder="Password">
+    <button onclick="unlock()">进入</button>
+    <div id="err" class="err">密码错误</div>
+  </div>
+</div>
+
 <div class="wrapper">
-    <div class="card">
-        <div class="title">❄️ XUE CF代理 ❄️</div>
+  <div class="card">
+    <div id="title" class="title"></div>
 
-        <button class="btn" onclick="copyLink(1)">复制订阅链接 1</button>
-        <button class="btn" onclick="copyLink(2)">复制订阅链接 2</button>
+    <button class="btn" onclick="copyLink(1)">复制订阅链接 1</button>
+    <button class="btn" onclick="copyLink(2)">复制订阅链接 2</button>
 
-        <div id="tip" class="tip"></div>
-
-        <div id="notice" class="notice"></div>
-    </div>
+    <div id="tip" class="tip"></div>
+    <div id="notice" class="notice"></div>
+  </div>
 </div>
 
 <script>
-/* ===== 可配置变量 ===== */
-const SUBSCRIBE_LINK_1 = "https://example.com/sub1";
-const SUBSCRIBE_LINK_2 = "https://example.com/sub2";
-const NOTICE_TEXT =
-    "请复制对应订阅链接后，粘贴到客户端中使用。如无法连接，请联系管理员。";
+let SUB1 = "", SUB2 = "";
 
-/* ===== 初始化 ===== */
-document.getElementById("notice").innerText = NOTICE_TEXT;
-
-/* ===== 行为 ===== */
-function copyLink(type) {
-    let link = "";
-    let label = "";
-
-    if (type === 1) {
-        link = SUBSCRIBE_LINK_1;
-        label = "订阅链接 1";
-    } else {
-        link = SUBSCRIBE_LINK_2;
-        label = "订阅链接 2";
+/* 读取配置 */
+fetch("/config")
+  .then(r => r.json())
+  .then(cfg => {
+    document.title = cfg.siteTitle || "";
+    document.getElementById("title").innerText = cfg.siteTitle || "";
+    document.getElementById("notice").innerText = cfg.notice || "";
+    SUB1 = cfg.sub1;
+    SUB2 = cfg.sub2;
+    if (cfg.bgImage) {
+      document.getElementById("bg").style.backgroundImage =
+        `url(${cfg.bgImage})`;
     }
+  });
 
-    navigator.clipboard.writeText(link);
+function copyLink(type) {
+  const link = type === 1 ? SUB1 : SUB2;
+  const label = type === 1 ? "订阅链接 1" : "订阅链接 2";
+  if (!link) return;
+  navigator.clipboard.writeText(link);
+  const tip = document.getElementById("tip");
+  tip.innerText = label + " 已复制";
+  tip.style.opacity = 1;
+  setTimeout(() => tip.style.opacity = 0, 1600);
+}
 
-    const tip = document.getElementById("tip");
-    tip.innerText = label + " 已复制";
-    tip.style.opacity = 1;
-
-    setTimeout(() => {
-        tip.style.opacity = 0;
-    }, 1600);
+/* 密码校验 */
+function unlock() {
+  fetch("/auth", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password: document.getElementById("pw").value })
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.ok) {
+      document.getElementById("lock").remove();
+    } else {
+      document.getElementById("err").style.display = "block";
+    }
+  });
 }
 </script>
 
