@@ -5,34 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Error 1101</title>
 <style>
-  body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:#f4f4f4; color:#333; margin:0; padding:0; min-height:100vh; position:relative; }
-  .container { max-width:800px; margin:0 auto; padding:60px 20px 180px; text-align:center; display:block; }
-  h1 { font-size:40px; margin:0; color:#ff4d4d; font-weight:bold; }
-  h2 { font-size:22px; margin:16px 0; color:#444; }
-  p { font-size:15px; margin:8px 0; opacity:0.9; }
-  .section { margin:30px 0; }
-  .link { color:#0066ff; text-decoration:underline; cursor:pointer; }
-  .footer { position:fixed; bottom:60px; left:50%; transform:translateX(-50%); font-size:12px; color:#666; text-align:center; width:90%; line-height:1.4; }
-  .feedback-btn { position:fixed; bottom:20px; right:30px; color:#0066ff; cursor:pointer; font-size:13px; z-index:10; text-decoration:underline; opacity:0.8; transition:all 0.3s; }
+  body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; margin:0; padding:0; min-height:100vh; position:relative; }
+  .container { max-width:800px; margin:0 auto; padding:60px 20px 180px; text-align:center; display:block; background:#ffffff; color:#000; }
+  h1 { font-size:40px; margin:0; color:#ff4d4d; font-weight:bold; background:#ffffff; }
+  h2 { font-size:22px; margin:16px 0; color:#444; background:#ffffff; }
+  p { font-size:15px; margin:8px 0; opacity:0.9; background:#ffffff; }
+  .section { margin:30px 0; background:#ffffff; }
+  .link { color:#0066ff; text-decoration:underline; cursor:pointer; background:#ffffff; }
+  .footer { position:fixed; bottom:60px; left:50%; transform:translateX(-50%); font-size:12px; color:#666; text-align:center; width:90%; line-height:1.4; background:#ffffff; }
+  .feedback-btn { position:fixed; bottom:20px; right:30px; color:#0066ff; cursor:pointer; font-size:13px; z-index:10; text-decoration:underline; opacity:0.8; transition:all 0.3s; background:#ffffff; }
   .feedback-btn:hover { opacity:1; color:#0044cc; }
   #modal, #adminModal, .edit-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:1000; }
   .modal-content { background:#fff; padding:20px; border-radius:12px; width:90%; max-width:340px; text-align:center; position:relative; box-shadow:0 8px 30px rgba(0,0,0,0.3); color:#333; }
-  .close-btn { position:absolute !important; top:8px !important; right:12px !important; background:none; border:none; color:#888; font-size:28px; line-height:1; cursor:pointer; z-index:1001; }
-  .close-btn:hover { color:#333; }
+  .close-btn { position:absolute !important; top:8px !important; right:12px !important; background:none !important; border:none !important; color:#888 !important; font-size:28px !important; line-height:1 !important; cursor:pointer !important; z-index:1001 !important; }
+  .close-btn:hover { color:#333 !important; }
   input, textarea { width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:6px; font-size:15px; }
   button { width:100%; padding:10px; background:#0066ff; color:#fff; border:none; border-radius:6px; font-size:15px; cursor:pointer; margin-top:10px; }
-  #realContent { display:none; position:fixed; inset:0; background:#f4f4f4; color:#333; flex-direction:column; align-items:center; justify-content:center; padding:20px; text-align:center; }
-  .admin-btn { position:fixed !important; top:16px !important; right:16px !important; background:none; border:none; color:#333; font-size:24px; cursor:pointer; z-index:9999; opacity:0.8; }
-  .admin-btn:hover { color:#0066ff; }
-  .header { margin-bottom:1.2rem; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; }
-  .main-title { font-size:1.6rem; font-weight:700; letter-spacing:1px; background:linear-gradient(90deg,#0066ff,#a855f7); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow:0 0 10px rgba(0,102,255,0.4); margin:0.3rem 0; }
-  .copy-btn { margin:8px 0; padding:10px 30px; background:linear-gradient(90deg,#0066ff,#a855f7); border:none; border-radius:50px; font-size:13px; cursor:pointer; color:#fff; min-width:180px; box-shadow:0 3px 10px rgba(0,102,255,0.3); transition:all 0.3s; }
-  .copy-btn:hover { transform:translateY(-2px); box-shadow:0 6px 18px rgba(0,102,255,0.4); }
-  .tip { color:#0066ff; opacity:0; transition:opacity 0.4s; margin-top:0.6rem; font-size:0.85rem; }
-  .notice { margin-top:2rem; opacity:0.9; font-size:0.95rem; max-width:80%; word-break:break-all; }
+  #realContent { display:none; position:fixed; inset:0; color:#e0f7ff; flex-direction:column; align-items:center; justify-content:center; padding:20px; text-align:center; background:linear-gradient(135deg, #0f0c29, #302b63, #24243e); background-size:cover; background-position:center; background-attachment:fixed; }
+  .admin-btn { position:fixed !important; top:16px !important; right:16px !important; background:none !important; border:none !important; color:#aaa !important; font-size:24px !important; cursor:pointer !important; z-index:9999 !important; opacity:0.8; }
+  .admin-btn:hover { color:#00d1ff !important; }
+  .header { margin-bottom:1rem; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; }
+  .main-title { font-size:2.2rem; font-weight:700; letter-spacing:1px; background:linear-gradient(90deg,#00f0ff,#a855f7); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow:0 0 8px rgba(168,85,247,0.5); margin:0.3rem 0; }
+  .copy-btn { margin:8px 0; padding:9px 28px; background:linear-gradient(90deg,#00f0ff,#a855f7); border:none; border-radius:50px; font-size:13px; cursor:pointer; color:#fff; min-width:160px; box-shadow:0 2px 8px rgba(0,240,255,0.2); transition:all 0.3s; }
+  .copy-btn:hover { transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,240,255,0.3); }
+  .tip { color:#a5f3fc; opacity:0; transition:opacity 0.4s; margin-top:0.5rem; font-size:0.8rem; }
+  .notice { margin-top:1.8rem; opacity:0.9; font-size:0.9rem; max-width:80%; word-break:break-all; }
   .settings-list { list-style:none; padding:0; margin:20px 0; }
-  .settings-list li { padding:10px; background:#eee; margin:6px 0; border-radius:6px; cursor:pointer; text-align:left; color:#333; }
-  .settings-list li:hover { background:#ddd; }
+  .settings-list li { padding:10px; background:#222; margin:6px 0; border-radius:6px; cursor:pointer; text-align:left; color:#fff; }
+  .settings-list li:hover { background:#333; }
 </style>
 </head>
 <body>
@@ -114,23 +114,20 @@ let SETTINGS = {
 };
 
 // 加载设置
-fetch("/api/get-links")
+fetch("/api/get-links?" + new Date().getTime())
   .then(r => r.json())
   .then(data => {
     SETTINGS = { ...SETTINGS, ...data };
 
-    // 应用背景
+    // 应用背景：默认深紫蓝渐变，有变量才换
     if (SETTINGS.bgUrl) {
       document.body.style.backgroundImage = `url(${SETTINGS.bgUrl})`;
       document.body.style.backgroundColor = "#000";
     } else {
-      document.body.style.background = "#f4f4f4";
+      document.body.style.background = "linear-gradient(135deg, #0f0c29, #302b63, #24243e)";
     }
 
-    // 应用标题
-    document.getElementById('mainTitle').textContent = SETTINGS.titleText;
-
-    // 应用说明
+    document.getElementById('mainTitle').textContent = SETTINGS.titleText || "XUE CF代理";
     document.getElementById('notice').textContent = SETTINGS.notice;
   })
   .catch(() => {});
@@ -191,9 +188,9 @@ async function saveSingleField() {
 
   const data = await res.json();
   if (data.success) {
-    alert("设置已更新！");
+    alert("设置已更新！页面刷新中...");
     document.getElementById('editModal').style.display = 'none';
-    location.reload();
+    location.reload(true);
   } else {
     alert("管理员密码错误或更新失败");
   }
