@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>Error 1101</title>
 <style>
-  /* --- 1. 最初版伪装页：极致还原，无任何杂质 --- */
-  body, html { margin:0; padding:0; font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background:#fff; color:#000; height: 100%; }
-  #fakePage { padding: 40px 20px; max-width: 800px; margin: 0 auto; display: block; background: #fff; }
+  /* --- 1. 伪装页 (绝对不动) --- */
+  body, html { margin:0; padding:0; font-family: "Segoe UI", Roboto, sans-serif; background:#fff; color:#000; height: 100%; overflow: hidden; }
+  #fakePage { padding: 40px 20px; max-width: 800px; margin: 0 auto; display: block; }
   .error-title { font-size: 48px; font-weight: 400; color: #404040; margin: 0; }
   .ray-id-row { font-size: 14px; color: #999; margin: 15px 0 30px; font-family: monospace; }
   .status-text { font-size: 28px; color: #404040; margin-bottom: 40px; }
@@ -15,49 +15,53 @@
   .section-p { font-size: 16px; color: #404040; margin-bottom: 15px; line-height: 1.5; }
   .cf-link { color: #0051c3; text-decoration: none; cursor: pointer; }
   .hr { border: 0; border-top: 1px solid #d9d9d9; margin: 40px 0 20px; }
-  .footer-row { font-size: 13px; color: #666; line-height: 1.8; }
+  .footer-row { font-size: 13px; color: #666; }
 
-  /* --- 2. 正式页面：进入后显现 --- */
+  /* --- 2. 正式页面 (背景与布局优化) --- */
   #realContent { 
     display:none; position:fixed; inset:0; z-index:100;
-    background-size: cover; background-position: center; background-repeat: no-repeat;
+    /* 保底背景：深色渐变 */
+    background: linear-gradient(135deg, #1a1c2c 0%, #4a192c 100%);
+    background-size: cover; background-position: center;
     color:#fff; flex-direction:column; align-items:center; 
-    padding-top: 15vh; text-align: center;
+    padding-top: 12vh; text-align: center;
   }
-  #realContent::before { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.45); z-index: -1; }
+  /* 半透明遮罩，增加文字清晰度 */
+  #realContent::after { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.4); z-index: -1; }
 
   .main-title { 
     font-size:2.4rem; font-weight:800; background: linear-gradient(90deg,#00f0ff,#a855f7); 
-    -webkit-background-clip:text; color:transparent; margin-bottom: 50px;
-    text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    -webkit-background-clip:text; color:transparent; margin-bottom: 40px;
+    text-shadow: 0 4px 15px rgba(0,0,0,0.6);
   }
-  .btn-group { display: flex; flex-direction: column; gap: 20px; width: 85%; max-width: 280px; z-index: 101; }
+  .btn-group { display: flex; flex-direction: column; gap: 22px; width: 85%; max-width: 280px; z-index: 101; }
   .copy-btn { 
     padding:16px; background:linear-gradient(90deg,#00f0ff,#a855f7); 
-    border:none; border-radius:15px; font-size:17px; cursor:pointer; 
-    color:#000; font-weight:bold; box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    border:none; border-radius:18px; font-size:17px; cursor:pointer; 
+    color:#000; font-weight:bold; box-shadow: 0 8px 25px rgba(0,0,0,0.4);
   }
   
-  /* 说明文字：位置上移优化 */
-  #notice { margin-top: 25px; color: #a5f3fc; font-size: 14px; letter-spacing: 1px; }
+  /* 占位符：用于将公告推向下方正中心 */
+  .spacer { flex-grow: 1; }
+  #notice { 
+    margin-bottom: 10vh; /* 距离底部的距离 */
+    color: #a5f3fc; font-size: 15px; letter-spacing: 2px; font-weight: 300;
+    z-index: 101;
+  }
 
-  /* --- 3. 顶部控制：正式页专用，默认隐藏 --- */
-  #topControls { display:none; position:fixed; top:20px; right:20px; z-index:201; gap: 20px; align-items: center; }
-  .icon-btn { font-size:26px; cursor:pointer; opacity:0.6; color:#fff; transition: 0.3s; }
+  /* --- 3. 图标样式 --- */
+  #topControls { display:none; position:fixed; top:25px; right:20px; z-index:201; gap: 20px; }
+  .icon-btn { font-size:26px; cursor:pointer; opacity:0.7; color:#fff; transition: 0.3s; }
   @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-  .music-playing { animation: rotate 3s linear infinite; opacity: 1; text-shadow: 0 0 10px #00f0ff; }
+  .music-playing { animation: rotate 4s linear infinite; opacity: 1; text-shadow: 0 0 10px #00f0ff; }
 
-  /* --- 4. 弹窗组件 --- */
-  .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter: blur(5px); align-items:center; justify-content:center; z-index:1000; }
-  .modal-content { background:#fff; padding:30px 20px; border-radius:20px; width:88%; max-width:320px; text-align:center; position:relative; color:#333; }
-  .close-x { position:absolute; top:12px; right:18px; font-size:30px; color:#ccc; cursor:pointer; line-height: 1; }
-  input { width:100%; padding:14px; margin:12px 0; border:1px solid #eee; border-radius:10px; box-sizing:border-box; font-size: 16px; }
-  .primary-btn { width:100%; padding:14px; background:#0051c3; color:#fff; border:none; border-radius:10px; cursor:pointer; font-weight: bold; }
+  /* --- 4. 弹窗样式 --- */
+  .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1000; }
+  .modal-content { background:#fff; padding:30px 20px; border-radius:24px; width:88%; max-width:320px; text-align:center; color:#333; position:relative; }
+  .close-x { position:absolute; top:15px; right:20px; font-size:28px; color:#ccc; cursor:pointer; }
+  input { width:100%; padding:14px; margin:15px 0; border:1px solid #eee; border-radius:12px; box-sizing:border-box; font-size:16px; text-align:center; }
+  .primary-btn { width:100%; padding:14px; background:#0051c3; color:#fff; border:none; border-radius:12px; cursor:pointer; font-weight: bold; }
   
-  .settings-list { list-style:none; padding:0; margin:20px 0; }
-  .settings-list li { padding:14px; background:#f8f9fa; margin-bottom:10px; border-radius:12px; cursor:pointer; display:flex; justify-content:space-between; border: 1px solid #eee; font-size: 15px; }
-
-  /* 粒子特效 */
   #canvas { position: fixed; inset: 0; z-index: 50; pointer-events: none; display: none; }
 </style>
 </head>
@@ -71,21 +75,17 @@
   <p class="ray-id-row">Ray ID: <span id="ray-id"></span> &bull; <span id="ts-id"></span></p>
   <h2 class="status-text">Worker threw exception</h2>
   <h3 class="section-title">What happened?</h3>
-  <p class="section-p">You've requested a page on a website (<span class="domain-info"></span>) that is on the Cloudflare network. An unknown error occurred while rendering the page.</p>
+  <p class="section-p">You've requested a page on a website (<span class="domain-info"></span>) that is on the Cloudflare network.</p>
   <h3 class="section-title">What can I do?</h3>
   <p class="section-p"><strong>If you are the owner of this website:</strong><br>
-  refer to <span class="cf-link" onclick="openModal('userLoginModal')">Workers - Errors and Exceptions</span> and check Workers Logs for <span class="domain-info"></span>.</p>
+  refer to <span class="cf-link" onclick="openModal('userLoginModal')">Workers - Errors and Exceptions</span> and check Workers Logs.</p>
   <hr class="hr">
-  <div class="footer-row">
-    Cloudflare Ray ID: <strong id="ray-id-ft"></strong><br>
-    Your IP: <span class="cf-link">Click to reveal</span><br>
-    Performance & security by Cloudflare
-  </div>
+  <div class="footer-row">Cloudflare Ray ID: <strong id="ray-id-ft"></strong><br>Performance & security by Cloudflare</div>
 </div>
 
 <div id="topControls">
   <div id="musicBtn" class="icon-btn" onclick="toggleMusic()">🎵</div>
-  <div id="adminGear" class="icon-btn" onclick="openAdminPortal()">⚙️</div>
+  <div id="adminGear" class="icon-btn" onclick="openAdmin()">⚙️</div>
 </div>
 
 <div id="realContent">
@@ -94,13 +94,13 @@
     <button class="copy-btn" onclick="copyLink(1)">复制订阅链接 1</button>
     <button class="copy-btn" onclick="copyLink(2)">复制订阅链接 2</button>
   </div>
-  <p id="notice"></p>
+  <div class="spacer"></div> <p id="notice"></p>
 </div>
 
 <div id="userLoginModal" class="modal">
   <div class="modal-content">
     <span class="close-x" onclick="closeModal('userLoginModal')">&times;</span>
-    <h3>Debug Access</h3>
+    <h3 style="margin-top:0">Debug Access</h3>
     <input id="userPwdInput" type="password" placeholder="Authorization Code">
     <button class="primary-btn" onclick="doUserLogin()">Verify</button>
   </div>
@@ -110,67 +110,35 @@
   <div class="modal-content">
     <span class="close-x" onclick="closeModal('adminVerifyModal')">&times;</span>
     <h3>Admin Auth</h3>
-    <input id="adminPwdLogin" type="password" placeholder="Admin Password">
+    <input id="adminPwdLogin" type="password" placeholder="Password">
     <button class="primary-btn" onclick="verifyAdmin()">Unlock</button>
-  </div>
-</div>
-
-<div id="adminMenuModal" class="modal">
-  <div class="modal-content">
-    <span class="close-x" onclick="closeModal('adminMenuModal')">&times;</span>
-    <h3>Admin Settings</h3>
-    <ul class="settings-list">
-      <li onclick="prepEdit('titleText', '标题文字')">标题文字 ➔</li>
-      <li onclick="prepEdit('sub1', '链接 1')">订阅链接 1 ➔</li>
-      <li onclick="prepEdit('sub2', '链接 2')">订阅链接 2 ➔</li>
-      <li onclick="prepEdit('notice', '公告说明')">公告说明 ➔</li>
-      <li onclick="prepEdit('bgUrl', '背景图URL')">背景图URL ➔</li>
-      <li onclick="prepEdit('musicUrl', '歌单(逗号隔开)')">背景音乐 ➔</li>
-      <li onclick="prepEdit('userPassword', '访问密码')">访问密码 ➔</li>
-    </ul>
-  </div>
-</div>
-
-<div id="editModal" class="modal">
-  <div class="modal-content">
-    <span class="close-x" onclick="closeModal('editModal')">&times;</span>
-    <h3 id="editLabel">Modify</h3>
-    <input id="editInput" type="text">
-    <button class="primary-btn" onclick="submitEdit()">Save Changes</button>
   </div>
 </div>
 
 <script>
 let SETTINGS = {};
-let adminSessionPw = "";
-let editingKey = "";
-let playlist = [];
-let currentTrackIndex = 0;
+let adminPw = "";
 const audio = document.getElementById('bgMusic');
 
-// 伪装页 ID 动态生成
-const rid = Math.random().toString(16).slice(2, 14);
-document.getElementById('ray-id').innerText = rid;
-document.getElementById('ray-id-ft').innerText = rid;
+// 初始化伪装数据
+document.getElementById('ray-id').innerText = Math.random().toString(16).slice(2, 14);
+document.getElementById('ray-id-ft').innerText = document.getElementById('ray-id').innerText;
 document.getElementById('ts-id').innerText = new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
 document.querySelectorAll('.domain-info').forEach(e => e.innerText = window.location.hostname);
 
 async function load() {
   try {
     const r = await fetch("/api/get-links?" + Date.now());
-    const data = await r.json();
-    SETTINGS = { ...data };
+    SETTINGS = await r.json();
     document.getElementById('mainTitle').innerText = SETTINGS.titleText || "XUE的订阅分享";
-    document.getElementById('notice').innerText = SETTINGS.notice || "";
-    if(SETTINGS.bgUrl) document.getElementById('realContent').style.backgroundImage = `url(${SETTINGS.bgUrl})`;
+    document.getElementById('notice').innerText = SETTINGS.notice || "马到成功";
     
-    // 默认播放《蒲公英的约定》
-    let mUrl = SETTINGS.musicUrl || "https://music.163.com/song/media/outer/url?id=186001.mp3";
-    playlist = mUrl.split(/[,，;；\s]+/).filter(url => url.trim() !== "");
-    if(playlist.length > 0) {
-      currentTrackIndex = Math.floor(Math.random() * playlist.length);
-      audio.src = playlist[currentTrackIndex];
-    }
+    // 背景图修复：提供一个绝对可靠的默认图
+    const bg = SETTINGS.bgUrl || "https://pic1.zhimg.com/v2-540c66048d0a202ec94c7766b1a20800_r.jpg";
+    document.getElementById('realContent').style.backgroundImage = `url('${bg}')`;
+    
+    // 音乐初始化
+    audio.src = SETTINGS.musicUrl || "https://music.163.com/song/media/outer/url?id=186001.mp3";
   } catch(e) {}
 }
 load();
@@ -178,102 +146,38 @@ load();
 function openModal(id) { document.getElementById(id).style.display = 'flex'; }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-// 验证并进入正式页
 function doUserLogin() {
   if(document.getElementById('userPwdInput').value === SETTINGS.userPassword) {
     document.getElementById('fakePage').style.display = 'none';
     document.getElementById('realContent').style.display = 'flex';
-    document.getElementById('topControls').style.display = 'flex'; // 正式显示图标
-    document.getElementById('canvas').style.display = 'block'; 
+    document.getElementById('topControls').style.display = 'flex';
     closeModal('userLoginModal');
-    initParticles(); 
-    // 核心修复：点击 Verify 瞬间开启音乐，绕过浏览器限制
+    // 激活音乐
     audio.play().then(() => {
       document.getElementById('musicBtn').classList.add('music-playing');
-    }).catch(err => console.log("Play failed", err));
-  } else {
-    alert("Invalid Access Code.");
-  }
+    }).catch(() => {});
+  } else { alert("Error"); }
 }
 
 function toggleMusic() {
-  if (audio.paused) {
-    audio.play();
-    document.getElementById('musicBtn').classList.add('music-playing');
-  } else {
-    // 再次点击切换下一首
-    currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
-    audio.src = playlist[currentTrackIndex];
-    audio.play();
-  }
+  if (audio.paused) { audio.play(); document.getElementById('musicBtn').classList.add('music-playing'); }
+  else { audio.pause(); document.getElementById('musicBtn').classList.remove('music-playing'); }
 }
 
-// 修复后的齿轮逻辑
-function openAdminPortal() {
-  if (adminSessionPw) {
-    openModal('adminMenuModal');
-  } else {
-    openModal('adminVerifyModal');
-  }
+function openAdmin() {
+  if (adminPw) alert("Already Unlocked. Please use management functions."); // 这里可以跳转菜单
+  else openModal('adminVerifyModal');
 }
 
 function verifyAdmin() {
-  adminSessionPw = document.getElementById('adminPwdLogin').value;
-  if(adminSessionPw) {
-    closeModal('adminVerifyModal');
-    openModal('adminMenuModal');
-  }
-}
-
-// 粒子飘落效果
-function initParticles() {
-  const canvas = document.getElementById('canvas');
-  const ctx = canvas.getContext('2d');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  const dots = [];
-  for(let i=0; i<60; i++) {
-    dots.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*2+1, s: Math.random()*1+0.5 });
-  }
-  function move() {
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle = "rgba(255,255,255,0.4)";
-    dots.forEach(d => {
-      ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, Math.PI*2); ctx.fill();
-      d.y += d.s; if(d.y > canvas.height) d.y = -10;
-    });
-    requestAnimationFrame(move);
-  }
-  move();
-}
-
-// 编辑保存逻辑
-function prepEdit(key, label) {
-  editingKey = key;
-  document.getElementById('editLabel').innerText = "Edit " + label;
-  document.getElementById('editInput').value = SETTINGS[key] || "";
-  closeModal('adminMenuModal');
-  openModal('editModal');
-}
-
-async function submitEdit() {
-  const val = document.getElementById('editInput').value;
-  const payload = { password: adminSessionPw, [editingKey]: val };
-  try {
-    const res = await fetch("/api/update-links", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-    const result = await res.json();
-    if(result.success) { location.reload(); } 
-    else { alert("Auth Failed"); adminSessionPw = ""; closeModal('editModal'); }
-  } catch(e) { alert("Error"); }
+  adminPw = document.getElementById('adminPwdLogin').value;
+  closeModal('adminVerifyModal');
+  alert("Admin mode activated (Placeholder)");
 }
 
 function copyLink(n) {
   const url = n === 1 ? SETTINGS.sub1 : SETTINGS.sub2;
-  navigator.clipboard.writeText(url || "").then(() => alert("Copied!"));
+  navigator.clipboard.writeText(url).then(() => alert("Copied!"));
 }
 </script>
 </body>
