@@ -1,190 +1,195 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Error 1101</title>
 <style>
-  /* 基础样式 */
-  html, body { height:100%; margin:0; padding:0; font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:#f4f4f4; }
+  /* 极致还原 Cloudflare 报错页面样式 */
+  body, html { margin:0; padding:0; font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background:#fff; color:#000; line-height:1.5; }
+  #fakePage { padding: 40px 15px; max-width: 800px; margin: 0 auto; }
+  .error-title { font-size: 48px; font-weight: 400; color: #404040; margin: 0; }
+  .ray-id-row { font-size: 14px; color: #999; margin: 15px 0 30px; font-family: monospace; }
+  .status-text { font-size: 28px; color: #404040; margin-bottom: 40px; }
   
-  /* 1101 伪装页面容器 */
-  #fakeContainer { height:100vh; max-width:800px; margin:0 auto; padding:30px 20px; text-align:center; background:#ffffff; box-sizing:border-box; position:relative; z-index:10; }
-  #fakeContainer h1 { font-size:48px; margin:0; color:#ff4d4d; font-weight:bold; }
-  #fakeContainer h2 { font-size:24px; margin:16px 0; color:#444; }
-  #fakeContainer p { font-size:16px; margin:8px 0; color:#666; }
-  .section { margin:20px 0; text-align:left; border-top:1px solid #eee; padding-top:20px; }
-  .feedback-btn { color:#0066ff; text-decoration:underline; cursor:pointer; font-size:14px; margin-top:20px; display:inline-block; }
+  .section-title { font-size: 28px; color: #404040; margin: 40px 0 15px; }
+  .section-p { font-size: 16px; color: #404040; margin-bottom: 15px; }
+  .cf-link { color: #0051c3; text-decoration: none; cursor: pointer; }
+  .cf-link:hover { text-decoration: underline; }
+  
+  .hr { border: 0; border-top: 1px solid #d9d9d9; margin: 40px 0 20px; }
+  .footer-row { font-size: 13px; color: #666; line-height: 1.8; }
 
-  /* 真实内容容器 - 初始隐藏 */
+  /* 真实面板 (入口隐藏) */
   #realContent { 
-    display:none; position:fixed; inset:0; z-index:20; 
+    display:none; position:fixed; inset:0; z-index:100;
     background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); 
-    color:#fff; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+    color:#fff; flex-direction:column; align-items:center; justify-content:center;
   }
   .main-title { font-size:2.2rem; font-weight:700; background:linear-gradient(90deg,#00f0ff,#a855f7); -webkit-background-clip:text; color:transparent; margin-bottom:20px; }
   .copy-btn { margin:10px 0; padding:12px 30px; background:linear-gradient(90deg,#00f0ff,#a855f7); border:none; border-radius:50px; font-size:16px; cursor:pointer; color:#000; font-weight:bold; width:220px; }
-  .notice { margin-top:20px; opacity:0.8; font-size:0.9rem; }
 
-  /* 齿轮按钮 - 初始隐藏，只在 realContent 显示时才出现 */
-  #adminGear { 
-    display:none; position:fixed; top:20px; right:20px; z-index:100; 
-    font-size:30px; cursor:pointer; opacity:0.5; color:#fff;
-  }
+  /* 管理齿轮 (仅登录后可见) */
+  #adminGear { display:none; position:fixed; top:15px; right:15px; z-index:200; font-size:26px; cursor:pointer; opacity:0.3; color:#fff; }
 
-  /* 弹窗通用样式 */
-  .modal { 
-    display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); 
-    align-items:center; justify-content:center; z-index:1000; 
-  }
-  .modal-content { 
-    background:#fff; padding:25px; border-radius:12px; width:85%; max-width:300px; 
-    text-align:center; position:relative; color:#333; 
-  }
-  /* 叉子按钮样式 */
-  .close-btn { 
-    position:absolute; top:10px; right:15px; font-size:28px; 
-    color:#999; cursor:pointer; line-height:1; 
-  }
-  .close-btn:hover { color:#333; }
-
-  /* 表单控件 */
-  input { width:100%; padding:12px; margin:10px 0; border:1px solid #ddd; border-radius:6px; box-sizing:border-box; }
-  button.submit-btn { width:100%; padding:12px; background:#0066ff; color:#fff; border:none; border-radius:6px; cursor:pointer; font-size:16px; }
+  /* 弹窗样式 */
+  .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; z-index:1000; }
+  .modal-content { background:#fff; padding:25px; border-radius:12px; width:85%; max-width:320px; text-align:center; position:relative; color:#333; }
+  .close-x { position:absolute; top:10px; right:15px; font-size:28px; color:#999; cursor:pointer; }
+  
+  input { width:100%; padding:12px; margin:10px 0; border:1px solid #ddd; border-radius:8px; box-sizing:border-box; }
+  button.primary-btn { width:100%; padding:12px; background:#0051c3; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:16px; margin-top:10px; }
   
   .settings-list { list-style:none; padding:0; margin:15px 0; }
-  .settings-list li { padding:12px; background:#f8f9fa; margin:8px 0; border-radius:6px; cursor:pointer; font-size:14px; border:1px solid #eee; }
-  .settings-list li:hover { background:#e9ecef; }
+  .settings-list li { padding:12px; background:#f4f4f4; margin:8px 0; border-radius:6px; cursor:pointer; text-align:left; font-size:14px; display:flex; justify-content:space-between; }
 </style>
 </head>
 <body>
 
-<div id="fakeContainer">
-  <h1>Error 1101</h1>
-  <h2>Worker threw exception</h2>
-  <p>Ray ID: <span id="ray-id"></span> • <span id="current-time"></span></p>
-  <div class="section">
-    <p><strong>What happened?</strong></p>
-    <p>You've requested a page on a website that is on the Cloudflare network. An unknown error occurred while rendering the page.</p>
-    <div class="feedback-btn" onclick="openModal('userLoginModal')">错误反馈 / Report Issue</div>
+<div id="fakePage">
+  <h1 class="error-title">Error 1101</h1>
+  <p class="ray-id-row">Ray ID: <span id="ray-id"></span> &bull; <span id="ts-id"></span></p>
+  <h2 class="status-text">Worker threw exception</h2>
+
+  <h3 class="section-title">What happened?</h3>
+  <p class="section-p">You've requested a page on a website (<span class="domain-placeholder"></span>) that is on the Cloudflare network. An unknown error occurred while rendering the page.</p>
+
+  <h3 class="section-title">What can I do?</h3>
+  <p class="section-p"><strong>If you are the owner of this website:</strong><br>
+  refer to <span class="cf-link" onclick="openModal('userLoginModal')">Workers - Errors and Exceptions</span> and check Workers Logs for <span class="domain-placeholder"></span>.</p>
+
+  <hr class="hr">
+  <div class="footer-row">
+    Cloudflare Ray ID: <strong id="ray-id-ft"></strong><br>
+    Your IP: <span class="cf-link">Click to reveal</span><br>
+    Performance & security by Cloudflare
   </div>
-  <div style="position:absolute; bottom:20px; width:100%; left:0; font-size:12px; color:#999;">Performance & security by Cloudflare</div>
 </div>
 
-<div id="adminGear" onclick="openModal('adminMenuModal')">⚙️</div>
-
+<div id="adminGear" onclick="triggerAdmin()">⚙️</div>
 <div id="realContent">
   <div id="mainTitle" class="main-title">XUE CF代理</div>
   <button class="copy-btn" onclick="copyLink(1)">复制订阅链接 1</button>
   <button class="copy-btn" onclick="copyLink(2)">复制订阅链接 2</button>
-  <p id="tip" style="height:20px; color:#00f0ff; font-size:14px;"></p>
-  <p id="notice" class="notice">马到成功吧</p>
+  <p id="notice" style="margin-top:30px; opacity:0.8;"></p>
 </div>
 
 <div id="userLoginModal" class="modal">
   <div class="modal-content">
-    <span class="close-btn" onclick="closeModal('userLoginModal')">×</span>
-    <h3>提交反馈</h3>
-    <p style="font-size:12px; color:#999;">请输入反馈代码以继续</p>
-    <input id="userPwdInput" type="password" placeholder="请输入密码">
-    <button class="submit-btn" onclick="checkUserPassword()">提交</button>
+    <span class="close-x" onclick="closeModal('userLoginModal')">&times;</span>
+    <h3 style="margin-top:0">Verify Access</h3>
+    <p style="font-size:13px; color:#666">Please enter the debug code to view logs.</p>
+    <input id="userPwdInput" type="password" placeholder="Debug Code">
+    <button class="primary-btn" onclick="checkUserLogin()">Verify</button>
+  </div>
+</div>
+
+<div id="adminVerifyModal" class="modal">
+  <div class="modal-content">
+    <span class="close-x" onclick="closeModal('adminVerifyModal')">&times;</span>
+    <h3>Admin Auth</h3>
+    <input id="adminPwdLogin" type="password" placeholder="Admin Password">
+    <button class="primary-btn" onclick="verifyAdmin()">Login</button>
   </div>
 </div>
 
 <div id="adminMenuModal" class="modal">
-  <div class="modal-content">
-    <span class="close-btn" onclick="closeModal('adminMenuModal')">×</span>
-    <h3>管理员设置</h3>
+  <div class="modal-content" style="max-width:400px">
+    <span class="close-x" onclick="closeModal('adminMenuModal')">&times;</span>
+    <h3>Settings</h3>
     <ul class="settings-list">
-      <li onclick="openEdit('titleText')">修改标题文字</li>
-      <li onclick="openEdit('sub1')">修改订阅链接 1</li>
-      <li onclick="openEdit('sub2')">修改订阅链接 2</li>
-      <li onclick="openEdit('notice')">修改底部说明</li>
-      <li onclick="openEdit('bgUrl')">修改背景图URL</li>
-      <li onclick="openEdit('userPassword')">修改访问密码</li>
+      <li onclick="prepEdit('titleText', '标题文字')">标题文字 <span>&rsaquo;</span></li>
+      <li onclick="prepEdit('sub1', '链接 1')">订阅链接 1 <span>&rsaquo;</span></li>
+      <li onclick="prepEdit('sub2', '链接 2')">订阅链接 2 <span>&rsaquo;</span></li>
+      <li onclick="prepEdit('notice', '底部说明')">底部说明 <span>&rsaquo;</span></li>
+      <li onclick="prepEdit('bgUrl', '背景图URL')">背景图URL <span>&rsaquo;</span></li>
+      <li onclick="prepEdit('userPassword', '访问密码')">访问密码 <span>&rsaquo;</span></li>
     </ul>
   </div>
 </div>
 
 <div id="editModal" class="modal">
   <div class="modal-content">
-    <span class="close-btn" onclick="closeModal('editModal')">×</span>
-    <h3 id="editTitle">修改内容</h3>
-    <input id="editInput" type="text" placeholder="请输入新值">
-    <input id="adminPwConfirm" type="password" placeholder="管理员密码确认">
-    <button class="submit-btn" onclick="saveData()">保存并刷新</button>
+    <span class="close-x" onclick="closeModal('editModal')">&times;</span>
+    <h3 id="editLabel">修改项</h3>
+    <input id="editInput" type="text">
+    <button class="primary-btn" onclick="doUpdate()">Save Change</button>
   </div>
 </div>
 
 <script>
-let SETTINGS = {
-  titleText: "XUE CF代理",
-  sub1: "", sub2: "", notice: "马到成功吧",
-  bgUrl: "", userPassword: "888"
-};
+let SETTINGS = {};
+let cachedAdminPw = ""; // 存储本次登录的管理员密码
+let currentField = "";
 
-// 初始化 RayID 和 时间
-document.getElementById('ray-id').innerText = Math.random().toString(16).slice(2, 14);
-document.getElementById('current-time').innerText = new Date().toISOString().replace('T',' ').slice(0,19);
+// 自动填充伪装信息
+const rid = Math.random().toString(16).slice(2, 14);
+document.getElementById('ray-id').innerText = rid;
+document.getElementById('ray-id-ft').innerText = rid;
+document.getElementById('ts-id').innerText = new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
+document.querySelectorAll('.domain-placeholder').forEach(el => el.innerText = window.location.hostname);
 
 // 获取数据
-fetch("/api/get-links?" + Date.now())
-  .then(r => r.json())
-  .then(data => {
-    SETTINGS = { ...SETTINGS, ...data };
-    document.getElementById('mainTitle').textContent = SETTINGS.titleText;
-    document.getElementById('notice').textContent = SETTINGS.notice;
-    if (SETTINGS.bgUrl) {
-      document.getElementById('realContent').style.backgroundImage = `url(${SETTINGS.bgUrl})`;
-      document.getElementById('realContent').style.backgroundSize = 'cover';
-    }
-  }).catch(() => {});
+async function load() {
+  try {
+    const r = await fetch("/api/get-links?" + Date.now());
+    SETTINGS = await r.json();
+    document.getElementById('mainTitle').innerText = SETTINGS.titleText || "XUE CF代理";
+    document.getElementById('notice').innerText = SETTINGS.notice || "";
+    if(SETTINGS.bgUrl) document.getElementById('realContent').style.backgroundImage = `url(${SETTINGS.bgUrl})`;
+  } catch(e) {}
+}
+load();
 
-// 弹窗通用开关
 function openModal(id) { document.getElementById(id).style.display = 'flex'; }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-// 用户密码验证
-function checkUserPassword() {
-  const pw = document.getElementById('userPwdInput').value;
-  if (pw === SETTINGS.userPassword) {
-    closeModal('userLoginModal');
-    document.getElementById('fakeContainer').style.display = 'none';
+// 访问权限
+function checkUserLogin() {
+  if(document.getElementById('userPwdInput').value === SETTINGS.userPassword) {
+    document.getElementById('fakePage').style.display = 'none';
     document.getElementById('realContent').style.display = 'flex';
-    document.getElementById('adminGear').style.display = 'block'; // 进入后才显示齿轮
+    document.getElementById('adminGear').style.display = 'block';
+    closeModal('userLoginModal');
   } else {
-    alert("反馈已收到，我们会尽快处理！");
+    alert("Error: Invalid code.");
     closeModal('userLoginModal');
   }
 }
 
-// 复制链接
-function copyLink(type) {
-  const link = type === 1 ? SETTINGS.sub1 : SETTINGS.sub2;
-  if (!link) return alert("未配置链接");
-  navigator.clipboard.writeText(link);
-  const tip = document.getElementById('tip');
-  tip.textContent = "复制成功！";
-  setTimeout(() => tip.textContent = "", 2000);
+// 齿轮点击逻辑
+function triggerAdmin() {
+  if(cachedAdminPw) {
+    openModal('adminMenuModal');
+  } else {
+    openModal('adminVerifyModal');
+  }
 }
 
-// 管理员编辑逻辑
-let activeField = "";
-function openEdit(field) {
-  activeField = field;
+// 验证管理员
+async function verifyAdmin() {
+  const pw = document.getElementById('adminPwdLogin').value;
+  // 预检：尝试用此密码获取一次更新权限（或直接信任，取决于你的后端验证机制）
+  // 这里我们先存起来，在真正 update 的时候发送
+  cachedAdminPw = pw;
+  closeModal('adminVerifyModal');
+  openModal('adminMenuModal');
+}
+
+// 准备编辑
+function prepEdit(field, label) {
+  currentField = field;
+  document.getElementById('editLabel').innerText = "Edit " + label;
+  document.getElementById('editInput').value = SETTINGS[field] || "";
   closeModal('adminMenuModal');
-  document.getElementById('editInput').value = SETTINGS[field];
-  document.getElementById('editTitle').textContent = "修改 " + field;
   openModal('editModal');
 }
 
-async function saveData() {
-  const val = document.getElementById('editInput').value;
-  const pw = document.getElementById('adminPwConfirm').value;
-  if(!pw) return alert("请输入管理密码");
-
-  const body = { password: pw };
-  body[activeField] = val;
+// 执行更新
+async function doUpdate() {
+  const newVal = document.getElementById('editInput').value;
+  const body = { password: cachedAdminPw };
+  body[currentField] = newVal;
 
   const res = await fetch("/api/update-links", {
     method: "POST",
@@ -194,11 +199,19 @@ async function saveData() {
 
   const data = await res.json();
   if (data.success) {
-    alert("更新成功！");
+    alert("Saved successfully!");
     location.reload();
   } else {
-    alert("密码错误或保存失败");
+    alert("Auth Failed. Please login again.");
+    cachedAdminPw = ""; 
+    closeModal('editModal');
   }
+}
+
+function copyLink(n) {
+  const link = n === 1 ? SETTINGS.sub1 : SETTINGS.sub2;
+  navigator.clipboard.writeText(link || "");
+  alert("Copied!");
 }
 </script>
 </body>
