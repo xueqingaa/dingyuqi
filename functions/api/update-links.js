@@ -1,7 +1,7 @@
 export async function onRequestPost(context) {
   try {
     const body = await context.request.json();
-    const { password, sub1, sub2, notice, bgUrl, userPassword } = body;
+    const { password, titleText, sub1, sub2, notice, bgUrl, userPassword } = body;
 
     const correct = context.env.ADMIN_PASSWORD;
     if (!correct) return new Response("Server config error", { status: 500 });
@@ -10,6 +10,7 @@ export async function onRequestPost(context) {
 
     const kv = context.env.SUB_KV;
 
+    if (titleText !== undefined) await kv.put("titleText", titleText.trim());
     if (sub1 !== undefined) await kv.put("sub1", sub1.trim());
     if (sub2 !== undefined) await kv.put("sub2", sub2.trim());
     if (notice !== undefined) await kv.put("notice", notice.trim());
