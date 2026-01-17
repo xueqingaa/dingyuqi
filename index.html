@@ -6,59 +6,58 @@
 <title>Error 1101</title>
 <style>
   /* --- 1. 严格原版伪装页样式 --- */
-  body, html { margin:0; padding:0; font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background:#fff; color:#000; height: 100%; overflow: hidden; }
+  body, html { margin:0; padding:0; font-family: "Segoe UI", Roboto, sans-serif; background:#fff; color:#000; height: 100%; overflow: hidden; }
   #fakePage { padding: 40px 20px; max-width: 800px; margin: 0 auto; display: block; position: relative; z-index: 10; }
   .error-title { font-size: 48px; font-weight: 400; color: #404040; margin: 0; }
   .ray-id-row { font-size: 14px; color: #999; margin: 15px 0 30px; font-family: monospace; }
   .status-text { font-size: 28px; color: #404040; margin-bottom: 40px; }
-  .section-title { font-size: 28px; color: #404040; margin: 40px 0 15px; }
-  .section-p { font-size: 16px; color: #404040; margin-bottom: 15px; }
-  .cf-link { color: #0051c3; text-decoration: none; cursor: pointer; }
+  .cf-link { color: #0051c3; text-decoration: none; cursor: pointer; font-weight: normal; }
   .hr { border: 0; border-top: 1px solid #d9d9d9; margin: 40px 0 20px; }
-  .footer-row { font-size: 13px; color: #666; line-height: 1.8; }
 
-  /* --- 2. 正式页面样式 (周杰伦背景 + 遮罩) --- */
+  /* --- 2. 正式页面样式 (优化间距) --- */
   #realContent { 
     display:none; position:fixed; inset:0; z-index:100;
+    background: #1a1a2e; /* 默认深色底，防止背景图加载失败变灰 */
     background-size: cover; background-position: center; background-repeat: no-repeat;
     color:#fff; flex-direction:column; align-items:center; 
     padding-top: 15vh; text-align: center;
   }
-  /* 确保文字清晰的黑色遮罩 */
-  #realContent::after { 
-    content: ""; position: absolute; inset: 0; 
-    background: rgba(0, 0, 0, 0.4); z-index: -1; 
-  }
+  #realContent::before { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: -1; }
 
-  /* 飘雪画布 */
+  /* 粒子画布 */
   #canvas { position: fixed; inset: 0; z-index: 50; pointer-events: none; display: none; }
 
   .main-title { 
     font-size:2.4rem; font-weight:800; background: linear-gradient(90deg,#00f0ff,#a855f7); 
-    -webkit-background-clip:text; color:transparent; margin-bottom: 50px;
+    -webkit-background-clip:text; color:transparent; margin-bottom: 40px;
     text-shadow: 0 4px 12px rgba(0,0,0,0.5);
   }
-  .btn-group { display: flex; flex-direction: column; gap: 20px; width: 85%; max-width: 280px; z-index: 101; }
+  .btn-group { display: flex; flex-direction: column; gap: 18px; width: 85%; max-width: 280px; z-index: 101; }
   .copy-btn { 
     padding:16px; background:linear-gradient(90deg,#00f0ff,#a855f7); 
     border:none; border-radius:15px; font-size:17px; cursor:pointer; 
-    color:#000; font-weight:bold; box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    color:#000; font-weight:bold; box-shadow: 0 6px 15px rgba(0,0,0,0.3);
   }
 
-  /* --- 3. 顶部图标（仅在正式页显示） --- */
-  #topControls { display:none; position:fixed; top:20px; right:20px; z-index:200; gap: 18px; align-items: center; }
+  /* 关键：公告下移 */
+  #notice { 
+    margin-top: 80px; /* 大幅下移 */
+    color: #a5f3fc; font-size: 15px; letter-spacing: 2px; opacity: 0.9;
+    z-index: 101;
+  }
+
+  /* --- 3. 顶部控制 (仅在主页显示) --- */
+  #topControls { display:none; position:fixed; top:25px; right:20px; z-index:200; gap: 20px; }
   .icon-btn { font-size:26px; cursor:pointer; opacity:0.7; color:#fff; transition: 0.3s; }
   @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-  .music-playing { animation: rotate 3s linear infinite; opacity: 1; }
+  .music-playing { animation: rotate 4s linear infinite; opacity: 1; text-shadow: 0 0 10px #00f0ff; }
 
   /* --- 4. 弹窗样式 --- */
   .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter: blur(5px); align-items:center; justify-content:center; z-index:1000; }
-  .modal-content { background:#fff; padding:30px 20px; border-radius:20px; width:88%; max-width:320px; text-align:center; position:relative; color:#333; }
-  .close-x { position:absolute; top:12px; right:18px; font-size:30px; color:#ccc; cursor:pointer; line-height: 1; }
+  .modal-content { background:#fff; padding:30px 20px; border-radius:20px; width:88%; max-width:320px; text-align:center; color:#333; position:relative; }
+  .close-x { position:absolute; top:10px; right:15px; font-size:28px; color:#ccc; cursor:pointer; }
   input { width:100%; padding:14px; margin:12px 0; border:1px solid #eee; border-radius:10px; box-sizing:border-box; font-size: 16px; }
   .primary-btn { width:100%; padding:14px; background:#0051c3; color:#fff; border:none; border-radius:10px; cursor:pointer; font-weight: bold; }
-  .settings-list { list-style:none; padding:0; margin:20px 0; }
-  .settings-list li { padding:14px; background:#f8f9fa; margin-bottom:10px; border-radius:12px; cursor:pointer; display:flex; justify-content:space-between; border: 1px solid #eee; }
 </style>
 </head>
 <body>
@@ -70,17 +69,12 @@
   <h1 class="error-title">Error 1101</h1>
   <p class="ray-id-row">Ray ID: <span id="ray-id"></span> &bull; <span id="ts-id"></span></p>
   <h2 class="status-text">Worker threw exception</h2>
-  <h3 class="section-title">What happened?</h3>
-  <p class="section-p">You've requested a page on a website (<span class="domain-info"></span>) that is on the Cloudflare network. An unknown error occurred while rendering the page.</p>
-  <h3 class="section-title">What can I do?</h3>
-  <p class="section-p"><strong>If you are the owner of this website:</strong><br>
-  refer to <span class="cf-link" onclick="openModal('userLoginModal')">Workers - Errors and Exceptions</span> and check Workers Logs for <span class="domain-info"></span>.</p>
+  <h3 style="font-size:28px; color:#404040; margin:40px 0 15px;">What happened?</h3>
+  <p style="font-size:16px; color:#404040; margin-bottom:15px;">You've requested a page on a website (<span class="domain-info"></span>) that is on the Cloudflare network.</p>
+  <h3 style="font-size:28px; color:#404040; margin:40px 0 15px;">What can I do?</h3>
+  <p style="font-size:16px; color:#404040;">If you are the owner: refer to <span class="cf-link" onclick="openModal('userLoginModal')">Workers - Errors and Exceptions</span>.</p>
   <hr class="hr">
-  <div class="footer-row">
-    Cloudflare Ray ID: <strong id="ray-id-ft"></strong><br>
-    Your IP: <span class="cf-link">Click to reveal</span><br>
-    Performance & security by Cloudflare
-  </div>
+  <div style="font-size:13px; color:#666;">Performance & security by Cloudflare</div>
 </div>
 
 <div id="topControls">
@@ -94,45 +88,21 @@
     <button class="copy-btn" onclick="copyLink(1)">复制订阅链接 1</button>
     <button class="copy-btn" onclick="copyLink(2)">复制订阅链接 2</button>
   </div>
-  <p id="notice" style="margin-top:40px; color:#a5f3fc; font-size:14px; letter-spacing:1px;"></p>
+  <p id="notice"></p>
 </div>
 
 <div id="userLoginModal" class="modal">
   <div class="modal-content">
     <span class="close-x" onclick="closeModal('userLoginModal')">&times;</span>
-    <h3>Debug Access</h3>
+    <h3 style="margin-top:0">Debug Access</h3>
     <input id="userPwdInput" type="password" placeholder="Authorization Code">
     <button class="primary-btn" onclick="doUserLogin()">Verify</button>
   </div>
 </div>
-<div id="adminVerifyModal" class="modal">
-  <div class="modal-content">
-    <span class="close-x" onclick="closeModal('adminVerifyModal')">&times;</span>
-    <h3>Admin Auth</h3>
-    <input id="adminPwdLogin" type="password" placeholder="Admin Password">
-    <button class="primary-btn" onclick="verifyAdmin()">Unlock</button>
-  </div>
-</div>
-<div id="adminMenuModal" class="modal">
-  <div class="modal-content">
-    <span class="close-x" onclick="closeModal('adminMenuModal')">&times;</span>
-    <h3>Settings</h3>
-    <ul class="settings-list">
-      <li onclick="prepEdit('titleText', '标题文字')">标题文字 ➔</li>
-      <li onclick="prepEdit('bgUrl', '背景图URL')">背景图URL ➔</li>
-      <li onclick="prepEdit('musicUrl', '多曲库设置')">多曲库设置 ➔</li>
-      <li onclick="prepEdit('notice', '底部公告')">底部公告 ➔</li>
-    </ul>
-  </div>
-</div>
-<div id="editModal" class="modal">
-  <div class="modal-content">
-    <span class="close-x" onclick="closeModal('editModal')">&times;</span>
-    <h3 id="editLabel">Modify</h3>
-    <input id="editInput" type="text">
-    <button class="primary-btn" onclick="submitEdit()">Save</button>
-  </div>
-</div>
+
+<div id="adminVerifyModal" class="modal"> <div class="modal-content"> <span class="close-x" onclick="closeModal('adminVerifyModal')">&times;</span> <h3>Admin Auth</h3> <input id="adminPwdLogin" type="password" placeholder="Admin Password"> <button class="primary-btn" onclick="verifyAdmin()">Unlock</button> </div> </div>
+<div id="adminMenuModal" class="modal"> <div class="modal-content"> <span class="close-x" onclick="closeModal('adminMenuModal')">&times;</span> <h3>Settings</h3> <ul style="list-style:none;padding:0;margin:20px 0;"> <li onclick="prepEdit('titleText', '标题文字')" style="padding:14px;background:#f8f9fa;margin-bottom:10px;border-radius:10px;cursor:pointer;">标题文字 ➔</li> <li onclick="prepEdit('sub1', '链接 1')" style="padding:14px;background:#f8f9fa;margin-bottom:10px;border-radius:10px;cursor:pointer;">链接 1 ➔</li> <li onclick="prepEdit('sub2', '链接 2')" style="padding:14px;background:#f8f9fa;margin-bottom:10px;border-radius:10px;cursor:pointer;">链接 2 ➔</li> <li onclick="prepEdit('bgUrl', '背景图URL')" style="padding:14px;background:#f8f9fa;margin-bottom:10px;border-radius:10px;cursor:pointer;">背景图URL ➔</li> <li onclick="prepEdit('musicUrl', '歌单(逗号隔开)')" style="padding:14px;background:#f8f9fa;margin-bottom:10px;border-radius:10px;cursor:pointer;">多曲库设置 ➔</li> <li onclick="prepEdit('userPassword', '访问密码')" style="padding:14px;background:#f8f9fa;margin-bottom:10px;border-radius:10px;cursor:pointer;">访问密码 ➔</li> <li onclick="prepEdit('notice', '公告文字')" style="padding:14px;background:#f8f9fa;margin-bottom:10px;border-radius:10px;cursor:pointer;">公告文字 ➔</li> </ul> </div> </div>
+<div id="editModal" class="modal"> <div class="modal-content"> <span class="close-x" onclick="closeModal('editModal')">&times;</span> <h3 id="editLabel">Modify</h3> <input id="editInput" type="text"> <button class="primary-btn" onclick="submitEdit()">Save</button> </div> </div>
 
 <script>
 let SETTINGS = {};
@@ -142,26 +112,18 @@ let playlist = [];
 let currentTrackIndex = 0;
 const audio = document.getElementById('bgMusic');
 
-// 1. 初始化伪装页数据
-const rid = Math.random().toString(16).slice(2, 14);
-document.getElementById('ray-id').innerText = rid;
-document.getElementById('ray-id-ft').innerText = rid;
-document.getElementById('ts-id').innerText = new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
-document.querySelectorAll('.domain-info').forEach(e => e.innerText = window.location.hostname);
-
 async function load() {
   try {
     const r = await fetch("/api/get-links?" + Date.now());
     const data = await r.json();
     SETTINGS = { ...data };
     document.getElementById('mainTitle').innerText = SETTINGS.titleText || "XUE的订阅分享";
-    document.getElementById('notice').innerText = SETTINGS.notice || "";
+    document.getElementById('notice').innerText = SETTINGS.notice || "马到成功";
+    if(SETTINGS.bgUrl) {
+        document.getElementById('realContent').style.backgroundImage = `url('${SETTINGS.bgUrl}')`;
+    }
     
-    // 设置稳定的周杰伦默认背景
-    const defaultBg = "https://pic4.zhimg.com/v2-825555431664188b2207904e57193d93_r.jpg";
-    document.getElementById('realContent').style.backgroundImage = `url(${SETTINGS.bgUrl || defaultBg})`;
-    
-    // 解析歌单 (默认蒲公英的约定)
+    // 解析歌单
     let mUrl = SETTINGS.musicUrl || "https://music.163.com/song/media/outer/url?id=186001.mp3";
     playlist = mUrl.split(/[,，;；\s]+/).filter(url => url.trim() !== "");
     if(playlist.length > 0) {
@@ -173,71 +135,67 @@ async function load() {
 load();
 
 function doUserLogin() {
-  if(document.getElementById('userPwdInput').value === SETTINGS.userPassword) {
+  const input = document.getElementById('userPwdInput').value;
+  if(input === SETTINGS.userPassword) {
+    // 1. 隐藏伪装
     document.getElementById('fakePage').style.display = 'none';
+    // 2. 显示主页内容和控制图标
     document.getElementById('realContent').style.display = 'flex';
     document.getElementById('topControls').style.display = 'flex';
-    document.getElementById('canvas').style.display = 'block'; 
+    document.getElementById('canvas').style.display = 'block';
     closeModal('userLoginModal');
-    initSnow(); 
-    playMusic();
-  } else { alert("Invalid code."); }
+    
+    // 3. 触发粒子和音乐 (必须在点击事件内)
+    initParticles();
+    forcePlay();
+  } else { alert("Code Error"); }
 }
 
-function playMusic() {
+function forcePlay() {
   audio.play().then(() => {
     document.getElementById('musicBtn').classList.add('music-playing');
-  }).catch(() => {
-    console.log("浏览器拦截了自动播放，请手动点击音符图标");
+  }).catch(err => {
+    console.log("Autoplay prevented, clicking icon manually might be needed.");
   });
 }
 
 function toggleMusic() {
   if (audio.paused) {
-    playMusic();
+    forcePlay();
   } else {
+    // 切歌逻辑
     currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
     audio.src = playlist[currentTrackIndex];
-    playMusic();
+    forcePlay();
   }
 }
 
-// 飘雪效果代码
-function initSnow() {
+function initParticles() {
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-  let particles = [];
-  for(let i=0; i<100; i++) {
-    particles.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 3 + 1,
-      d: Math.random() * 1
-    });
+  const particles = [];
+  for(let i=0; i<60; i++) {
+    particles.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*2+1, s: Math.random()*1+0.5 });
   }
   function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = "rgba(255,255,255,0.4)";
     ctx.beginPath();
     for(let p of particles) {
-      ctx.moveTo(p.x, p.y);
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2, true);
+      ctx.moveTo(p.x,p.y);
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      p.y += p.s;
+      if(p.y > canvas.height) p.y = -10;
     }
     ctx.fill();
-    for(let p of particles) {
-      p.y += Math.cos(p.d) + 1 + p.r/2;
-      if(p.y > canvas.height) {
-        p.y = -10;
-        p.x = Math.random() * canvas.width;
-      }
-    }
     requestAnimationFrame(draw);
   }
   draw();
 }
 
+// 基础弹窗控制
 function openModal(id) { document.getElementById(id).style.display = 'flex'; }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 function handleGearClick() { if (adminSessionPw) openModal('adminMenuModal'); else openModal('adminVerifyModal'); }
@@ -251,7 +209,11 @@ async function submitEdit() {
     if((await res.json()).success) { location.reload(); } else { alert("Auth Failed"); }
   } catch(e) { alert("Error"); }
 }
-function copyLink(n) { const url = n === 1 ? SETTINGS.sub1 : SETTINGS.sub2; navigator.clipboard.writeText(url || "").then(() => alert("已复制到剪贴板")); }
+function copyLink(n) { const url = n === 1 ? SETTINGS.sub1 : SETTINGS.sub2; navigator.clipboard.writeText(url || "").then(() => alert("Copied!")); }
+
+const rid = Math.random().toString(16).slice(2, 14);
+document.getElementById('ray-id').innerText = rid;
+document.querySelectorAll('.domain-info').forEach(e => e.innerText = window.location.hostname);
 </script>
 </body>
 </html>
