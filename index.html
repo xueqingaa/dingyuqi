@@ -3,198 +3,152 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Service Error</title>
+<title>XUE CF代理</title>
 
 <style>
-/* ===== 基础兜底（任何设备必显示） ===== */
 * { box-sizing: border-box; }
 
 html, body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: #f9fafb;
-    color: #111827;
+    background: radial-gradient(circle at top, #1e3a8a, #020617);
+    color: #e0f2fe;
+    min-height: 100svh;
 }
 
-/* ===== 错误页（伪装 Cloudflare） ===== */
-#errorPage {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    min-height: 100svh; /* 移动端安全视口 */
+/* 布局 */
+.wrapper {
+    min-height: 100svh;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 24px;
 }
 
-.cf-box {
-    max-width: 520px;
+.card {
     width: 100%;
+    max-width: 420px;
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 40px 28px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,.4);
 }
 
-.cf-title {
+/* 标题 */
+.title {
     font-size: 28px;
     font-weight: 600;
+    letter-spacing: .05em;
+    margin-bottom: 28px;
+    text-shadow: 0 0 20px rgba(56,189,248,.6);
 }
 
-.cf-desc {
-    margin: 16px 0 24px;
-    color: #374151;
-    line-height: 1.6;
-}
-
-.cf-btn {
-    padding: 10px 18px;
-    border: 1px solid #d1d5db;
-    background: white;
-    border-radius: 6px;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-/* ===== 反馈弹窗 ===== */
-#feedbackMask {
-    position: fixed;
-    top: 0;
-    left: 0;
+/* 按钮 */
+.btn {
     width: 100%;
-    min-height: 100svh;
-    background: rgba(0,0,0,.4);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
-
-.modal {
-    background: white;
-    border-radius: 10px;
-    width: 100%;
-    max-width: 360px;
-    padding: 24px;
-}
-
-.modal-title {
-    font-weight: 600;
-    margin-bottom: 16px;
-}
-
-.modal input {
-    width: 100%;
-    padding: 12px;
-    border-radius: 6px;
-    border: 1px solid #d1d5db;
-    font-size: 15px;
-}
-
-.modal button {
-    width: 100%;
-    margin-top: 16px;
-    padding: 12px;
+    padding: 16px 0;
     border: none;
-    border-radius: 6px;
-    background: #2563eb;
-    color: white;
-    font-size: 15px;
-}
-
-/* ===== 解锁后真实内容 ===== */
-#mainContent {
-    display: none;
-    min-height: 100svh;
-    padding: 60px 20px;
-    background: linear-gradient(135deg,#0f0c29,#302b63,#24243e);
-    color: #e0f7ff;
-    text-align: center;
-}
-
-.main-title {
-    font-size: clamp(28px, 6vw, 48px);
-    margin-bottom: 24px;
-}
-
-.copy-btn {
-    padding: 14px 36px;
-    border-radius: 40px;
-    border: none;
+    border-radius: 999px;
     font-size: 16px;
     font-weight: 600;
-    background: linear-gradient(90deg,#00f0ff,#7b2cbf);
-    color: #000;
+    color: #020617;
+    background: linear-gradient(90deg, #22d3ee, #a855f7);
     cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
 }
 
+.btn + .btn {
+    margin-top: 14px;
+}
+
+.btn:hover {
+    box-shadow: 0 0 30px rgba(168,85,247,.6);
+}
+
+.btn:active {
+    transform: scale(.97);
+}
+
+/* 提示 */
 .tip {
     margin-top: 16px;
-    color: #a5f3fc;
+    font-size: 14px;
+    color: #7dd3fc;
     opacity: 0;
-    transition: opacity .3s;
+    transition: opacity .3s ease;
 }
 
-/* ===== 桌面端增强 ===== */
+/* 说明 */
+.notice {
+    margin-top: 26px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255,255,255,.15);
+    font-size: 13px;
+    line-height: 1.6;
+    color: rgba(224,242,254,.7);
+}
+
+/* 桌面端优化 */
 @media (min-width: 768px) {
-    .cf-title { font-size: 32px; }
-    .cf-desc { font-size: 16px; }
+    .card {
+        padding: 48px 36px;
+    }
+    .title {
+        font-size: 32px;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<!-- 伪装错误页 -->
-<div id="errorPage">
-    <div class="cf-box">
-        <div class="cf-title">Bad gateway</div>
-        <p class="cf-desc">
-            The web server reported a bad gateway error.
-        </p>
-        <button class="cf-btn" onclick="openFeedback()">反馈问题</button>
-    </div>
-</div>
+<div class="wrapper">
+    <div class="card">
+        <div class="title">❄️ XUE CF代理 ❄️</div>
 
-<!-- 反馈弹窗 -->
-<div id="feedbackMask">
-    <div class="modal">
-        <div class="modal-title">问题反馈</div>
-        <input id="pwInput" type="password" placeholder="请描述你遇到的问题">
-        <button onclick="unlock()">提交反馈</button>
-    </div>
-</div>
+        <button class="btn" onclick="copyLink(1)">复制订阅链接 1</button>
+        <button class="btn" onclick="copyLink(2)">复制订阅链接 2</button>
 
-<!-- 解锁后内容 -->
-<div id="mainContent">
-    <div class="main-title">❄️ XUE CF代理 ❄️</div>
-    <button class="copy-btn" onclick="copyLink()">复制订阅链接</button>
-    <div id="copyTip" class="tip">已复制到剪贴板</div>
+        <div id="tip" class="tip"></div>
+
+        <div id="notice" class="notice"></div>
+    </div>
 </div>
 
 <script>
 /* ===== 可配置变量 ===== */
-const PASSWORD = "xue2026";
-const SUBSCRIBE_LINK = "https://example.com/sub";
-const SITE_TITLE = "XUE CF代理";
+const SUBSCRIBE_LINK_1 = "https://example.com/sub1";
+const SUBSCRIBE_LINK_2 = "https://example.com/sub2";
+const NOTICE_TEXT =
+    "请复制对应订阅链接后，粘贴到客户端中使用。如无法连接，请联系管理员。";
 
-/* ===== 行为逻辑 ===== */
-function openFeedback() {
-    document.getElementById("feedbackMask").style.display = "flex";
-}
+/* ===== 初始化 ===== */
+document.getElementById("notice").innerText = NOTICE_TEXT;
 
-function unlock() {
-    if (document.getElementById("pwInput").value === PASSWORD) {
-        document.title = SITE_TITLE;
-        document.getElementById("errorPage").remove();
-        document.getElementById("feedbackMask").remove();
-        document.getElementById("mainContent").style.display = "block";
+/* ===== 行为 ===== */
+function copyLink(type) {
+    let link = "";
+    let label = "";
+
+    if (type === 1) {
+        link = SUBSCRIBE_LINK_1;
+        label = "订阅链接 1";
+    } else {
+        link = SUBSCRIBE_LINK_2;
+        label = "订阅链接 2";
     }
-}
 
-function copyLink() {
-    navigator.clipboard.writeText(SUBSCRIBE_LINK);
-    const tip = document.getElementById("copyTip");
+    navigator.clipboard.writeText(link);
+
+    const tip = document.getElementById("tip");
+    tip.innerText = label + " 已复制";
     tip.style.opacity = 1;
-    setTimeout(() => tip.style.opacity = 0, 1500);
+
+    setTimeout(() => {
+        tip.style.opacity = 0;
+    }, 1600);
 }
 </script>
 
