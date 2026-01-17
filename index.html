@@ -5,14 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>Error 1101</title>
 <style>
-  /* 基础样式与伪装页 */
+  /* 极致还原 Cloudflare 样式 */
   body, html { margin:0; padding:0; font-family: "Segoe UI", Roboto, sans-serif; background:#fff; color:#000; height: 100%; overflow: hidden; }
-  #fakePage { padding: 40px 20px; max-width: 800px; margin: 0 auto; }
+  #fakePage { padding: 40px 20px; max-width: 800px; margin: 0 auto; display: block; }
   .error-title { font-size: 48px; font-weight: 400; color: #404040; margin: 0; }
   .ray-id-row { font-size: 14px; color: #999; margin: 15px 0 30px; font-family: monospace; }
   .cf-link { color: #0051c3; text-decoration: none; cursor: pointer; }
+  .hr { border: 0; border-top: 1px solid #d9d9d9; margin: 40px 0 20px; }
 
-  /* 真实面板 (增加 z-index 确保内容在粒子上方) */
+  /* 真实面板：Jay 式氛围感 */
   #realContent { 
     display:none; position:fixed; inset:0; z-index:100;
     background-size: cover; background-position: center; background-repeat: no-repeat;
@@ -20,8 +21,7 @@
     padding-top: 15vh; text-align: center;
   }
   #realContent::before { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.45); z-index: -1; }
-
-  /* 粒子容器 */
+  
   #canvas { position: fixed; inset: 0; z-index: 50; pointer-events: none; display: none; }
 
   .main-title { 
@@ -33,10 +33,10 @@
   .copy-btn { 
     padding:16px; background:linear-gradient(90deg,#00f0ff,#a855f7); 
     border:none; border-radius:15px; font-size:17px; cursor:pointer; 
-    color:#000; font-weight:bold; box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    color:#000; font-weight:bold; box-shadow: 0 6px 20px rgba(0,0,0,0.3); transition: 0.3s;
   }
+  .copy-btn:active { transform: scale(0.95); opacity: 0.8; }
 
-  /* 控制按钮 */
   .top-controls { display:none; position:fixed; top:20px; right:20px; z-index:200; display: flex; gap: 20px; align-items: center; }
   .icon-btn { font-size:26px; cursor:pointer; opacity:0.6; color:#fff; transition: 0.3s; }
   @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -45,25 +45,24 @@
   /* 弹窗样式 */
   .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter: blur(5px); align-items:center; justify-content:center; z-index:1000; }
   .modal-content { background:#fff; padding:30px 20px; border-radius:20px; width:88%; max-width:320px; text-align:center; position:relative; color:#333; }
-  .close-x { position:absolute; top:12px; right:18px; font-size:30px; color:#ccc; cursor:pointer; }
-  input { width:100%; padding:14px; margin:12px 0; border:1px solid #eee; border-radius:10px; box-sizing:border-box; }
+  .close-x { position:absolute; top:12px; right:18px; font-size:30px; color:#ccc; cursor:pointer; line-height:1; }
+  input { width:100%; padding:14px; margin:12px 0; border:1px solid #eee; border-radius:10px; box-sizing:border-box; font-size: 16px; }
   .primary-btn { width:100%; padding:14px; background:#0051c3; color:#fff; border:none; border-radius:10px; cursor:pointer; font-weight: bold; }
-  
-  .settings-list { list-style:none; padding:0; margin:20px 0; }
-  .settings-list li { padding:14px; background:#f8f9fa; margin-bottom:10px; border-radius:12px; cursor:pointer; display:flex; justify-content:space-between; border: 1px solid #eee; }
 </style>
 </head>
 <body>
 
-<audio id="bgMusic" preload="auto"></audio>
-<canvas id="canvas"></canvas> <div id="fakePage">
+<audio id="bgMusic" src="https://music.163.com/song/media/outer/url?id=186001.mp3" preload="auto" loop></audio>
+<canvas id="canvas"></canvas>
+
+<div id="fakePage">
   <h1 class="error-title">Error 1101</h1>
   <p class="ray-id-row">Ray ID: <span id="ray-id"></span> &bull; <span id="ts-id"></span></p>
   <h2 class="status-text">Worker threw exception</h2>
   <h3 style="font-size: 28px; color: #404040; margin: 40px 0 15px;">What happened?</h3>
   <p style="font-size: 16px; color: #404040;">You've requested a page on a website (<span class="domain-info"></span>) that is on the Cloudflare network.</p>
-  <p style="font-size: 16px; color: #404040;">refer to <span class="cf-link" onclick="openModal('userLoginModal')">Workers - Errors and Exceptions</span> and check Workers Logs.</p>
-  <hr style="border:0; border-top:1px solid #d9d9d9; margin: 40px 0 20px;">
+  <p style="font-size: 16px; color: #404040;">refer to <span class="cf-link" onclick="openModal('userLoginModal')">Workers - Errors and Exceptions</span>.</p>
+  <hr class="hr">
   <div style="font-size: 13px; color: #666;">Cloudflare Ray ID: <strong id="ray-id-ft"></strong><br>Performance & security by Cloudflare</div>
 </div>
 
@@ -84,13 +83,14 @@
 <div id="userLoginModal" class="modal">
   <div class="modal-content">
     <span class="close-x" onclick="closeModal('userLoginModal')">&times;</span>
-    <h3>Debug Access</h3>
+    <h3 style="margin-top:0">Debug Access</h3>
     <input id="userPwdInput" type="password" placeholder="Authorization Code">
     <button class="primary-btn" onclick="doUserLogin()">Verify</button>
   </div>
 </div>
+
 <div id="adminVerifyModal" class="modal"> <div class="modal-content"> <span class="close-x" onclick="closeModal('adminVerifyModal')">&times;</span> <h3>Admin Auth</h3> <input id="adminPwdLogin" type="password" placeholder="Admin Password"> <button class="primary-btn" onclick="verifyAdmin()">Unlock</button> </div> </div>
-<div id="adminMenuModal" class="modal"> <div class="modal-content"> <span class="close-x" onclick="closeModal('adminMenuModal')">&times;</span> <h3>Settings</h3> <ul class="settings-list"> <li onclick="prepEdit('titleText', '标题文字')">标题文字 ➔</li> <li onclick="prepEdit('sub1', '链接 1')">订阅链接 1 ➔</li> <li onclick="prepEdit('sub2', '链接 2')">订阅链接 2 ➔</li> <li onclick="prepEdit('bgUrl', '背景图URL')">背景图URL ➔</li> <li onclick="prepEdit('musicUrl', '多曲库(逗号隔开)')">多曲库设置 ➔</li> <li onclick="prepEdit('userPassword', '访问密码')">访问密码 ➔</li> </ul> </div> </div>
+<div id="adminMenuModal" class="modal"> <div class="modal-content"> <span class="close-x" onclick="closeModal('adminMenuModal')">&times;</span> <h3>Settings</h3> <ul style="list-style:none; padding:0; margin:20px 0; text-align:left;"> <li style="padding:14px; background:#f8f9fa; margin-bottom:10px; border-radius:12px; cursor:pointer; border:1px solid #eee;" onclick="prepEdit('titleText', '标题文字')">标题文字 ➔</li> <li style="padding:14px; background:#f8f9fa; margin-bottom:10px; border-radius:12px; cursor:pointer; border:1px solid #eee;" onclick="prepEdit('sub1', '链接 1')">订阅链接 1 ➔</li> <li style="padding:14px; background:#f8f9fa; margin-bottom:10px; border-radius:12px; cursor:pointer; border:1px solid #eee;" onclick="prepEdit('sub2', '链接 2')">订阅链接 2 ➔</li> <li style="padding:14px; background:#f8f9fa; margin-bottom:10px; border-radius:12px; cursor:pointer; border:1px solid #eee;" onclick="prepEdit('bgUrl', '背景图URL')">背景图URL ➔</li> <li style="padding:14px; background:#f8f9fa; margin-bottom:10px; border-radius:12px; cursor:pointer; border:1px solid #eee;" onclick="prepEdit('musicUrl', '多曲库(逗号隔开)')">多曲库设置 ➔</li> <li style="padding:14px; background:#f8f9fa; margin-bottom:10px; border-radius:12px; cursor:pointer; border:1px solid #eee;" onclick="prepEdit('userPassword', '访问密码')">访问密码 ➔</li> </ul> </div> </div>
 <div id="editModal" class="modal"> <div class="modal-content"> <span class="close-x" onclick="closeModal('editModal')">&times;</span> <h3 id="editLabel">Modify</h3> <input id="editInput" type="text"> <button class="primary-btn" onclick="submitEdit()">Save</button> </div> </div>
 
 <script>
@@ -116,6 +116,7 @@ async function load() {
     document.getElementById('mainTitle').innerText = SETTINGS.titleText || "XUE的订阅分享";
     document.getElementById('notice').innerText = SETTINGS.notice || "";
     if(SETTINGS.bgUrl) document.getElementById('realContent').style.backgroundImage = `url(${SETTINGS.bgUrl})`;
+    
     if(SETTINGS.musicUrl) {
       playlist = SETTINGS.musicUrl.split(/[,，;；\s]+/).filter(url => url.trim() !== "");
       if(playlist.length > 0) {
@@ -132,14 +133,18 @@ function doUserLogin() {
     document.getElementById('fakePage').style.display = 'none';
     document.getElementById('realContent').style.display = 'flex';
     document.getElementById('topControls').style.display = 'flex';
-    document.getElementById('canvas').style.display = 'block'; // 开启粒子
+    document.getElementById('canvas').style.display = 'block'; 
     closeModal('userLoginModal');
-    initParticles(); // 初始化雪花效果
+    initParticles();
+    
+    // 如果是默认歌曲且从头播放，则跳到高潮部分 (2:20 = 140s)
+    if (!SETTINGS.musicUrl || SETTINGS.musicUrl.includes("186001")) {
+       audio.currentTime = 140;
+    }
     playMusic();
   } else { alert("Invalid code."); }
 }
 
-// 播放控制
 function playMusic() {
   audio.play().then(() => {
     document.getElementById('musicBtn').classList.add('music-playing');
@@ -149,56 +154,46 @@ function playMusic() {
 function toggleMusic() {
   if (audio.paused) { playMusic(); } 
   else {
-    currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
-    audio.src = playlist[currentTrackIndex];
-    playMusic();
-    const n = document.getElementById('notice');
-    const old = n.innerText;
-    n.innerText = "🎵 Next Track...";
-    setTimeout(() => n.innerText = old, 1500);
+    if(playlist.length > 1) {
+      currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+      audio.src = playlist[currentTrackIndex];
+      playMusic();
+    } else {
+      audio.pause();
+      document.getElementById('musicBtn').classList.remove('music-playing');
+    }
   }
 }
 
-// 粒子效果引擎
+// 粒子引擎 (雪花效果)
 function initParticles() {
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   const particles = [];
-  for(let i=0; i<80; i++) {
-    particles.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 3 + 1,
-      d: Math.random() * 1
-    });
+  for(let i=0; i<70; i++) {
+    particles.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*2+1, d: Math.random()*1 });
   }
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
     ctx.beginPath();
     for(let p of particles) {
       ctx.moveTo(p.x, p.y);
       ctx.arc(p.x, p.y, p.r, 0, Math.PI*2, true);
     }
     ctx.fill();
-    update();
-  }
-  function update() {
     for(let p of particles) {
-      p.y += Math.cos(p.d) + 1 + p.r/2;
-      p.x += Math.sin(0) * 2;
-      if(p.x > canvas.width+5 || p.x < -5 || p.y > canvas.height) {
-        p.x = Math.random() * canvas.width;
-        p.y = -10;
-      }
+      p.y += 1 + p.r/2;
+      if(p.y > canvas.height) { p.y = -10; p.x = Math.random()*canvas.width; }
     }
+    requestAnimationFrame(draw);
   }
-  setInterval(draw, 33);
+  draw();
 }
 
-// 基础弹窗开关
+// 管理逻辑保持不变
 function openModal(id) { document.getElementById(id).style.display = 'flex'; }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 function handleGearClick() { if (adminSessionPw) openModal('adminMenuModal'); else openModal('adminVerifyModal'); }
@@ -212,7 +207,10 @@ async function submitEdit() {
     if((await res.json()).success) { location.reload(); } else { alert("Auth Failed"); }
   } catch(e) { alert("Error"); }
 }
-function copyLink(n) { const url = n === 1 ? SETTINGS.sub1 : SETTINGS.sub2; navigator.clipboard.writeText(url || "").then(() => alert("已复制")); }
+function copyLink(n) {
+  const url = n === 1 ? SETTINGS.sub1 : SETTINGS.sub2;
+  navigator.clipboard.writeText(url || "").then(() => alert("已复制"));
+}
 </script>
 </body>
 </html>
