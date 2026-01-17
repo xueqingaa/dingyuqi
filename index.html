@@ -9,25 +9,28 @@
   body, html { margin:0; padding:0; font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background:#fff; color:#000; height: 100%; overflow: hidden; }
   #fakePage { padding: 40px 20px; max-width: 800px; margin: 0 auto; display: block; position: relative; z-index: 10; }
   .error-title { font-size: 48px; font-weight: 400; color: #404040; margin: 0; }
-  .ray-id-row { font-size: 14px; color: #999; margin: 15px 0 30px; font-family: "SFMono-Regular", Menlo, Monaco, Consolas, monospace; }
+  .ray-id-row { font-size: 14px; color: #999; margin: 15px 0 30px; font-family: monospace; }
   .status-text { font-size: 28px; color: #404040; margin-bottom: 40px; }
   .section-title { font-size: 28px; color: #404040; margin: 40px 0 15px; }
   .section-p { font-size: 16px; color: #404040; margin-bottom: 15px; }
   .cf-link { color: #0051c3; text-decoration: none; cursor: pointer; }
-  .cf-link:hover { text-decoration: underline; }
   .hr { border: 0; border-top: 1px solid #d9d9d9; margin: 40px 0 20px; }
   .footer-row { font-size: 13px; color: #666; line-height: 1.8; }
 
-  /* --- 2. 正式页面样式 --- */
+  /* --- 2. 正式页面样式 (周杰伦背景 + 遮罩) --- */
   #realContent { 
     display:none; position:fixed; inset:0; z-index:100;
     background-size: cover; background-position: center; background-repeat: no-repeat;
     color:#fff; flex-direction:column; align-items:center; 
     padding-top: 15vh; text-align: center;
   }
-  #realContent::before { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.45); z-index: -1; }
+  /* 确保文字清晰的黑色遮罩 */
+  #realContent::after { 
+    content: ""; position: absolute; inset: 0; 
+    background: rgba(0, 0, 0, 0.4); z-index: -1; 
+  }
 
-  /* 粒子画布 */
+  /* 飘雪画布 */
   #canvas { position: fixed; inset: 0; z-index: 50; pointer-events: none; display: none; }
 
   .main-title { 
@@ -42,11 +45,11 @@
     color:#000; font-weight:bold; box-shadow: 0 6px 20px rgba(0,0,0,0.3);
   }
 
-  /* --- 3. 顶部控制（默认隐藏） --- */
-  .top-controls { display:none; position:fixed; top:20px; right:20px; z-index:200; gap: 20px; align-items: center; }
-  .icon-btn { font-size:26px; cursor:pointer; opacity:0.6; color:#fff; transition: 0.3s; }
+  /* --- 3. 顶部图标（仅在正式页显示） --- */
+  #topControls { display:none; position:fixed; top:20px; right:20px; z-index:200; gap: 18px; align-items: center; }
+  .icon-btn { font-size:26px; cursor:pointer; opacity:0.7; color:#fff; transition: 0.3s; }
   @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-  .music-playing { animation: rotate 3s linear infinite; opacity: 1; text-shadow: 0 0 10px #00f0ff; }
+  .music-playing { animation: rotate 3s linear infinite; opacity: 1; }
 
   /* --- 4. 弹窗样式 --- */
   .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter: blur(5px); align-items:center; justify-content:center; z-index:1000; }
@@ -80,7 +83,7 @@
   </div>
 </div>
 
-<div id="topControls" class="top-controls">
+<div id="topControls">
   <div id="musicBtn" class="icon-btn" onclick="toggleMusic()">🎵</div>
   <div id="adminGear" class="icon-btn" onclick="handleGearClick()">⚙️</div>
 </div>
@@ -102,7 +105,6 @@
     <button class="primary-btn" onclick="doUserLogin()">Verify</button>
   </div>
 </div>
-
 <div id="adminVerifyModal" class="modal">
   <div class="modal-content">
     <span class="close-x" onclick="closeModal('adminVerifyModal')">&times;</span>
@@ -111,22 +113,18 @@
     <button class="primary-btn" onclick="verifyAdmin()">Unlock</button>
   </div>
 </div>
-
 <div id="adminMenuModal" class="modal">
   <div class="modal-content">
     <span class="close-x" onclick="closeModal('adminMenuModal')">&times;</span>
     <h3>Settings</h3>
     <ul class="settings-list">
       <li onclick="prepEdit('titleText', '标题文字')">标题文字 ➔</li>
-      <li onclick="prepEdit('sub1', '链接 1')">订阅链接 1 ➔</li>
-      <li onclick="prepEdit('sub2', '链接 2')">订阅链接 2 ➔</li>
       <li onclick="prepEdit('bgUrl', '背景图URL')">背景图URL ➔</li>
-      <li onclick="prepEdit('musicUrl', '歌单(逗号隔开)')">多曲库设置 ➔</li>
-      <li onclick="prepEdit('userPassword', '访问密码')">访问密码 ➔</li>
+      <li onclick="prepEdit('musicUrl', '多曲库设置')">多曲库设置 ➔</li>
+      <li onclick="prepEdit('notice', '底部公告')">底部公告 ➔</li>
     </ul>
   </div>
 </div>
-
 <div id="editModal" class="modal">
   <div class="modal-content">
     <span class="close-x" onclick="closeModal('editModal')">&times;</span>
@@ -144,7 +142,7 @@ let playlist = [];
 let currentTrackIndex = 0;
 const audio = document.getElementById('bgMusic');
 
-// 初始化 RayID
+// 1. 初始化伪装页数据
 const rid = Math.random().toString(16).slice(2, 14);
 document.getElementById('ray-id').innerText = rid;
 document.getElementById('ray-id-ft').innerText = rid;
@@ -158,9 +156,12 @@ async function load() {
     SETTINGS = { ...data };
     document.getElementById('mainTitle').innerText = SETTINGS.titleText || "XUE的订阅分享";
     document.getElementById('notice').innerText = SETTINGS.notice || "";
-    if(SETTINGS.bgUrl) document.getElementById('realContent').style.backgroundImage = `url(${SETTINGS.bgUrl})`;
     
-    // 解析歌单 (默认一首蒲公英的约定)
+    // 设置稳定的周杰伦默认背景
+    const defaultBg = "https://pic4.zhimg.com/v2-825555431664188b2207904e57193d93_r.jpg";
+    document.getElementById('realContent').style.backgroundImage = `url(${SETTINGS.bgUrl || defaultBg})`;
+    
+    // 解析歌单 (默认蒲公英的约定)
     let mUrl = SETTINGS.musicUrl || "https://music.163.com/song/media/outer/url?id=186001.mp3";
     playlist = mUrl.split(/[,，;；\s]+/).filter(url => url.trim() !== "");
     if(playlist.length > 0) {
@@ -171,18 +172,14 @@ async function load() {
 }
 load();
 
-function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
 function doUserLogin() {
   if(document.getElementById('userPwdInput').value === SETTINGS.userPassword) {
-    // 隐藏伪装，显示正式
     document.getElementById('fakePage').style.display = 'none';
     document.getElementById('realContent').style.display = 'flex';
-    document.getElementById('topControls').style.display = 'flex'; // 此时才显示图标
+    document.getElementById('topControls').style.display = 'flex';
     document.getElementById('canvas').style.display = 'block'; 
     closeModal('userLoginModal');
-    initParticles(); 
+    initSnow(); 
     playMusic();
   } else { alert("Invalid code."); }
 }
@@ -190,43 +187,59 @@ function doUserLogin() {
 function playMusic() {
   audio.play().then(() => {
     document.getElementById('musicBtn').classList.add('music-playing');
-  }).catch(() => {});
+  }).catch(() => {
+    console.log("浏览器拦截了自动播放，请手动点击音符图标");
+  });
 }
 
 function toggleMusic() {
-  if (audio.paused) { playMusic(); } 
-  else {
+  if (audio.paused) {
+    playMusic();
+  } else {
     currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
     audio.src = playlist[currentTrackIndex];
     playMusic();
   }
 }
 
-// 粒子雪花
-function initParticles() {
+// 飘雪效果代码
+function initSnow() {
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-  const particles = [];
-  for(let i=0; i<70; i++) {
-    particles.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*2+1, d: Math.random() });
+  let particles = [];
+  for(let i=0; i<100; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 3 + 1,
+      d: Math.random() * 1
+    });
   }
   function draw() {
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle = "rgba(255,255,255,0.5)";
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
     ctx.beginPath();
-    for(let p of particles) { ctx.moveTo(p.x,p.y); ctx.arc(p.x,p.y,p.r,0,Math.PI*2,true); }
+    for(let p of particles) {
+      ctx.moveTo(p.x, p.y);
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2, true);
+    }
     ctx.fill();
     for(let p of particles) {
-      p.y += 1.5; if(p.y > canvas.height) p.y = -10;
+      p.y += Math.cos(p.d) + 1 + p.r/2;
+      if(p.y > canvas.height) {
+        p.y = -10;
+        p.x = Math.random() * canvas.width;
+      }
     }
     requestAnimationFrame(draw);
   }
   draw();
 }
 
-// 后台逻辑
+function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 function handleGearClick() { if (adminSessionPw) openModal('adminMenuModal'); else openModal('adminVerifyModal'); }
 function verifyAdmin() { adminSessionPw = document.getElementById('adminPwdLogin').value; closeModal('adminVerifyModal'); openModal('adminMenuModal'); }
 function prepEdit(key, label) { editingKey = key; document.getElementById('editLabel').innerText = "Edit " + label; document.getElementById('editInput').value = SETTINGS[key] || ""; closeModal('adminMenuModal'); openModal('editModal'); }
@@ -238,7 +251,7 @@ async function submitEdit() {
     if((await res.json()).success) { location.reload(); } else { alert("Auth Failed"); }
   } catch(e) { alert("Error"); }
 }
-function copyLink(n) { const url = n === 1 ? SETTINGS.sub1 : SETTINGS.sub2; navigator.clipboard.writeText(url || "").then(() => alert("Copied!")); }
+function copyLink(n) { const url = n === 1 ? SETTINGS.sub1 : SETTINGS.sub2; navigator.clipboard.writeText(url || "").then(() => alert("已复制到剪贴板")); }
 </script>
 </body>
 </html>
