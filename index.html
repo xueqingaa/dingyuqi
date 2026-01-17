@@ -3,27 +3,42 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>xue</title>
+<title>XUE</title>
 
 <style>
 * { box-sizing: border-box; }
 html, body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; min-height: 100svh; }
 body { background: #020617; color: #e0f2fe; }
-/* 背景 */
-.bg { position: fixed; inset: 0; background-size: cover; background-position: center; filter: blur(0); z-index: -1; }
-/* 居中卡片 */
+
+/* 背景 - 强制覆盖全屏 */
+.bg {
+  position: fixed;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: blur(0);
+  z-index: -1;
+}
+
+/* 其他样式保持原样（wrapper, card, btn 等） */
 .wrapper { min-height: 100svh; display: flex; align-items: center; justify-content: center; padding: 24px; }
 .card { width: 100%; max-width: 420px; background: rgba(255,255,255,0.06); backdrop-filter: blur(14px); border-radius: 20px; padding: 40px 28px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.45); }
 .title { font-size: 28px; font-weight: 600; margin-bottom: 28px; text-shadow: 0 0 20px rgba(56,189,248,.6); }
-/* 按钮 */
 .btn { width: 100%; padding: 16px 0; border: none; border-radius: 999px; font-size: 16px; font-weight: 600; background: linear-gradient(90deg,#22d3ee,#a855f7); color: #020617; cursor: pointer; }
 .btn + .btn { margin-top: 14px; }
-/* 提示 */
 .tip { margin-top: 16px; font-size: 14px; color: #7dd3fc; opacity: 0; transition: opacity .3s; }
-/* 说明 */
 .notice { margin-top: 26px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,.15); font-size: 13px; line-height: 1.6; color: rgba(224,242,254,.75); }
-/* 密码遮罩 */
-#lock { position: fixed; inset: 0; background: rgba(2,6,23,.92); display: flex; align-items: center; justify-content: center; }
+
+/* 密码层 - 强制全屏覆盖 */
+#lock {
+  position: fixed;
+  inset: 0;
+  background: rgba(2,6,23,.92);
+  display: flex !important; /* 强制显示 */
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
 .lock-box { background: #020617; border-radius: 16px; padding: 32px; width: 280px; text-align: center; }
 .lock-box input { width: 100%; padding: 12px; border-radius: 8px; border: none; margin-top: 16px; }
 .lock-box button { margin-top: 16px; width: 100%; padding: 12px; border-radius: 8px; border: none; background: #2563eb; color: white; }
@@ -35,13 +50,13 @@ body { background: #020617; color: #e0f2fe; }
 
 <div class="bg" id="bg"></div>
 
-<!-- 密码层 -->
+<!-- 密码层：默认强制显示 -->
 <div id="lock">
   <div class="lock-box">
     <div>请输入访问密码</div>
     <input id="pw" type="password" placeholder="Password">
     <button onclick="unlock()">进入</button>
-    <div id="err" class="err">密码错误</div>
+    <div id="err" class="err">您的反馈意见我们已收到，请等待处理。</div>
   </div>
 </div>
 
@@ -58,15 +73,15 @@ body { background: #020617; color: #e0f2fe; }
 </div>
 
 <script>
-// ===== 配置区：以后改这里就行 =====
-const SITE_TITLE = "xue";
+// 配置区（默认值，随时在 GitHub 修改）
+const SITE_TITLE = "XUE";
 const SUB1 = "123";
 const SUB2 = "456";
 const NOTICE = "马到成功";
 const PASSWORD = "88888888";
-const BG_IMAGE = "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80&auto=format&fit=crop";  // 默认星空，可换
+const BG_IMAGE = "https://www.shutterstock.com/image-photo/deep-space-background-vibrant-blues-260nw-2600983199.jpg";  // 新深紫蓝渐变，无白点
 
-// 应用配置
+// 应用配置（密码层已强制显示，不会自动移除）
 document.title = SITE_TITLE;
 document.getElementById("title").innerText = SITE_TITLE;
 document.getElementById("notice").innerText = NOTICE;
@@ -90,13 +105,13 @@ function copyLink(type) {
   }).catch(() => alert("复制失败，请手动长按复制"));
 }
 
-// 密码校验（本地）
+// 密码校验
 function unlock() {
   const input = document.getElementById("pw").value.trim();
   if (input === PASSWORD) {
-    document.getElementById("lock").remove();
+    document.getElementById("lock").remove();  // 正确才移除
   } else {
-    document.getElementById("err").style.display = "block";
+    document.getElementById("err").style.display = "block";  // 错误显示伪装提示
   }
 }
 </script>
