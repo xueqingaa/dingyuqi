@@ -5,43 +5,58 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Error 1101</title>
 <style>
-  /* 极致还原 Cloudflare 报错页面样式 */
-  body, html { margin:0; padding:0; font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background:#fff; color:#000; line-height:1.5; }
-  #fakePage { padding: 40px 15px; max-width: 800px; margin: 0 auto; }
+  /* --- 极致还原 Cloudflare 报错页 --- */
+  body, html { margin:0; padding:0; font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background:#fff; color:#000; line-height:1.5; height: 100%; }
+  #fakePage { padding: 40px 20px; max-width: 800px; margin: 0 auto; display: block; }
   .error-title { font-size: 48px; font-weight: 400; color: #404040; margin: 0; }
-  .ray-id-row { font-size: 14px; color: #999; margin: 15px 0 30px; font-family: monospace; }
+  .ray-id-row { font-size: 14px; color: #999; margin: 15px 0 30px; font-family: "SFMono-Regular", Menlo, Monaco, Consolas, monospace; }
   .status-text { font-size: 28px; color: #404040; margin-bottom: 40px; }
-  
   .section-title { font-size: 28px; color: #404040; margin: 40px 0 15px; }
   .section-p { font-size: 16px; color: #404040; margin-bottom: 15px; }
   .cf-link { color: #0051c3; text-decoration: none; cursor: pointer; }
   .cf-link:hover { text-decoration: underline; }
-  
   .hr { border: 0; border-top: 1px solid #d9d9d9; margin: 40px 0 20px; }
   .footer-row { font-size: 13px; color: #666; line-height: 1.8; }
 
-  /* 真实面板 (入口隐藏) */
+  /* --- 真实内容面板 (UI 优化版) --- */
   #realContent { 
     display:none; position:fixed; inset:0; z-index:100;
     background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); 
-    color:#fff; flex-direction:column; align-items:center; justify-content:center;
+    color:#fff; flex-direction:column; align-items:center; 
+    padding-top: 18vh; /* 标题上移，原为居中 */
+    text-align: center;
   }
-  .main-title { font-size:2.2rem; font-weight:700; background:linear-gradient(90deg,#00f0ff,#a855f7); -webkit-background-clip:text; color:transparent; margin-bottom:20px; }
-  .copy-btn { margin:10px 0; padding:12px 30px; background:linear-gradient(90deg,#00f0ff,#a855f7); border:none; border-radius:50px; font-size:16px; cursor:pointer; color:#000; font-weight:bold; width:220px; }
+  .main-title { 
+    font-size:2.4rem; font-weight:800; letter-spacing: 2px;
+    background: linear-gradient(90deg,#00f0ff,#a855f7); 
+    -webkit-background-clip:text; color:transparent; 
+    margin-bottom: 40px;
+    text-shadow: 0 10px 20px rgba(0,0,0,0.3);
+  }
+  .btn-group { display: flex; flex-direction: column; gap: 20px; width: 80%; max-width: 280px; }
+  .copy-btn { 
+    padding:16px; background:linear-gradient(90deg,#00f0ff,#a855f7); 
+    border:none; border-radius:15px; font-size:17px; cursor:pointer; 
+    color:#000; font-weight:bold; transition: 0.3s;
+    box-shadow: 0 4px 15px rgba(0,240,255,0.2);
+  }
+  .copy-btn:active { transform: scale(0.96); opacity: 0.8; }
+  .notice { margin-top: 50px; font-size: 15px; color: #a5f3fc; opacity: 0.8; letter-spacing: 1px; }
 
-  /* 管理齿轮 (仅登录后可见) */
-  #adminGear { display:none; position:fixed; top:15px; right:15px; z-index:200; font-size:26px; cursor:pointer; opacity:0.3; color:#fff; }
+  /* --- 弹窗与控制 --- */
+  #adminGear { display:none; position:fixed; top:20px; right:20px; z-index:200; font-size:28px; cursor:pointer; opacity:0.3; color:#fff; transition: 0.3s; }
+  #adminGear:hover { opacity: 1; transform: rotate(45deg); }
 
-  /* 弹窗样式 */
-  .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; z-index:1000; }
-  .modal-content { background:#fff; padding:25px; border-radius:12px; width:85%; max-width:320px; text-align:center; position:relative; color:#333; }
-  .close-x { position:absolute; top:10px; right:15px; font-size:28px; color:#999; cursor:pointer; }
+  .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter: blur(5px); align-items:center; justify-content:center; z-index:1000; }
+  .modal-content { background:#fff; padding:30px 20px; border-radius:20px; width:88%; max-width:340px; text-align:center; position:relative; color:#333; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+  .close-x { position:absolute; top:15px; right:20px; font-size:30px; color:#ccc; cursor:pointer; line-height: 1; }
   
-  input { width:100%; padding:12px; margin:10px 0; border:1px solid #ddd; border-radius:8px; box-sizing:border-box; }
-  button.primary-btn { width:100%; padding:12px; background:#0051c3; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:16px; margin-top:10px; }
+  input { width:100%; padding:14px; margin:12px 0; border:1px solid #eee; border-radius:10px; box-sizing:border-box; background: #f9f9f9; font-size: 16px; }
+  button.primary-btn { width:100%; padding:14px; background:#0051c3; color:#fff; border:none; border-radius:10px; cursor:pointer; font-size:16px; font-weight: bold; margin-top:10px; }
   
-  .settings-list { list-style:none; padding:0; margin:15px 0; }
-  .settings-list li { padding:12px; background:#f4f4f4; margin:8px 0; border-radius:6px; cursor:pointer; text-align:left; font-size:14px; display:flex; justify-content:space-between; }
+  .settings-list { list-style:none; padding:0; margin:20px 0; }
+  .settings-list li { padding:15px; background:#f8f9fa; margin-bottom:10px; border-radius:12px; cursor:pointer; text-align:left; display:flex; justify-content:space-between; align-items: center; border: 1px solid #eee; }
+  .settings-list li:hover { background: #fff; border-color: #0051c3; color: #0051c3; }
 </style>
 </head>
 <body>
@@ -50,14 +65,11 @@
   <h1 class="error-title">Error 1101</h1>
   <p class="ray-id-row">Ray ID: <span id="ray-id"></span> &bull; <span id="ts-id"></span></p>
   <h2 class="status-text">Worker threw exception</h2>
-
   <h3 class="section-title">What happened?</h3>
-  <p class="section-p">You've requested a page on a website (<span class="domain-placeholder"></span>) that is on the Cloudflare network. An unknown error occurred while rendering the page.</p>
-
+  <p class="section-p">You've requested a page on a website (<span class="domain-info"></span>) that is on the Cloudflare network. An unknown error occurred while rendering the page.</p>
   <h3 class="section-title">What can I do?</h3>
   <p class="section-p"><strong>If you are the owner of this website:</strong><br>
-  refer to <span class="cf-link" onclick="openModal('userLoginModal')">Workers - Errors and Exceptions</span> and check Workers Logs for <span class="domain-placeholder"></span>.</p>
-
+  refer to <span class="cf-link" onclick="openModal('userLoginModal')">Workers - Errors and Exceptions</span> and check Workers Logs for <span class="domain-info"></span>.</p>
   <hr class="hr">
   <div class="footer-row">
     Cloudflare Ray ID: <strong id="ray-id-ft"></strong><br>
@@ -66,21 +78,23 @@
   </div>
 </div>
 
-<div id="adminGear" onclick="triggerAdmin()">⚙️</div>
+<div id="adminGear" onclick="handleGearClick()">⚙️</div>
 <div id="realContent">
   <div id="mainTitle" class="main-title">XUE CF代理</div>
-  <button class="copy-btn" onclick="copyLink(1)">复制订阅链接 1</button>
-  <button class="copy-btn" onclick="copyLink(2)">复制订阅链接 2</button>
-  <p id="notice" style="margin-top:30px; opacity:0.8;"></p>
+  <div class="btn-group">
+    <button class="copy-btn" onclick="copyLink(1)">复制订阅链接 1</button>
+    <button class="copy-btn" onclick="copyLink(2)">复制订阅链接 2</button>
+  </div>
+  <p id="notice" class="notice"></p>
 </div>
 
 <div id="userLoginModal" class="modal">
   <div class="modal-content">
     <span class="close-x" onclick="closeModal('userLoginModal')">&times;</span>
-    <h3 style="margin-top:0">Verify Access</h3>
-    <p style="font-size:13px; color:#666">Please enter the debug code to view logs.</p>
-    <input id="userPwdInput" type="password" placeholder="Debug Code">
-    <button class="primary-btn" onclick="checkUserLogin()">Verify</button>
+    <h3 style="margin:0 0 10px">Debug Access</h3>
+    <p style="font-size:13px; color:#888">Enter the authorization code to access worker logs.</p>
+    <input id="userPwdInput" type="password" placeholder="Authorization Code">
+    <button class="primary-btn" onclick="doUserLogin()">Verify Code</button>
   </div>
 </div>
 
@@ -89,21 +103,21 @@
     <span class="close-x" onclick="closeModal('adminVerifyModal')">&times;</span>
     <h3>Admin Auth</h3>
     <input id="adminPwdLogin" type="password" placeholder="Admin Password">
-    <button class="primary-btn" onclick="verifyAdmin()">Login</button>
+    <button class="primary-btn" onclick="verifyAdmin()">Unlock Settings</button>
   </div>
 </div>
 
 <div id="adminMenuModal" class="modal">
-  <div class="modal-content" style="max-width:400px">
+  <div class="modal-content">
     <span class="close-x" onclick="closeModal('adminMenuModal')">&times;</span>
-    <h3>Settings</h3>
+    <h3 style="margin-bottom:20px">Admin Panel</h3>
     <ul class="settings-list">
-      <li onclick="prepEdit('titleText', '标题文字')">标题文字 <span>&rsaquo;</span></li>
-      <li onclick="prepEdit('sub1', '链接 1')">订阅链接 1 <span>&rsaquo;</span></li>
-      <li onclick="prepEdit('sub2', '链接 2')">订阅链接 2 <span>&rsaquo;</span></li>
-      <li onclick="prepEdit('notice', '底部说明')">底部说明 <span>&rsaquo;</span></li>
-      <li onclick="prepEdit('bgUrl', '背景图URL')">背景图URL <span>&rsaquo;</span></li>
-      <li onclick="prepEdit('userPassword', '访问密码')">访问密码 <span>&rsaquo;</span></li>
+      <li onclick="prepEdit('titleText', '标题文字')">标题文字 <span>➔</span></li>
+      <li onclick="prepEdit('sub1', '链接 1')">订阅链接 1 <span>➔</span></li>
+      <li onclick="prepEdit('sub2', '链接 2')">订阅链接 2 <span>➔</span></li>
+      <li onclick="prepEdit('notice', '公告说明')">公告说明 <span>➔</span></li>
+      <li onclick="prepEdit('bgUrl', '背景图URL')">背景图URL <span>➔</span></li>
+      <li onclick="prepEdit('userPassword', '访问密码')">访问密码 <span>➔</span></li>
     </ul>
   </div>
 </div>
@@ -111,25 +125,25 @@
 <div id="editModal" class="modal">
   <div class="modal-content">
     <span class="close-x" onclick="closeModal('editModal')">&times;</span>
-    <h3 id="editLabel">修改项</h3>
-    <input id="editInput" type="text">
-    <button class="primary-btn" onclick="doUpdate()">Save Change</button>
+    <h3 id="editLabel">Modify</h3>
+    <input id="editInput" type="text" autofocus>
+    <button class="primary-btn" onclick="submitEdit()">Apply Changes</button>
   </div>
 </div>
 
 <script>
 let SETTINGS = {};
-let cachedAdminPw = ""; // 存储本次登录的管理员密码
-let currentField = "";
+let adminSessionPw = ""; // 管理员会话密码
+let editingKey = "";
 
-// 自动填充伪装信息
-const rid = Math.random().toString(16).slice(2, 14);
-document.getElementById('ray-id').innerText = rid;
-document.getElementById('ray-id-ft').innerText = rid;
+// 1. 初始化伪装数据
+const ray = Math.random().toString(16).slice(2, 14);
+document.getElementById('ray-id').innerText = ray;
+document.getElementById('ray-id-ft').innerText = ray;
 document.getElementById('ts-id').innerText = new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
-document.querySelectorAll('.domain-placeholder').forEach(el => el.innerText = window.location.hostname);
+document.querySelectorAll('.domain-info').forEach(e => e.innerText = window.location.hostname);
 
-// 获取数据
+// 2. 加载数据
 async function load() {
   try {
     const r = await fetch("/api/get-links?" + Date.now());
@@ -141,77 +155,74 @@ async function load() {
 }
 load();
 
+// 3. 基础交互
 function openModal(id) { document.getElementById(id).style.display = 'flex'; }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-// 访问权限
-function checkUserLogin() {
+function doUserLogin() {
   if(document.getElementById('userPwdInput').value === SETTINGS.userPassword) {
     document.getElementById('fakePage').style.display = 'none';
     document.getElementById('realContent').style.display = 'flex';
     document.getElementById('adminGear').style.display = 'block';
     closeModal('userLoginModal');
   } else {
-    alert("Error: Invalid code.");
+    alert("Invalid authorization code.");
     closeModal('userLoginModal');
   }
 }
 
-// 齿轮点击逻辑
-function triggerAdmin() {
-  if(cachedAdminPw) {
+// 4. 管理员逻辑优化：会话式免密
+function handleGearClick() {
+  if (adminSessionPw) {
     openModal('adminMenuModal');
   } else {
     openModal('adminVerifyModal');
   }
 }
 
-// 验证管理员
-async function verifyAdmin() {
+function verifyAdmin() {
   const pw = document.getElementById('adminPwdLogin').value;
-  // 预检：尝试用此密码获取一次更新权限（或直接信任，取决于你的后端验证机制）
-  // 这里我们先存起来，在真正 update 的时候发送
-  cachedAdminPw = pw;
+  if(!pw) return;
+  // 先把密码存入 session，在真正提交修改时由后端验证
+  adminSessionPw = pw;
   closeModal('adminVerifyModal');
   openModal('adminMenuModal');
 }
 
-// 准备编辑
-function prepEdit(field, label) {
-  currentField = field;
+function prepEdit(key, label) {
+  editingKey = key;
   document.getElementById('editLabel').innerText = "Edit " + label;
-  document.getElementById('editInput').value = SETTINGS[field] || "";
+  document.getElementById('editInput').value = SETTINGS[key] || "";
   closeModal('adminMenuModal');
   openModal('editModal');
 }
 
-// 执行更新
-async function doUpdate() {
+async function submitEdit() {
   const newVal = document.getElementById('editInput').value;
-  const body = { password: cachedAdminPw };
-  body[currentField] = newVal;
+  const payload = { password: adminSessionPw };
+  payload[editingKey] = newVal;
 
-  const res = await fetch("/api/update-links", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  });
-
-  const data = await res.json();
-  if (data.success) {
-    alert("Saved successfully!");
-    location.reload();
-  } else {
-    alert("Auth Failed. Please login again.");
-    cachedAdminPw = ""; 
-    closeModal('editModal');
-  }
+  try {
+    const res = await fetch("/api/update-links", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if(data.success) {
+      alert("Settings updated!");
+      location.reload();
+    } else {
+      alert("Auth failed. Please re-login.");
+      adminSessionPw = ""; // 验证失败清空会话
+      closeModal('editModal');
+    }
+  } catch(e) { alert("Network error"); }
 }
 
 function copyLink(n) {
-  const link = n === 1 ? SETTINGS.sub1 : SETTINGS.sub2;
-  navigator.clipboard.writeText(link || "");
-  alert("Copied!");
+  const url = n === 1 ? SETTINGS.sub1 : SETTINGS.sub2;
+  navigator.clipboard.writeText(url || "").then(() => alert("Copied to clipboard!"));
 }
 </script>
 </body>
