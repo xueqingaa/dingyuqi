@@ -5,65 +5,80 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>Error 1101</title>
 <style>
-  /* 极致还原 Cloudflare 样式 */
-  body, html { margin:0; padding:0; font-family: "Segoe UI", Roboto, sans-serif; background:#fff; color:#000; height: 100%; overflow: hidden; }
+  /* --- 极致还原第一版伪装页 (1:1 像素级) --- */
+  body, html { margin:0; padding:0; font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background:#fff; color:#000; height: 100%; }
   #fakePage { padding: 40px 20px; max-width: 800px; margin: 0 auto; display: block; }
   .error-title { font-size: 48px; font-weight: 400; color: #404040; margin: 0; }
-  .ray-id-row { font-size: 14px; color: #999; margin: 15px 0 30px; font-family: monospace; }
+  .ray-id-row { font-size: 14px; color: #999; margin: 15px 0 30px; font-family: "SFMono-Regular", Menlo, Monaco, Consolas, monospace; }
+  .status-text { font-size: 28px; color: #404040; margin-bottom: 40px; font-weight: 500; }
+  .section-title { font-size: 28px; color: #404040; margin: 40px 0 15px; font-weight: 400; }
+  .section-p { font-size: 16px; color: #404040; margin-bottom: 15px; }
   .cf-link { color: #0051c3; text-decoration: none; cursor: pointer; }
+  .cf-link:hover { text-decoration: underline; }
   .hr { border: 0; border-top: 1px solid #d9d9d9; margin: 40px 0 20px; }
+  .footer-row { font-size: 13px; color: #666; line-height: 1.8; }
 
-  /* 真实面板：Jay 式氛围感 */
+  /* --- 真实面板样式 --- */
   #realContent { 
     display:none; position:fixed; inset:0; z-index:100;
     background-size: cover; background-position: center; background-repeat: no-repeat;
     color:#fff; flex-direction:column; align-items:center; 
-    padding-top: 15vh; text-align: center;
+    padding-top: 12vh; text-align: center;
   }
   #realContent::before { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.45); z-index: -1; }
-  
   #canvas { position: fixed; inset: 0; z-index: 50; pointer-events: none; display: none; }
 
   .main-title { 
     font-size:2.4rem; font-weight:800; background: linear-gradient(90deg,#00f0ff,#a855f7); 
     -webkit-background-clip:text; color:transparent; margin-bottom: 50px;
-    text-shadow: 0 4px 12px rgba(0,0,0,0.5); position: relative;
+    text-shadow: 0 4px 12px rgba(0,0,0,0.5);
   }
   .btn-group { display: flex; flex-direction: column; gap: 20px; width: 85%; max-width: 280px; z-index: 101; }
   .copy-btn { 
     padding:16px; background:linear-gradient(90deg,#00f0ff,#a855f7); 
     border:none; border-radius:15px; font-size:17px; cursor:pointer; 
-    color:#000; font-weight:bold; box-shadow: 0 6px 20px rgba(0,0,0,0.3); transition: 0.3s;
+    color:#000; font-weight:bold; box-shadow: 0 6px 20px rgba(0,0,0,0.3);
   }
-  .copy-btn:active { transform: scale(0.95); opacity: 0.8; }
 
-  .top-controls { display:none; position:fixed; top:20px; right:20px; z-index:200; display: flex; gap: 20px; align-items: center; }
+  /* 控制图标：默认完全不显示，只在真实面板显示 */
+  #topControls { display:none; position:fixed; top:20px; right:20px; z-index:200; gap: 20px; align-items: center; }
   .icon-btn { font-size:26px; cursor:pointer; opacity:0.6; color:#fff; transition: 0.3s; }
   @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-  .music-playing { animation: rotate 3s linear infinite; opacity: 1; text-shadow: 0 0 10px #00f0ff; }
+  .music-playing { animation: rotate 3s linear infinite; opacity: 1; }
 
   /* 弹窗样式 */
-  .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter: blur(5px); align-items:center; justify-content:center; z-index:1000; }
+  .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter: blur(5px); align-items:center; justify-content:center; z-index:1000; }
   .modal-content { background:#fff; padding:30px 20px; border-radius:20px; width:88%; max-width:320px; text-align:center; position:relative; color:#333; }
-  .close-x { position:absolute; top:12px; right:18px; font-size:30px; color:#ccc; cursor:pointer; line-height:1; }
+  .close-x { position:absolute; top:12px; right:18px; font-size:30px; color:#ccc; cursor:pointer; }
   input { width:100%; padding:14px; margin:12px 0; border:1px solid #eee; border-radius:10px; box-sizing:border-box; font-size: 16px; }
   .primary-btn { width:100%; padding:14px; background:#0051c3; color:#fff; border:none; border-radius:10px; cursor:pointer; font-weight: bold; }
+  .settings-list { list-style:none; padding:0; margin:20px 0; }
+  .settings-list li { padding:14px; background:#f8f9fa; margin-bottom:10px; border-radius:12px; cursor:pointer; display:flex; justify-content:space-between; border: 1px solid #eee; }
 </style>
 </head>
 <body>
 
-<audio id="bgMusic" src="https://music.163.com/song/media/outer/url?id=186001.mp3" preload="auto" loop></audio>
+<audio id="bgMusic" preload="auto"></audio>
 <canvas id="canvas"></canvas>
 
 <div id="fakePage">
   <h1 class="error-title">Error 1101</h1>
   <p class="ray-id-row">Ray ID: <span id="ray-id"></span> &bull; <span id="ts-id"></span></p>
   <h2 class="status-text">Worker threw exception</h2>
-  <h3 style="font-size: 28px; color: #404040; margin: 40px 0 15px;">What happened?</h3>
-  <p style="font-size: 16px; color: #404040;">You've requested a page on a website (<span class="domain-info"></span>) that is on the Cloudflare network.</p>
-  <p style="font-size: 16px; color: #404040;">refer to <span class="cf-link" onclick="openModal('userLoginModal')">Workers - Errors and Exceptions</span>.</p>
+
+  <h3 class="section-title">What happened?</h3>
+  <p class="section-p">You've requested a page on a website (<span class="domain-info"></span>) that is on the Cloudflare network. An unknown error occurred while rendering the page.</p>
+
+  <h3 class="section-title">What can I do?</h3>
+  <p class="section-p"><strong>If you are the owner of this website:</strong><br>
+  refer to <span class="cf-link" onclick="openModal('userLoginModal')">Workers - Errors and Exceptions</span> and check Workers Logs for <span class="domain-info"></span>.</p>
+
   <hr class="hr">
-  <div style="font-size: 13px; color: #666;">Cloudflare Ray ID: <strong id="ray-id-ft"></strong><br>Performance & security by Cloudflare</div>
+  <div class="footer-row">
+    Cloudflare Ray ID: <strong id="ray-id-ft"></strong><br>
+    Your IP: <span class="cf-link">Click to reveal</span><br>
+    Performance & security by Cloudflare
+  </div>
 </div>
 
 <div id="topControls" class="top-controls">
@@ -85,12 +100,12 @@
     <span class="close-x" onclick="closeModal('userLoginModal')">&times;</span>
     <h3 style="margin-top:0">Debug Access</h3>
     <input id="userPwdInput" type="password" placeholder="Authorization Code">
-    <button class="primary-btn" onclick="doUserLogin()">Verify</button>
+    <button class="primary-btn" onclick="doUserLogin()">Verify & Launch</button>
   </div>
 </div>
 
 <div id="adminVerifyModal" class="modal"> <div class="modal-content"> <span class="close-x" onclick="closeModal('adminVerifyModal')">&times;</span> <h3>Admin Auth</h3> <input id="adminPwdLogin" type="password" placeholder="Admin Password"> <button class="primary-btn" onclick="verifyAdmin()">Unlock</button> </div> </div>
-<div id="adminMenuModal" class="modal"> <div class="modal-content"> <span class="close-x" onclick="closeModal('adminMenuModal')">&times;</span> <h3>Settings</h3> <ul style="list-style:none; padding:0; margin:20px 0; text-align:left;"> <li style="padding:14px; background:#f8f9fa; margin-bottom:10px; border-radius:12px; cursor:pointer; border:1px solid #eee;" onclick="prepEdit('titleText', '标题文字')">标题文字 ➔</li> <li style="padding:14px; background:#f8f9fa; margin-bottom:10px; border-radius:12px; cursor:pointer; border:1px solid #eee;" onclick="prepEdit('sub1', '链接 1')">订阅链接 1 ➔</li> <li style="padding:14px; background:#f8f9fa; margin-bottom:10px; border-radius:12px; cursor:pointer; border:1px solid #eee;" onclick="prepEdit('sub2', '链接 2')">订阅链接 2 ➔</li> <li style="padding:14px; background:#f8f9fa; margin-bottom:10px; border-radius:12px; cursor:pointer; border:1px solid #eee;" onclick="prepEdit('bgUrl', '背景图URL')">背景图URL ➔</li> <li style="padding:14px; background:#f8f9fa; margin-bottom:10px; border-radius:12px; cursor:pointer; border:1px solid #eee;" onclick="prepEdit('musicUrl', '多曲库(逗号隔开)')">多曲库设置 ➔</li> <li style="padding:14px; background:#f8f9fa; margin-bottom:10px; border-radius:12px; cursor:pointer; border:1px solid #eee;" onclick="prepEdit('userPassword', '访问密码')">访问密码 ➔</li> </ul> </div> </div>
+<div id="adminMenuModal" class="modal"> <div class="modal-content"> <span class="close-x" onclick="closeModal('adminMenuModal')">&times;</span> <h3>Settings</h3> <ul class="settings-list"> <li onclick="prepEdit('titleText', '标题')">标题文字 ➔</li> <li onclick="prepEdit('sub1', '链接1')">链接 1 ➔</li> <li onclick="prepEdit('sub2', '链接2')">链接 2 ➔</li> <li onclick="prepEdit('bgUrl', '背景图')">背景图URL ➔</li> <li onclick="prepEdit('musicUrl', '歌单(逗号隔开)')">多曲库设置 ➔</li> <li onclick="prepEdit('userPassword', '访问密码')">访问密码 ➔</li> </ul> </div> </div>
 <div id="editModal" class="modal"> <div class="modal-content"> <span class="close-x" onclick="closeModal('editModal')">&times;</span> <h3 id="editLabel">Modify</h3> <input id="editInput" type="text"> <button class="primary-btn" onclick="submitEdit()">Save</button> </div> </div>
 
 <script>
@@ -105,7 +120,6 @@ const audio = document.getElementById('bgMusic');
 const ray = Math.random().toString(16).slice(2, 14);
 document.getElementById('ray-id').innerText = ray;
 document.getElementById('ray-id-ft').innerText = ray;
-document.getElementById('ts-id').innerText = new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
 document.querySelectorAll('.domain-info').forEach(e => e.innerText = window.location.hostname);
 
 async function load() {
@@ -128,74 +142,69 @@ async function load() {
 }
 load();
 
+function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+// 点击验证按钮：激活音乐、隐藏伪装、开启特效
 function doUserLogin() {
   if(document.getElementById('userPwdInput').value === SETTINGS.userPassword) {
     document.getElementById('fakePage').style.display = 'none';
     document.getElementById('realContent').style.display = 'flex';
     document.getElementById('topControls').style.display = 'flex';
-    document.getElementById('canvas').style.display = 'block'; 
+    document.getElementById('canvas').style.display = 'block';
     closeModal('userLoginModal');
+    
+    // 激活粒子
     initParticles();
     
-    // 如果是默认歌曲且从头播放，则跳到高潮部分 (2:20 = 140s)
-    if (!SETTINGS.musicUrl || SETTINGS.musicUrl.includes("186001")) {
-       audio.currentTime = 140;
-    }
-    playMusic();
+    // 强制播放音乐 (由用户点击行为触发)
+    audio.play().then(() => {
+      document.getElementById('musicBtn').classList.add('music-playing');
+    }).catch(e => console.log("Play error:", e));
   } else { alert("Invalid code."); }
 }
 
-function playMusic() {
-  audio.play().then(() => {
-    document.getElementById('musicBtn').classList.add('music-playing');
-  }).catch(() => {});
-}
-
 function toggleMusic() {
-  if (audio.paused) { playMusic(); } 
+  if (audio.paused) { audio.play(); document.getElementById('musicBtn').classList.add('music-playing'); } 
   else {
-    if(playlist.length > 1) {
-      currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
-      audio.src = playlist[currentTrackIndex];
-      playMusic();
-    } else {
-      audio.pause();
-      document.getElementById('musicBtn').classList.remove('music-playing');
-    }
+    currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+    audio.src = playlist[currentTrackIndex];
+    audio.play();
+    document.getElementById('musicBtn').classList.add('music-playing');
   }
 }
 
-// 粒子引擎 (雪花效果)
+audio.onended = () => {
+  currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+  audio.src = playlist[currentTrackIndex];
+  audio.play();
+};
+
 function initParticles() {
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   const particles = [];
-  for(let i=0; i<70; i++) {
-    particles.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*2+1, d: Math.random()*1 });
+  for(let i=0; i<80; i++) {
+    particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, r: Math.random() * 3 + 1, d: Math.random() * 1 });
   }
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
-    ctx.beginPath();
-    for(let p of particles) {
-      ctx.moveTo(p.x, p.y);
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2, true);
-    }
-    ctx.fill();
-    for(let p of particles) {
-      p.y += 1 + p.r/2;
-      if(p.y > canvas.height) { p.y = -10; p.x = Math.random()*canvas.width; }
-    }
-    requestAnimationFrame(draw);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.6)"; ctx.beginPath();
+    for(let p of particles) { ctx.moveTo(p.x, p.y); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2, true); }
+    ctx.fill(); update();
   }
-  draw();
+  function update() {
+    for(let p of particles) {
+      p.y += Math.cos(p.d) + 1 + p.r/2;
+      if(p.y > canvas.height) { p.x = Math.random() * canvas.width; p.y = -10; }
+    }
+  }
+  setInterval(draw, 33);
 }
 
-// 管理逻辑保持不变
-function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+// 管理后台逻辑
 function handleGearClick() { if (adminSessionPw) openModal('adminMenuModal'); else openModal('adminVerifyModal'); }
 function verifyAdmin() { adminSessionPw = document.getElementById('adminPwdLogin').value; closeModal('adminVerifyModal'); openModal('adminMenuModal'); }
 function prepEdit(key, label) { editingKey = key; document.getElementById('editLabel').innerText = "Edit " + label; document.getElementById('editInput').value = SETTINGS[key] || ""; closeModal('adminMenuModal'); openModal('editModal'); }
@@ -207,10 +216,7 @@ async function submitEdit() {
     if((await res.json()).success) { location.reload(); } else { alert("Auth Failed"); }
   } catch(e) { alert("Error"); }
 }
-function copyLink(n) {
-  const url = n === 1 ? SETTINGS.sub1 : SETTINGS.sub2;
-  navigator.clipboard.writeText(url || "").then(() => alert("已复制"));
-}
+function copyLink(n) { const url = n === 1 ? SETTINGS.sub1 : SETTINGS.sub2; navigator.clipboard.writeText(url || "").then(() => alert("Copied!")); }
 </script>
 </body>
 </html>
