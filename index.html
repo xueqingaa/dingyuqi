@@ -5,31 +5,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Error 1101</title>
 <style>
-  html, body { height:100%; margin:0; padding:0; overflow:hidden; font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
-  .container { height:100vh; max-width:800px; margin:0 auto; padding:30px 20px; text-align:center; background:#ffffff; color:#000; box-sizing:border-box; overflow:hidden; }
+  html, body { height:100%; margin:0; padding:0; overflow:hidden; font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:#f4f4f4; }
+  .container { height:100vh; max-width:800px; margin:0 auto; padding:20px 20px 40px; text-align:center; background:#ffffff; color:#000; box-sizing:border-box; overflow:hidden; position:relative; z-index:1; }
   h1 { font-size:48px; margin:0; color:#ff4d4d; font-weight:bold; background:#ffffff; }
   h2 { font-size:24px; margin:16px 0; color:#444; background:#ffffff; }
   p { font-size:16px; margin:8px 0; opacity:0.9; background:#ffffff; }
   .section { margin:20px 0; background:#ffffff; }
   .link { color:#0066ff; text-decoration:underline; cursor:pointer; background:#ffffff; }
-  .footer { position:absolute; bottom:10px; left:50%; transform:translateX(-50%); font-size:12px; color:#666; text-align:center; width:90%; line-height:1.4; background:#ffffff; }
+  .footer { position:absolute; bottom:10px; left:50%; transform:translateX(-50%); font-size:12px; color:#666; text-align:center; width:90%; line-height:1.4; background:#ffffff; z-index:5; }
   .feedback-btn { position:fixed; bottom:20px; right:20px; color:#0066ff; cursor:pointer; font-size:13px; z-index:10; text-decoration:underline; opacity:0.8; transition:all 0.3s; background:#ffffff; }
   .feedback-btn:hover { opacity:1; color:#0044cc; }
   #modal, #adminModal, .edit-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:1000; }
-  .modal-content { background:#fff; padding:16px; border-radius:12px; width:90%; max-width:280px; text-align:center; position:relative; box-shadow:0 8px 30px rgba(0,0,0,0.3); color:#333; }
+  .modal-content { background:#fff; padding:16px; border-radius:12px; width:90%; max-width:280px; text-align:center; position:relative; box-shadow:0 8px 30px rgba(0,0,0,0.3); color:#333; z-index:1001; }
   .close-btn { position:fixed !important; top:8px !important; right:16px !important; background:none !important; border:none !important; color:#aaa !important; font-size:40px !important; line-height:1 !important; cursor:pointer !important; z-index:10001 !important; pointer-events:auto !important; }
   .close-btn:hover { color:#fff !important; }
   input { width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:6px; font-size:15px; box-sizing:border-box; }
   button { width:100%; padding:10px; background:#0066ff; color:#fff; border:none; border-radius:6px; font-size:15px; cursor:pointer; margin-top:8px; }
-  #realContent { display:none; position:fixed; inset:0; background:linear-gradient(135deg, #0f0c29, #302b63, #24243e); color:#e0f7ff; flex-direction:column; align-items:center; justify-content:center; padding:20px 20px 40px; text-align:center; background-size:cover; background-position:center; background-attachment:fixed; overflow:hidden; }
-  .admin-btn { position:fixed !important; top:8px !important; right:60px !important; background:none !important; border:none !important; color:#aaa !important; font-size:36px !important; cursor:pointer !important; z-index:10000 !important; opacity:0.9; }
+  #realContent { display:none; position:fixed; inset:0; background:linear-gradient(135deg, #0f0c29, #302b63, #24243e); color:#e0f7ff; flex-direction:column; align-items:center; justify-content:center; padding:10px 20px 30px; text-align:center; background-size:cover; background-position:center; background-attachment:fixed; overflow:hidden; z-index:2; }
+  .admin-btn { position:fixed !important; top:8px !important; right:60px !important; background:none !important; border:none !important; color:#aaa !important; font-size:36px !important; cursor:pointer !important; z-index:10000 !important; opacity:0.9; pointer-events:auto !important; }
   .admin-btn:hover { color:#00d1ff !important; }
-  .header { margin: 0.8rem 0 1.2rem 0; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; }
-  .main-title { font-size:2.2rem; font-weight:700; letter-spacing:1px; background:linear-gradient(90deg,#00f0ff,#a855f7); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow:0 0 8px rgba(168,85,247,0.5); margin:0.3rem 0; }
-  .copy-btn { margin:8px 0; padding:10px 20px; background:linear-gradient(90deg,#00f0ff,#a855f7); border:none; border-radius:50px; font-size:16px; cursor:pointer; color:#000; box-shadow:0 4px 12px rgba(0,240,255,0.3); transition:all 0.3s; white-space:nowrap; display:inline-block; min-width:auto !important; width:auto !important; }
+  .header { margin: 0.5rem 0 1rem 0; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; } /* 上移标题和按钮整体 */
+  .main-title { font-size:2.2rem; font-weight:700; letter-spacing:1px; background:linear-gradient(90deg,#00f0ff,#a855f7); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow:0 0 8px rgba(168,85,247,0.5); margin:0.2rem 0; }
+  .copy-btn { margin:6px 0; padding:10px 20px; background:linear-gradient(90deg,#00f0ff,#a855f7); border:none; border-radius:50px; font-size:16px; cursor:pointer; color:#000; box-shadow:0 4px 12px rgba(0,240,255,0.3); transition:all 0.3s; white-space:nowrap; display:inline-block; min-width:auto !important; width:auto !important; }
   .copy-btn:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(0,240,255,0.5); }
   .tip { color:#a5f3fc; opacity:0; transition:opacity 0.4s; margin-top:0.5rem; font-size:0.9rem; }
-  .notice { margin-top:1.8rem; opacity:1; font-size:1.1rem; font-weight:500; max-width:80%; word-break:break-all; text-align:center; color:#ffffff; text-shadow:none !important; letter-spacing:1px; background:transparent !important; padding:0 !important; box-shadow:none !important; }
+  .notice { margin-top:1.5rem; opacity:1; font-size:1.1rem; font-weight:500; max-width:80%; word-break:break-all; text-align:center; color:#ffffff; text-shadow:none !important; letter-spacing:1px; background:transparent !important; padding:0 !important; box-shadow:none !important; }
   .settings-list { list-style:none; padding:0; margin:15px 0; }
   .settings-list li { padding:10px; background:#222; margin:5px 0; border-radius:6px; cursor:pointer; text-align:left; color:#fff; font-size:14px; }
   .settings-list li:hover { background:#333; }
@@ -128,13 +128,14 @@ fetch("/api/get-links?" + new Date().getTime())
   })
   .catch(() => {});
 
-// 超级强制定位齿轮和叉子（多轮 + 移到 body 最外层 + 高 z-index）
+// 最终强制定位（只执行一次，避免重复 append）
 function forcePosition() {
-  const adminBtn = document.querySelector('.admin-btn');
-  const closeBtns = document.querySelectorAll('.close-btn');
-
-  if (adminBtn) {
+  // 齿轮
+  let adminBtn = document.querySelector('.admin-btn');
+  if (adminBtn && adminBtn.parentNode !== document.body) {
     document.body.appendChild(adminBtn);
+  }
+  if (adminBtn) {
     adminBtn.style.position = 'fixed';
     adminBtn.style.top = '8px';
     adminBtn.style.right = '60px';
@@ -142,8 +143,11 @@ function forcePosition() {
     adminBtn.style.pointerEvents = 'auto';
   }
 
-  closeBtns.forEach(btn => {
-    document.body.appendChild(btn);
+  // 所有叉子
+  document.querySelectorAll('.close-btn').forEach(btn => {
+    if (btn.parentNode !== document.body) {
+      document.body.appendChild(btn);
+    }
     btn.style.position = 'fixed';
     btn.style.top = '8px';
     btn.style.right = '16px';
@@ -152,11 +156,10 @@ function forcePosition() {
   });
 }
 
-window.addEventListener('load', () => {
-  forcePosition();
-  setTimeout(forcePosition, 800);
-  setTimeout(forcePosition, 2000);
-});
+// 只执行一次定位（load + 延迟 + 事件触发时）
+window.addEventListener('load', forcePosition);
+setTimeout(forcePosition, 1000);
+setTimeout(forcePosition, 3000); // 保险
 
 function checkPassword() {
   const input = document.getElementById('pw').value.trim();
@@ -165,7 +168,7 @@ function checkPassword() {
     document.querySelector('.container').style.display = 'none';
     document.querySelector('.feedback-btn').style.display = 'none';
     document.getElementById('realContent').style.display = 'flex';
-    setTimeout(forcePosition, 300);
+    forcePosition(); // 解锁后立即定位
   } else {
     alert("您的意见已经发送，请等待系统处理！");
     document.getElementById('modal').style.display = 'none';
@@ -195,7 +198,7 @@ function editField(field) {
   document.getElementById('editTitle').textContent = titles[field];
   document.getElementById('editInput').value = SETTINGS[field];
   document.getElementById('editInput').dataset.field = field;
-  setTimeout(forcePosition, 300);
+  forcePosition(); // 打开弹窗后定位
 }
 
 async function saveSingleField() {
