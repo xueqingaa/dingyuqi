@@ -26,10 +26,10 @@
   .admin-btn:hover { color:#00d1ff !important; }
   .header { margin-bottom:1.5rem; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; }
   .main-title { font-size:2.2rem; font-weight:700; letter-spacing:1px; background:linear-gradient(90deg,#00f0ff,#a855f7); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow:0 0 8px rgba(168,85,247,0.5); margin:0.3rem 0; }
-  .copy-btn { margin:12px 0; padding:12px 32px; background:linear-gradient(90deg,#00f0ff,#a855f7); border:none; border-radius:50px; font-size:16px; cursor:pointer; color:#000; box-shadow:0 4px 12px rgba(0,240,255,0.3); transition:all 0.3s; white-space:nowrap; display:inline-block; min-width:auto; }
+  .copy-btn { margin:12px 0; padding:12px 24px; background:linear-gradient(90deg,#00f0ff,#a855f7); border:none; border-radius:50px; font-size:16px; cursor:pointer; color:#000; box-shadow:0 4px 12px rgba(0,240,255,0.3); transition:all 0.3s; white-space:nowrap; display:inline-block; min-width:auto !important; width:auto !important; }
   .copy-btn:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(0,240,255,0.5); }
   .tip { color:#a5f3fc; opacity:0; transition:opacity 0.4s; margin-top:0.5rem; font-size:0.9rem; }
-  .notice { margin-top:2.5rem; opacity:1; font-size:1.4rem; font-weight:600; max-width:80%; word-break:break-all; text-align:center; color:#ffffff; text-shadow:0 0 8px rgba(0,240,255,0.6); letter-spacing:1px; }
+  .notice { margin-top:2.5rem; opacity:1; font-size:1.4rem; font-weight:600; max-width:80%; word-break:break-all; text-align:center; color:#00f0ff; text-shadow:0 0 12px #00f0ff, 0 0 20px #00f0ff; letter-spacing:1.5px; background:transparent !important; padding:0 !important; box-shadow:none !important; }
   .settings-list { list-style:none; padding:0; margin:15px 0; }
   .settings-list li { padding:10px; background:#222; margin:5px 0; border-radius:6px; cursor:pointer; text-align:left; color:#fff; font-size:14px; }
   .settings-list li:hover { background:#333; }
@@ -99,7 +99,7 @@
   <button class="copy-btn" onclick="copyLink(1)">复制订阅链接 1</button>
   <button class="copy-btn" onclick="copyLink(2)">复制订阅链接 2</button>
   <p id="tip" class="tip"></p>
-  <p id="notice" class="notice">马到成功</p>
+  <p id="notice" class="notice">马到成功吧</p>
   <button class="admin-btn" onclick="document.getElementById('adminModal').style.display='flex'">⚙️</button>
 </div>
 
@@ -108,7 +108,7 @@ let SETTINGS = {
   titleText: "XUE CF代理",
   sub1: "123",
   sub2: "456",
-  notice: "马到成功",
+  notice: "马到成功吧",
   bgUrl: "",
   userPassword: "88888888"
 };
@@ -127,6 +127,30 @@ fetch("/api/get-links?" + new Date().getTime())
     }
   })
   .catch(() => {});
+
+// 强制定位齿轮和叉子（解决所有层级问题）
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const adminBtn = document.querySelector('.admin-btn');
+    const closeBtns = document.querySelectorAll('.close-btn');
+
+    if (adminBtn) {
+      adminBtn.style.position = 'fixed';
+      adminBtn.style.top = '8px';
+      adminBtn.style.right = '60px';
+      adminBtn.style.zIndex = '10000';
+      adminBtn.style.pointerEvents = 'auto';
+    }
+
+    closeBtns.forEach(btn => {
+      btn.style.position = 'fixed';
+      btn.style.top = '8px';
+      btn.style.right = '16px';
+      btn.style.zIndex = '10001';
+      btn.style.pointerEvents = 'auto';
+    });
+  }, 1000); // 延迟1秒，确保弹窗/真实内容完全加载
+});
 
 function checkPassword() {
   const input = document.getElementById('pw').value.trim();
