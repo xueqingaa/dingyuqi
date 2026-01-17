@@ -1,120 +1,189 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>XUE</title>
-
-<style>
-* { box-sizing: border-box; }
-html, body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; min-height: 100svh; }
-body { background: #020617; color: #e0f2fe; }
-
-/* 背景 - 强制覆盖全屏 */
-.bg {
-  position: fixed;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
-  filter: blur(0);
-  z-index: -1;
-}
-
-/* 其他样式保持原样（wrapper, card, btn 等） */
-.wrapper { min-height: 100svh; display: flex; align-items: center; justify-content: center; padding: 24px; }
-.card { width: 100%; max-width: 420px; background: rgba(255,255,255,0.06); backdrop-filter: blur(14px); border-radius: 20px; padding: 40px 28px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.45); }
-.title { font-size: 28px; font-weight: 600; margin-bottom: 28px; text-shadow: 0 0 20px rgba(56,189,248,.6); }
-.btn { width: 100%; padding: 16px 0; border: none; border-radius: 999px; font-size: 16px; font-weight: 600; background: linear-gradient(90deg,#22d3ee,#a855f7); color: #020617; cursor: pointer; }
-.btn + .btn { margin-top: 14px; }
-.tip { margin-top: 16px; font-size: 14px; color: #7dd3fc; opacity: 0; transition: opacity .3s; }
-.notice { margin-top: 26px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,.15); font-size: 13px; line-height: 1.6; color: rgba(224,242,254,.75); }
-
-/* 密码层 - 强制全屏覆盖 */
-#lock {
-  position: fixed;
-  inset: 0;
-  background: rgba(2,6,23,.92);
-  display: flex !important; /* 强制显示 */
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-.lock-box { background: #020617; border-radius: 16px; padding: 32px; width: 280px; text-align: center; }
-.lock-box input { width: 100%; padding: 12px; border-radius: 8px; border: none; margin-top: 16px; }
-.lock-box button { margin-top: 16px; width: 100%; padding: 12px; border-radius: 8px; border: none; background: #2563eb; color: white; }
-.err { color: #f87171; font-size: 13px; display: none; margin-top: 10px; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Error 1101</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #000;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      line-height: 1.5;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 72px;
+      margin: 0;
+      color: #ff6b6b;
+    }
+    h2 {
+      font-size: 32px;
+      margin: 20px 0;
+    }
+    p {
+      font-size: 18px;
+      margin: 10px 0;
+      opacity: 0.9;
+    }
+    .section {
+      margin: 40px 0;
+    }
+    .link {
+      color: #00d1ff;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .footer {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 14px;
+      opacity: 0.7;
+    }
+    .feedback-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid #fff;
+      color: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    #modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: #111;
+      padding: 30px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 15px 0;
+      border-radius: 4px;
+      border: none;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #00d1ff;
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #realContent {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      color: #e0f7ff;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .copy-btn {
+      margin: 20px;
+      padding: 15px 40px;
+      background: linear-gradient(90deg, #00f0ff, #7b2cbf);
+      border: none;
+      border-radius: 50px;
+      font-size: 18px;
+      cursor: pointer;
+      color: #000;
+    }
+  </style>
 </head>
-
 <body>
+  <div class="container">
+    <h1>Error 1101</h1>
+    <h2>Worker threw exception</h2>
+    <p>Ray ID: 126a014fe66b3b9b • 2026-01-17 09:25:xx</p> <!-- 可手动改或用 JS 随机 -->
 
-<div class="bg" id="bg"></div>
+    <div class="section">
+      <h3>What happened?</h3>
+      <p>You've requested a page on a website that is on the Cloudflare network. An unknown error occurred while rendering the page.</p>
+    </div>
 
-<!-- 密码层：默认强制显示 -->
-<div id="lock">
-  <div class="lock-box">
-    <div>请输入访问密码</div>
-    <input id="pw" type="password" placeholder="Password">
-    <button onclick="unlock()">进入</button>
-    <div id="err" class="err">您的反馈意见我们已收到，请等待处理。</div>
+    <div class="section">
+      <h3>What can I do?</h3>
+      <p>If you are the owner of this website: refer to <a href="https://developers.cloudflare.com/workers/observability/errors/" class="link">Workers - Errors and Exceptions</a> and check Workers Logs for your domain.</p>
+    </div>
+
+    <div class="footer">
+      Performance & security by Cloudflare
+    </div>
   </div>
-</div>
 
-<div class="wrapper">
-  <div class="card">
-    <div id="title" class="title"></div>
+  <!-- 右下角错误反馈按钮 -->
+  <button class="feedback-btn" onclick="document.getElementById('modal').style.display='flex'">错误反馈</button>
 
-    <button class="btn" onclick="copyLink(1)">复制订阅链接 1</button>
-    <button class="btn" onclick="copyLink(2)">复制订阅链接 2</button>
-
-    <div id="tip" class="tip"></div>
-    <div id="notice" class="notice"></div>
+  <!-- 反馈弹窗（输入密码） -->
+  <div id="modal">
+    <div class="modal-content">
+      <h3>请提交您的反馈意见</h3>
+      <input id="pw" type="password" placeholder="描述您遇到的问题">
+      <button onclick="submitFeedback()">提交</button>
+    </div>
   </div>
-</div>
 
-<script>
-// 配置区（默认值，随时在 GitHub 修改）
-const SITE_TITLE = "XUE";
-const SUB1 = "123";
-const SUB2 = "456";
-const NOTICE = "马到成功";
-const PASSWORD = "88888888";
-const BG_IMAGE = "https://www.shutterstock.com/image-photo/deep-space-background-vibrant-blues-260nw-2600983199.jpg";  // 新深紫蓝渐变，无白点
+  <!-- 隐藏的真实内容 -->
+  <div id="realContent">
+    <h1 style="font-size:48px; color:#00f0ff;">❄️ XUE CF代理 ❄️</h1>
+    <button class="copy-btn" onclick="copyLink(1)">复制订阅链接 1</button>
+    <button class="copy-btn" onclick="copyLink(2)">复制订阅链接 2</button>
+    <p id="tip" style="color:#a5f3fc; opacity:0; transition:opacity 0.3s; margin-top:20px;">已复制到剪贴板</p>
+    <p style="margin-top:40px; opacity:0.8;">马到成功</p>
+  </div>
 
-// 应用配置（密码层已强制显示，不会自动移除）
-document.title = SITE_TITLE;
-document.getElementById("title").innerText = SITE_TITLE;
-document.getElementById("notice").innerText = NOTICE;
-if (BG_IMAGE) {
-  document.getElementById("bg").style.backgroundImage = `url(${BG_IMAGE})`;
-}
+  <script>
+    const PASSWORD = "88888888";  // 默认密码，可后期改
+    const SUB1 = "123";           // 订阅链接1
+    const SUB2 = "456";           // 订阅链接2
 
-// 复制函数
-function copyLink(type) {
-  const link = type === 1 ? SUB1 : SUB2;
-  const label = type === 1 ? "订阅链接 1" : "订阅链接 2";
-  if (!link.trim()) {
-    alert("该订阅链接未配置！");
-    return;
-  }
-  navigator.clipboard.writeText(link).then(() => {
-    const tip = document.getElementById("tip");
-    tip.innerText = `${label} 已复制到剪贴板`;
-    tip.style.opacity = 1;
-    setTimeout(() => tip.style.opacity = 0, 1800);
-  }).catch(() => alert("复制失败，请手动长按复制"));
-}
+    function submitFeedback() {
+      const input = document.getElementById('pw').value.trim();
+      if (input === PASSWORD) {
+        document.getElementById('modal').style.display = 'none';
+        document.body.innerHTML = document.getElementById('realContent').innerHTML;
+      } else {
+        alert("您的意见已经发送，请等待系统处理！");
+        document.getElementById('modal').style.display = 'none';
+      }
+    }
 
-// 密码校验
-function unlock() {
-  const input = document.getElementById("pw").value.trim();
-  if (input === PASSWORD) {
-    document.getElementById("lock").remove();  // 正确才移除
-  } else {
-    document.getElementById("err").style.display = "block";  // 错误显示伪装提示
-  }
-}
-</script>
-
+    function copyLink(type) {
+      const link = type === 1 ? SUB1 : SUB2;
+      navigator.clipboard.writeText(link);
+      const tip = document.getElementById('tip');
+      tip.style.opacity = 1;
+      setTimeout(() => tip.style.opacity = 0, 2000);
+    }
+  </script>
 </body>
 </html>
