@@ -65,7 +65,7 @@
   </div>
 </div>
 
-<!-- 管理员主面板（列表式） -->
+<!-- 管理员主面板（列表） -->
 <div id="adminModal">
   <div class="modal-content">
     <button class="close-btn" onclick="document.getElementById('adminModal').style.display='none'">&times;</button>
@@ -114,8 +114,8 @@ let SETTINGS = {
   userPassword: "88888888"
 };
 
-// 加载所有设置
-fetch("/api/get-settings")
+// 加载设置
+fetch("/api/get-links")
   .then(r => r.json())
   .then(data => {
     SETTINGS = { ...SETTINGS, ...data };
@@ -127,7 +127,7 @@ fetch("/api/get-settings")
       document.body.style.background = "linear-gradient(135deg, #0f0c29, #302b63, #24243e)";
     }
 
-    // 应用底部说明
+    // 应用说明
     document.getElementById('notice').textContent = SETTINGS.notice;
   })
   .catch(() => {});
@@ -145,7 +145,6 @@ function checkPassword() {
   }
 }
 
-// 复制
 function copyLink(type) {
   const link = type === 1 ? SETTINGS.sub1 : SETTINGS.sub2;
   if (!link.trim()) return alert("链接未配置");
@@ -155,11 +154,18 @@ function copyLink(type) {
   setTimeout(() => document.getElementById('tip').style.opacity = 0, 2000);
 }
 
-// 管理员面板 - 选择字段编辑
+// 管理员 - 选择字段编辑
 function editField(field) {
   document.getElementById('adminModal').style.display = 'none';
   document.getElementById('editModal').style.display = 'flex';
-  document.getElementById('editTitle').textContent = `修改${field === 'sub1' ? '订阅链接 1' : field === 'sub2' ? '订阅链接 2' : field === 'notice' ? '底部说明' : field === 'bgUrl' ? '背景图URL' : '访问密码'}`;
+  const titles = {
+    sub1: '修改订阅链接 1',
+    sub2: '修改订阅链接 2',
+    notice: '修改底部说明',
+    bgUrl: '修改背景图URL',
+    userPassword: '修改访问密码'
+  };
+  document.getElementById('editTitle').textContent = titles[field];
   document.getElementById('editInput').value = SETTINGS[field];
   document.getElementById('editInput').dataset.field = field;
 }
@@ -175,7 +181,7 @@ async function saveSingleField() {
   const body = { password: pw };
   body[field] = value;
 
-  const res = await fetch("/api/update-settings", {
+  const res = await fetch("/api/update-links", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body)
