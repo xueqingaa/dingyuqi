@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"/>
     <title>Error 1101</title>
     <style>
-        /* --- 1. 基础与伪装页样式 --- */
         body, html { margin:0; padding:0; font-family: "Segoe UI", Roboto, sans-serif; background:#fff; color:#000; min-height: 100vh; overflow-x: hidden; }
         #fakePage { padding: 40px 20px 100px; max-width: 800px; margin: 0 auto; display: block; }
         .error-title { font-size: 48px; font-weight: 400; color: #404040; margin: 0; }
@@ -17,36 +16,31 @@
         .hr { border: 0; border-top: 1px solid #d9d9d9; margin: 40px 0 20px; }
         .footer-row { font-size: 13px; color: #666; line-height: 1.8; }
 
-        /* --- 2. 真实主页样式 --- */
         #realContent { 
             display:none; position:fixed; inset:0; z-index:100;
             background-size: cover; background-position: center; background-repeat: no-repeat;
-            color:#fff; flex-direction:column; align-items:center; padding-top: 15vh; text-align: center;
+            color:#fff; flex-direction:column; align-items:center; padding-top: 12vh; text-align: center;
         }
-        /* 遮罩层，确保文字清晰 */
-        #realContent::before { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.4); z-index: -1; }
+        #realContent::before { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.45); z-index: -1; }
 
-        /* 修复：下雪画布层级提升，确保可见但不在按钮之上 */
         #canvas { position: fixed; inset: 0; z-index: 10; pointer-events: none; display: none; }
-        
         #topControls { display:none; position:fixed; top:20px; right:20px; z-index:200; gap: 20px; }
-        .icon-btn { font-size:28px; cursor:pointer; opacity:0.8; color: #fff; text-shadow: 0 0 5px #000; }
+        .icon-btn { font-size:26px; cursor:pointer; color: #fff; text-shadow: 0 0 5px #000; }
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .music-playing { animation: rotate 3s linear infinite; }
 
-        .main-title { font-size:2.4rem; font-weight:800; background: linear-gradient(90deg,#00f0ff,#a855f7); -webkit-background-clip:text; color:transparent; margin-bottom: 50px; z-index: 20; }
+        .main-title { font-size:2.4rem; font-weight:800; background: linear-gradient(90deg,#00f0ff,#a855f7); -webkit-background-clip:text; color:transparent; margin-bottom: 40px; z-index: 20; }
         .btn-group { display: flex; flex-direction: column; gap: 20px; width: 85%; max-width: 280px; z-index: 20; }
         .copy-btn { padding:16px; background:linear-gradient(90deg,#00f0ff,#a855f7); border:none; border-radius:15px; font-size:17px; color:#000; font-weight:bold; cursor:pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
 
-        /* 修复：“马到成功”说明文字向下移动 */
-        #notice { margin-top: 80px; color: #a5f3fc; font-weight:bold; z-index: 20; font-size: 1.2rem; }
+        /* “马到成功”向下大幅移动 */
+        #notice { margin-top: 120px; color: #a5f3fc; font-weight:bold; z-index: 20; font-size: 1.1rem; }
 
-        /* --- 3. 弹窗与表单 --- */
         .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter: blur(5px); align-items:center; justify-content:center; z-index:1000; }
-        .modal-content { background:#fff; padding:25px; border-radius:20px; width:88%; max-width:350px; text-align:center; color:#333; max-height: 85vh; overflow-y: auto; }
-        label { display: block; text-align: left; font-size: 12px; color: #666; margin: 8px 0 2px 5px; }
-        input { width:100%; padding:12px; margin-bottom:10px; border:1px solid #eee; border-radius:10px; box-sizing:border-box; font-size: 14px; }
-        .primary-btn { width:100%; padding:14px; background:#0051c3; color:#fff; border:none; border-radius:10px; font-weight:bold; cursor:pointer; margin-top: 10px; }
+        .modal-content { background:#fff; padding:25px; border-radius:20px; width:85%; max-width:340px; text-align:center; color:#333; }
+        label { display: block; text-align: left; font-size: 12px; color: #777; margin: 8px 0 2px 5px; }
+        input { width:100%; padding:12px; margin-bottom:10px; border:1px solid #ddd; border-radius:10px; box-sizing:border-box; }
+        .primary-btn { width:100%; padding:14px; background:#0051c3; color:#fff; border:none; border-radius:10px; font-weight:bold; cursor:pointer; }
     </style>
 </head>
 <body>
@@ -64,10 +58,7 @@
     <p class="section-p"><strong>If you are the owner of this website:</strong><br>
     refer to <span class="cf-link" onclick="openModal('userLoginModal')">Workers - Errors and Exceptions</span>.</p>
     <hr class="hr">
-    <div class="footer-row">
-        Cloudflare Ray ID: <strong id="ray-id-ft"></strong><br>
-        Your IP: <span id="user-ip">Loading...</span>
-    </div>
+    <div class="footer-row">Cloudflare Ray ID: <strong id="ray-id-ft"></strong><br>Your IP: <span id="user-ip">Loading...</span></div>
 </div>
 
 <div id="topControls">
@@ -89,27 +80,26 @@
         <h3>Debug Access</h3>
         <input id="userPwdInput" type="password" placeholder="Authorization Code">
         <button class="primary-btn" onclick="doUserLogin()">Verify</button>
-        <p style="cursor:pointer; font-size:12px;" onclick="closeModal('userLoginModal')">取消</p>
     </div>
 </div>
 
 <div id="adminModal" class="modal">
     <div class="modal-content">
-        <h3>管理员面板</h3>
+        <h3>管理员设置</h3>
         <div id="adminAuthArea">
-            <input id="adminPwdInput" type="password" placeholder="请输入管理员密码">
-            <button class="primary-btn" onclick="verifyAdminLocal()">验证</button>
+            <input id="adminPwdInput" type="password" placeholder="输入后台管理员密码">
+            <button class="primary-btn" onclick="showAdminConfig()">验证身份</button>
         </div>
-        <div id="adminConfigArea" style="display: none;">
+        <div id="adminConfigArea" style="display: none; text-align: left;">
             <label>网页标题</label><input id="edit_title" type="text">
-            <label>公告说明</label><input id="edit_notice" type="text">
-            <label>链接 1</label><input id="edit_sub1" type="text">
-            <label>链接 2</label><input id="edit_sub2" type="text">
-            <label>背景图 URL</label><input id="edit_bgUrl" type="text">
-            <label>用户密码</label><input id="edit_userPwd" type="text">
-            <button class="primary-btn" style="background:#28a745;" onclick="saveConfigs()">保存更改</button>
+            <label>底部说明</label><input id="edit_notice" type="text">
+            <label>订阅 1</label><input id="edit_sub1" type="text">
+            <label>订阅 2</label><input id="edit_sub2" type="text">
+            <label>背景 URL</label><input id="edit_bgUrl" type="text">
+            <label>访客密码</label><input id="edit_userPwd" type="text">
+            <button class="primary-btn" style="background:#28a745;" onclick="saveConfigs()">保存更改并重启</button>
         </div>
-        <p style="cursor:pointer; font-size:12px;" onclick="closeModal('adminModal')">关闭</p>
+        <p style="cursor:pointer; font-size:12px; margin-top:15px;" onclick="closeModal('adminModal')">关闭</p>
     </div>
 </div>
 
@@ -117,13 +107,12 @@
     let SETTINGS = {};
     const audio = document.getElementById('bgMusic');
 
-    // 初始化伪装页 ID 和 IP
     const rid = Math.random().toString(16).slice(2, 14);
     document.getElementById('ray-id').innerText = rid;
     document.getElementById('ray-id-ft').innerText = rid;
     document.getElementById('ts-id').innerText = new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
     document.querySelectorAll('.domain-info').forEach(e => e.innerText = window.location.hostname);
-    fetch('https://api.ipify.org?format=json').then(r => r.json()).then(d => document.getElementById('user-ip').innerText = d.ip).catch(() => {});
+    fetch('https://api.ipify.org?format=json').then(r => r.json()).then(d => document.getElementById('user-ip').innerText = d.ip);
 
     async function load() {
         try {
@@ -137,76 +126,32 @@
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-    // 核心修复：登录成功后触发背景和雪花
     function doUserLogin() {
         if(document.getElementById('userPwdInput').value === SETTINGS.userPassword) {
             document.getElementById('fakePage').style.display = 'none';
-            document.body.style.overflow = 'hidden';
-            
-            const real = document.getElementById('realContent');
-            real.style.display = 'flex';
+            document.getElementById('realContent').style.display = 'flex';
             document.getElementById('topControls').style.display = 'flex';
             
             document.getElementById('mainTitle').innerText = SETTINGS.titleText || "XUE的订阅分享";
             document.getElementById('notice').innerText = SETTINGS.notice || "";
             
-            // 修复：强制设置背景图片
             const finalBg = (SETTINGS.bgUrl && SETTINGS.bgUrl.trim() !== "") ? SETTINGS.bgUrl : "bg.jpg";
-            real.style.backgroundImage = "url('" + finalBg + "')";
+            document.getElementById('realContent').style.backgroundImage = `url('${finalBg}')`;
             
-            // 修复：显示画布并初始化雪花
             const canvas = document.getElementById('canvas');
             canvas.style.display = 'block';
             initSnow(); 
             
             audio.play().then(() => document.getElementById('musicBtn').classList.add('music-playing')).catch(() => {});
             closeModal('userLoginModal');
-        } else { alert("验证失败"); }
+        } else {
+            // 优化：伪装提示语
+            alert("您的反馈已收到，我们会尽快处理。");
+            closeModal('userLoginModal');
+        }
     }
 
-    // 雪花代码修复
-    function initSnow() {
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        const particles = [];
-        for(let i=0; i<100; i++) {
-            particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                r: Math.random() * 3 + 1,
-                d: Math.random() * 1 + 0.5
-            });
-        }
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-            ctx.beginPath();
-            for(let p of particles) {
-                ctx.moveTo(p.x, p.y);
-                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
-            }
-            ctx.fill();
-            for(let p of particles) {
-                p.y += p.d;
-                p.x += Math.sin(p.y / 50) * 0.5; // 增加一点左右摆动感
-                if(p.y > canvas.height) p.y = -10;
-                if(p.x > canvas.width) p.x = 0;
-                if(p.x < 0) p.x = canvas.width;
-            }
-            requestAnimationFrame(draw);
-        }
-        draw();
-    }
-
-    // 管理员函数等保持原样...
-    function openAdminPortal() {
-        document.getElementById('adminAuthArea').style.display = 'block';
-        document.getElementById('adminConfigArea').style.display = 'none';
-        openModal('adminModal');
-    }
-    function verifyAdminLocal() {
+    function showAdminConfig() {
         document.getElementById('edit_title').value = SETTINGS.titleText || "";
         document.getElementById('edit_notice').value = SETTINGS.notice || "";
         document.getElementById('edit_sub1').value = SETTINGS.sub1 || "";
@@ -216,9 +161,10 @@
         document.getElementById('adminAuthArea').style.display = 'none';
         document.getElementById('adminConfigArea').style.display = 'block';
     }
+
     async function saveConfigs() {
         const newData = {
-            password: document.getElementById('adminPwdInput').value,
+            password: document.getElementById('adminPwdInput').value, // 传给后端比对 ADMIN_PASSWORD
             titleText: document.getElementById('edit_title').value,
             notice: document.getElementById('edit_notice').value,
             sub1: document.getElementById('edit_sub1').value,
@@ -226,22 +172,47 @@
             bgUrl: document.getElementById('edit_bgUrl').value,
             userPassword: document.getElementById('edit_userPwd').value
         };
+
         const res = await fetch('/api/update-links', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newData)
         });
         const ret = await res.json();
-        if(ret.success) { alert("保存成功！"); location.reload(); }
-        else { alert("保存失败"); }
+        // 只有后端返回 success: true 才是真密码
+        if(ret.success) { 
+            alert("设置已应用，页面即将刷新。"); 
+            location.reload(); 
+        } else { 
+            alert("管理员授权失败，更改未保存。"); 
+        }
     }
+
+    function initSnow() {
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        const p = [];
+        for(let i=0; i<100; i++) p.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:Math.random()*3+1, s:Math.random()*1+0.5});
+        function draw() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = "rgba(255,255,255,0.8)"; ctx.beginPath();
+            for(let i of p) { ctx.moveTo(i.x,i.y); ctx.arc(i.x,i.y,i.r,0,Math.PI*2,true); }
+            ctx.fill();
+            for(let i of p) { i.y += i.s; if(i.y > canvas.height) i.y = -10; }
+            requestAnimationFrame(draw);
+        }
+        draw();
+    }
+
+    function openAdminPortal() { openModal('adminModal'); }
     function toggleMusic() {
         if (audio.paused) { audio.play(); document.getElementById('musicBtn').classList.add('music-playing'); }
         else { audio.pause(); document.getElementById('musicBtn').classList.remove('music-playing'); }
     }
     function copyLink(n) {
         const url = (n === 1 ? SETTINGS.sub1 : SETTINGS.sub2) || "";
-        navigator.clipboard.writeText(url).then(() => alert("复制成功！"));
+        navigator.clipboard.writeText(url).then(() => alert("链接已存至剪贴板"));
     }
 </script>
 </body>
