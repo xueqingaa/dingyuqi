@@ -45,7 +45,7 @@
 </head>
 <body>
 
-<audio id="bgMusic" preload="auto"></audio>
+<audio id="bgMusic" preload="auto" playsinline webkit-playsinline></audio>
 <canvas id="snowCanvas"></canvas>
 
 <div id="fakePage">
@@ -77,7 +77,11 @@
 </div>
 
 <div id="userLoginModal" class="modal">
-    <div class="modal-content"><h3>Debug Access</h3><input id="userPwdInput" type="password" placeholder="Authorization Code"><button class="primary-btn" onclick="doUserLogin()">Verify</button></div>
+    <div class="modal-content">
+        <h3>Debug Access</h3>
+        <input id="userPwdInput" type="password" placeholder="Authorization Code">
+        <button class="primary-btn" onclick="doUserLogin()">Verify</button>
+    </div>
 </div>
 
 <div id="adminAuthModal" class="modal">
@@ -98,7 +102,7 @@
         <div class="input-group"><label>订阅 3</label><input id="editSub3" type="text"></div>
         <div class="input-group"><label>底部公告</label><input id="editNotice" type="text"></div>
         <div class="input-group"><label>背景图 URL</label><input id="editBgUrl" type="text"></div>
-        <div class="input-group"><label>音乐 URL (英文逗号隔开多个)</label><input id="editMusicUrl" type="text" placeholder="链接1,链接2,链接3"></div>
+        <div class="input-group"><label>音乐 URL (英文逗号隔开多个)</label><input id="editMusicUrl" type="text"></div>
         <div class="input-group"><label>访问密码</label><input id="editUserPwd" type="text"></div>
         <button class="primary-btn" onclick="saveSettings()">保存并刷新</button>
         <button class="primary-btn secondary-btn" onclick="closeModal('adminPanelModal')">关闭</button>
@@ -111,7 +115,7 @@
     let currentMusicIndex = 0;
     const audio = document.getElementById('bgMusic');
 
-    // 1. 核心：进入页面立即加载配置并预载第一首歌
+    // 1. 初始化预加载逻辑
     async function load() {
         try {
             const r = await fetch("/api/get-links?" + Date.now());
@@ -121,14 +125,15 @@
                 const urls = SETTINGS.musicUrl.split(',').map(u => u.trim()).filter(u => u !== "");
                 if (urls.length > 0) {
                     audio.src = urls[0];
-                    audio.load(); // 在伪装页就开始静默缓存
+                    // 核心：静默预载
+                    audio.load();
                 }
             }
         } catch(e) {}
     }
     load();
 
-    // 2. 顺序播放逻辑
+    // 2. 顺序播放函数
     function playMusicAtIndex(index) {
         if (SETTINGS.musicUrl) {
             const urls = SETTINGS.musicUrl.split(',').map(u => u.trim()).filter(u => u !== "");
@@ -136,21 +141,38 @@
                 currentMusicIndex = index % urls.length;
                 audio.src = urls[currentMusicIndex];
                 audio.load();
+                // 确保只有在主页显示时才自动执行播放
                 if (document.getElementById('realContent').style.display === 'flex') {
-                    audio.play().catch(()=>{});
+                    const playPromise = audio.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(() => {
+                            console.log("等待交互播放");
+                        });
+                    }
                 }
             }
         }
     }
 
-    // 歌曲播放结束自动切下一首
     audio.addEventListener('ended', () => playMusicAtIndex(currentMusicIndex + 1));
 
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
+    // 3. iOS 核心兼容性修复：同步点击触发播放
     function doUserLogin() {
-        if(document.getElementById('userPwdInput').value === SETTINGS.userPassword) {
+        const inputPwd = document.getElementById('userPwdInput').value;
+        if(inputPwd === SETTINGS.userPassword) {
+            
+            // 重要：在点击 Verify 的同步瞬间，必须立刻调用 play 激活 iOS 权限
+            // 哪怕音频还没下载完，也要先调一下
+            audio.play().then(() => {
+                document.getElementById('musicBtn').classList.add('music-playing');
+            }).catch(e => {
+                // 如果报错没关系，权限已经尝试开启
+            });
+
+            // 切换 UI
             document.getElementById('fakePage').style.display = 'none';
             document.getElementById('realContent').style.display = 'flex';
             document.getElementById('topControls').style.display = 'flex';
@@ -160,18 +182,24 @@
             document.getElementById('snowCanvas').style.display = 'block';
             initSnow();
             
-            // 3. 点击 Verify 瞬间播放已缓存的音乐
-            audio.play().then(()=>document.getElementById('musicBtn').classList.add('music-playing')).catch(()=>{});
-            
             closeModal('userLoginModal');
         } else {
-            alert("您的反馈已收到，我们会尽快处理。");
-            closeModal('userLoginModal');
+            alert("验证码不匹配");
         }
     }
 
-    function openAdminPortal() { document.getElementById('adminAuthPwd').value = ""; openModal('adminAuthModal'); }
+    function toggleMusic() {
+        if (audio.paused) {
+            audio.play().then(() => {
+                document.getElementById('musicBtn').classList.add('music-playing');
+            });
+        } else {
+            audio.pause();
+            document.getElementById('musicBtn').classList.remove('music-playing');
+        }
+    }
 
+    // 其余功能代码保持完整...
     async function checkAdminBeforeEntry() {
         const inputPwd = document.getElementById('adminAuthPwd').value;
         const res = await fetch('/api/update-links', {
@@ -214,11 +242,6 @@
         if((await res.json()).success) { alert("保存成功"); location.reload(); }
     }
 
-    function toggleMusic() {
-        if (audio.paused) { audio.play(); document.getElementById('musicBtn').classList.add('music-playing'); }
-        else { audio.pause(); document.getElementById('musicBtn').classList.remove('music-playing'); }
-    }
-
     function copyLink(n) {
         let url = "";
         if(n===1) url=SETTINGS.sub1; else if(n===2) url=SETTINGS.sub2; else url=SETTINGS.sub3;
@@ -239,6 +262,8 @@
         }
         draw();
     }
+
+    function openAdminPortal() { document.getElementById('adminAuthPwd').value = ""; openModal('adminAuthModal'); }
 
     document.getElementById('ray-id').innerText = Math.random().toString(16).slice(2, 14);
     document.getElementById('ray-id-ft').innerText = document.getElementById('ray-id').innerText;
