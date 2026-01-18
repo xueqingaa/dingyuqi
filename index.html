@@ -111,15 +111,24 @@
     let currentMusicIndex = 0;
     const audio = document.getElementById('bgMusic');
 
+    // 1. 核心：进入页面立即加载配置并预载第一首歌
     async function load() {
         try {
             const r = await fetch("/api/get-links?" + Date.now());
             SETTINGS = await r.json();
-            playMusicAtIndex(0);
+            
+            if (SETTINGS.musicUrl) {
+                const urls = SETTINGS.musicUrl.split(',').map(u => u.trim()).filter(u => u !== "");
+                if (urls.length > 0) {
+                    audio.src = urls[0];
+                    audio.load(); // 在伪装页就开始静默缓存
+                }
+            }
         } catch(e) {}
     }
     load();
 
+    // 2. 顺序播放逻辑
     function playMusicAtIndex(index) {
         if (SETTINGS.musicUrl) {
             const urls = SETTINGS.musicUrl.split(',').map(u => u.trim()).filter(u => u !== "");
@@ -134,6 +143,7 @@
         }
     }
 
+    // 歌曲播放结束自动切下一首
     audio.addEventListener('ended', () => playMusicAtIndex(currentMusicIndex + 1));
 
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
@@ -149,7 +159,10 @@
             document.getElementById('realContent').style.backgroundImage = `url('${SETTINGS.bgUrl || ""}')`;
             document.getElementById('snowCanvas').style.display = 'block';
             initSnow();
+            
+            // 3. 点击 Verify 瞬间播放已缓存的音乐
             audio.play().then(()=>document.getElementById('musicBtn').classList.add('music-playing')).catch(()=>{});
+            
             closeModal('userLoginModal');
         } else {
             alert("您的反馈已收到，我们会尽快处理。");
