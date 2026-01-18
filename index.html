@@ -1,65 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>Error 1101</title>
-<style>
-  /* --- 1. 严格还原：最早版本的 Cloudflare 1101 样式 --- */
-  body, html { margin:0; padding:0; font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background:#fff; color:#000; height: 100%; overflow: hidden; }
-  #fakePage { padding: 40px 20px; max-width: 800px; margin: 0 auto; display: block; background: #fff; }
-  .error-title { font-size: 48px; font-weight: 400; color: #404040; margin: 0; }
-  .ray-id-row { font-size: 14px; color: #999; margin: 15px 0 30px; font-family: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
-  .status-text { font-size: 28px; color: #404040; margin-bottom: 40px; }
-  .section-title { font-size: 28px; color: #404040; margin: 40px 0 15px; }
-  .section-p { font-size: 16px; color: #404040; margin-bottom: 15px; line-height: 1.5; }
-  .cf-link { color: #0051c3; text-decoration: none; cursor: pointer; }
-  .hr { border: 0; border-top: 1px solid #d9d9d9; margin: 40px 0 20px; }
-  .footer-row { font-size: 13px; color: #666; line-height: 1.8; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"/>
+    <title>Error 1101</title>
+    <style>
+        /* --- 1. 伪装页样式：完全模拟真实报错页，支持滑动 --- */
+        body, html { margin:0; padding:0; font-family: "Segoe UI", Roboto, sans-serif; background:#fff; color:#000; min-height: 100vh; overflow-x: hidden; }
+        #fakePage { padding: 40px 20px 100px; max-width: 800px; margin: 0 auto; display: block; }
+        .error-title { font-size: 48px; font-weight: 400; color: #404040; margin: 0; }
+        .ray-id-row { font-size: 14px; color: #999; margin: 15px 0 30px; font-family: monospace; }
+        .status-text { font-size: 28px; color: #404040; margin-bottom: 40px; }
+        .section-title { font-size: 28px; color: #404040; margin: 40px 0 15px; }
+        .section-p { font-size: 16px; color: #404040; margin-bottom: 15px; line-height: 1.5; }
+        .cf-link { color: #0051c3; text-decoration: none; cursor: pointer; }
+        .hr { border: 0; border-top: 1px solid #d9d9d9; margin: 40px 0 20px; }
+        .footer-row { font-size: 13px; color: #666; line-height: 1.8; }
 
-  /* --- 2. 正式页面布局 (只有进入后才显示) --- */
-  #realContent { 
-    display:none; position:fixed; inset:0; z-index:100;
-    /* 默认保底背景图 */
-    background-image: url('https://pic4.zhimg.com/v2-825555431664188b2207904e57193d93_r.jpg');
-    background-size: cover; background-position: center; background-repeat: no-repeat;
-    color:#fff; flex-direction:column; align-items:center; 
-    padding-top: 15vh; text-align: center;
-  }
-  #realContent::before { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: -1; }
+        /* --- 2. 真实页面样式：固定覆盖 --- */
+        #realContent { 
+            display:none; position:fixed; inset:0; z-index:100;
+            background-size: cover; background-position: center; background-repeat: no-repeat;
+            color:#fff; flex-direction:column; align-items:center; padding-top: 15vh; text-align: center;
+        }
+        #realContent::before { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: -1; }
 
-  /* 下雪特效画布 */
-  #canvas { position: fixed; inset: 0; z-index: 50; pointer-events: none; display: none; }
+        /* 下雪特效层级 */
+        #canvas { position: fixed; inset: 0; z-index: 50; pointer-events: none; display: none; }
 
-  .main-title { 
-    font-size:2.4rem; font-weight:800; background: linear-gradient(90deg,#00f0ff,#a855f7); 
-    -webkit-background-clip:text; color:transparent; margin-bottom: 50px;
-    text-shadow: 0 4px 12px rgba(0,0,0,0.5);
-  }
-  .btn-group { display: flex; flex-direction: column; gap: 20px; width: 85%; max-width: 280px; z-index: 101; }
-  .copy-btn { 
-    padding:16px; background:linear-gradient(90deg,#00f0ff,#a855f7); 
-    border:none; border-radius:15px; font-size:17px; cursor:pointer; 
-    color:#000; font-weight:bold; box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-  }
-  
-  /* 调整“马到成功”公告位置：按钮下方正中间 */
-  .notice-wrapper { flex-grow: 1; display: flex; align-items: center; justify-content: center; z-index: 101; }
-  #notice { color: #a5f3fc; font-size: 16px; letter-spacing: 2px; }
+        .main-title { font-size:2.4rem; font-weight:800; background: linear-gradient(90deg,#00f0ff,#a855f7); -webkit-background-clip:text; color:transparent; margin-bottom: 50px; }
+        .btn-group { display: flex; flex-direction: column; gap: 20px; width: 85%; max-width: 280px; z-index: 101; }
+        .copy-btn { padding:16px; background:linear-gradient(90deg,#00f0ff,#a855f7); border:none; border-radius:15px; font-size:17px; color:#000; font-weight:bold; cursor:pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
 
-  /* 控制图标 */
-  #topControls { display:none; position:fixed; top:20px; right:20px; z-index:200; gap: 20px; }
-  .icon-btn { font-size:26px; cursor:pointer; opacity:0.6; color:#fff; transition: 0.3s; }
-  @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-  .music-playing { animation: rotate 3s linear infinite; opacity: 1; text-shadow: 0 0 10px #00f0ff; }
+        #topControls { display:none; position:fixed; top:20px; right:20px; z-index:200; }
+        .icon-btn { font-size:28px; cursor:pointer; }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .music-playing { animation: rotate 3s linear infinite; }
 
-  /* 弹窗样式 */
-  .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter: blur(5px); align-items:center; justify-content:center; z-index:1000; }
-  .modal-content { background:#fff; padding:30px 20px; border-radius:20px; width:88%; max-width:320px; text-align:center; position:relative; color:#333; }
-  .close-x { position:absolute; top:12px; right:18px; font-size:30px; color:#ccc; cursor:pointer; line-height: 1; }
-  input { width:100%; padding:14px; margin:12px 0; border:1px solid #eee; border-radius:10px; box-sizing:border-box; font-size: 16px; }
-  .primary-btn { width:100%; padding:14px; background:#0051c3; color:#fff; border:none; border-radius:10px; cursor:pointer; font-weight: bold; }
-</style>
+        /* 弹窗 */
+        .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter: blur(5px); align-items:center; justify-content:center; z-index:1000; }
+        .modal-content { background:#fff; padding:30px 20px; border-radius:20px; width:88%; max-width:320px; text-align:center; color:#333; }
+        input { width:100%; padding:14px; margin:12px 0; border:1px solid #eee; border-radius:10px; box-sizing:border-box; font-size: 16px; }
+        .primary-btn { width:100%; padding:14px; background:#0051c3; color:#fff; border:none; border-radius:10px; font-weight:bold; }
+    </style>
 </head>
 <body>
 
@@ -67,165 +50,145 @@
 <canvas id="canvas"></canvas>
 
 <div id="fakePage">
-  <h1 class="error-title">Error 1101</h1>
-  <p class="ray-id-row">Ray ID: <span id="ray-id"></span> &bull; <span id="ts-id"></span></p>
-  <h2 class="status-text">Worker threw exception</h2>
-  <h3 class="section-title">What happened?</h3>
-  <p class="section-p">You've requested a page on a website (<span class="domain-info"></span>) that is on the Cloudflare network. An unknown error occurred while rendering the page.</p>
-  <h3 class="section-title">What can I do?</h3>
-  <p class="section-p"><strong>If you are the owner of this website:</strong><br>
-  refer to <span class="cf-link" onclick="openModal('userLoginModal')">Workers - Errors and Exceptions</span> and check Workers Logs for <span class="domain-info"></span>.</p>
-  <hr class="hr">
-  <div class="footer-row">
-    Cloudflare Ray ID: <strong id="ray-id-ft"></strong><br>
-    Performance & security by Cloudflare
-  </div>
+    <h1 class="error-title">Error 1101</h1>
+    <p class="ray-id-row">Ray ID: <span id="ray-id"></span> &bull; <span id="ts-id"></span></p>
+    <h2 class="status-text">Worker threw exception</h2>
+    <h3 class="section-title">What happened?</h3>
+    <p class="section-p">You've requested a page on a website (<span class="domain-info"></span>) that is on the Cloudflare network. An unknown error occurred while rendering the page.</p>
+    <h3 class="section-title">What can I do?</h3>
+    <p class="section-p"><strong>If you are the owner of this website:</strong><br>
+    refer to <span class="cf-link" onclick="openModal('userLoginModal')">Workers - Errors and Exceptions</span> and check Workers Logs for <span class="domain-info"></span>.</p>
+    <hr class="hr">
+    <div class="footer-row">
+        Cloudflare Ray ID: <strong id="ray-id-ft"></strong><br>
+        Your IP: <span id="user-ip">Click to reveal</span><br>
+        Performance & security by Cloudflare
+    </div>
 </div>
 
 <div id="topControls">
-  <div id="musicBtn" class="icon-btn" onclick="toggleMusic()">🎵</div>
-  <div id="adminGear" class="icon-btn" onclick="openAdminPortal()">⚙️</div>
+    <div id="musicBtn" class="icon-btn" onclick="toggleMusic()">🎵</div>
 </div>
 
 <div id="realContent">
-  <div id="mainTitle" class="main-title">XUE的订阅分享</div>
-  <div class="btn-group">
-    <button class="copy-btn" onclick="copyLink(1)">复制订阅链接 1</button>
-    <button class="copy-btn" onclick="copyLink(2)">复制订阅链接 2</button>
-  </div>
-  <div class="notice-wrapper">
-    <p id="notice"></p>
-  </div>
+    <div id="mainTitle" class="main-title">载入中...</div>
+    <div class="btn-group">
+        <button class="copy-btn" onclick="copyLink(1)">复制订阅链接 1</button>
+        <button class="copy-btn" onclick="copyLink(2)">复制订阅链接 2</button>
+    </div>
+    <p id="notice" style="margin-top: 50px; color: #a5f3fc;"></p>
 </div>
 
 <div id="userLoginModal" class="modal">
-  <div class="modal-content">
-    <span class="close-x" onclick="closeModal('userLoginModal')">&times;</span>
-    <h3>Debug Access</h3>
-    <input id="userPwdInput" type="password" placeholder="Authorization Code">
-    <button class="primary-btn" onclick="doUserLogin()">Verify</button>
-  </div>
-</div>
-
-<div id="adminVerifyModal" class="modal">
-  <div class="modal-content">
-    <span class="close-x" onclick="closeModal('adminVerifyModal')">&times;</span>
-    <h3>Admin Auth</h3>
-    <input id="adminPwdLogin" type="password" placeholder="Admin Password">
-    <button class="primary-btn" onclick="verifyAdmin()">Unlock</button>
-  </div>
+    <div class="modal-content">
+        <h3 style="margin-top:0;">Debug Access</h3>
+        <input id="userPwdInput" type="password" placeholder="Authorization Code">
+        <button class="primary-btn" onclick="doUserLogin()">Verify</button>
+        <p style="margin-top:10px; color:#999; font-size:12px; cursor:pointer;" onclick="closeModal('userLoginModal')">取消</p>
+    </div>
 </div>
 
 <script>
-let SETTINGS = {};
-let adminSessionPw = "";
-const audio = document.getElementById('bgMusic');
+    let SETTINGS = {};
+    const audio = document.getElementById('bgMusic');
 
-// 初始化伪装页动态信息
-const rid = Math.random().toString(16).slice(2, 14);
-document.getElementById('ray-id').innerText = rid;
-document.getElementById('ray-id-ft').innerText = rid;
-document.getElementById('ts-id').innerText = new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
-document.querySelectorAll('.domain-info').forEach(e => e.innerText = window.location.hostname);
-
-async function load() {
-  try {
-    const r = await fetch("/api/get-links?" + Date.now());
-    SETTINGS = await r.json();
-    document.getElementById('mainTitle').innerText = SETTINGS.titleText || "XUE的订阅分享";
-    document.getElementById('notice').innerText = SETTINGS.notice || "";
+    // 初始化 CF 信息
+    const rid = Math.random().toString(16).slice(2, 14);
+    document.getElementById('ray-id').innerText = rid;
+    document.getElementById('ray-id-ft').innerText = rid;
+    document.getElementById('ts-id').innerText = new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
+    document.querySelectorAll('.domain-info').forEach(e => e.innerText = window.location.hostname);
     
-    // 修复背景图显示
-    if(SETTINGS.bgUrl) {
-      document.getElementById('realContent').style.backgroundImage = `url('${SETTINGS.bgUrl}')`;
+    // 获取真实 IP
+    fetch('https://api.ipify.org?format=json')
+        .then(r => r.json())
+        .then(data => document.getElementById('user-ip').innerText = data.ip)
+        .catch(() => document.getElementById('user-ip').innerText = "1.1.1.1");
+
+    async function load() {
+        try {
+            const r = await fetch("/api/get-links?" + Date.now());
+            SETTINGS = await r.json();
+            document.getElementById('mainTitle').innerText = SETTINGS.titleText || "XUE的订阅分享";
+            document.getElementById('notice').innerText = SETTINGS.notice || "";
+            // 默认音乐逻辑：有变量用变量，没有则读取根目录 music.mp3
+            audio.src = (SETTINGS.musicUrl && SETTINGS.musicUrl !== "") ? SETTINGS.musicUrl : "music.mp3";
+        } catch(e) { console.error("Load failed"); }
     }
-    
-    // 初始化音乐
-    audio.src = SETTINGS.musicUrl || "https://music.163.com/song/media/outer/url?id=186001.mp3";
-  } catch(e) {}
-}
-load();
+    load();
 
-function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-function doUserLogin() {
-  if(document.getElementById('userPwdInput').value === SETTINGS.userPassword) {
-    document.getElementById('fakePage').style.display = 'none';
-    document.getElementById('realContent').style.display = 'flex';
-    document.getElementById('topControls').style.display = 'flex';
-    
-    // 启动下雪特效
-    document.getElementById('canvas').style.display = 'block'; 
-    initSnow();
-    
-    // 启动音乐
-    audio.play().then(() => {
-      document.getElementById('musicBtn').classList.add('music-playing');
-    }).catch(() => {});
-    
-    closeModal('userLoginModal');
-  } else { alert("Auth Failed"); }
-}
-
-function toggleMusic() {
-  if (audio.paused) {
-    audio.play();
-    document.getElementById('musicBtn').classList.add('music-playing');
-  } else {
-    audio.pause();
-    document.getElementById('musicBtn').classList.remove('music-playing');
-  }
-}
-
-function openAdminPortal() {
-  if (adminSessionPw) alert("Already Authorized"); 
-  else openModal('adminVerifyModal');
-}
-
-function verifyAdmin() {
-  adminSessionPw = document.getElementById('adminPwdLogin').value;
-  closeModal('adminVerifyModal');
-  alert("Admin Mode Enabled");
-}
-
-// 修复下雪特效
-function initSnow() {
-  const canvas = document.getElementById('canvas');
-  const ctx = canvas.getContext('2d');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  const particles = [];
-  for(let i=0; i<70; i++) {
-    particles.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 3 + 1,
-      d: Math.random() * 1 + 0.5
-    });
-  }
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
-    ctx.beginPath();
-    for(let p of particles) {
-      ctx.moveTo(p.x, p.y);
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
+    function doUserLogin() {
+        if(document.getElementById('userPwdInput').value === SETTINGS.userPassword) {
+            document.getElementById('fakePage').style.display = 'none';
+            document.body.style.overflow = 'hidden';
+            
+            const real = document.getElementById('realContent');
+            real.style.display = 'flex';
+            
+            // --- 核心背景逻辑：有变量用变量，没变量用默认的 bg.jpg ---
+            const finalBg = (SETTINGS.bgUrl && SETTINGS.bgUrl.trim() !== "") ? SETTINGS.bgUrl : "bg.jpg";
+            real.style.backgroundImage = `url('${finalBg}')`;
+            
+            document.getElementById('topControls').style.display = 'flex';
+            
+            // 启动下雪
+            const canvas = document.getElementById('canvas');
+            canvas.style.display = 'block';
+            initSnow();
+            
+            // 播放音乐
+            audio.play().then(() => {
+                document.getElementById('musicBtn').classList.add('music-playing');
+            }).catch(() => {});
+            
+            closeModal('userLoginModal');
+        } else { alert("验证失败"); }
     }
-    ctx.fill();
-    for(let p of particles) {
-      p.y += p.d;
-      if(p.y > canvas.height) p.y = -10;
-    }
-    requestAnimationFrame(draw);
-  }
-  draw();
-}
 
-function copyLink(n) {
-  const url = (n === 1 ? SETTINGS.sub1 : SETTINGS.sub2) || "";
-  navigator.clipboard.writeText(url).then(() => alert("Copied!"));
-}
+    function toggleMusic() {
+        if (audio.paused) { audio.play(); document.getElementById('musicBtn').classList.add('music-playing'); }
+        else { audio.pause(); document.getElementById('musicBtn').classList.remove('music-playing'); }
+    }
+
+    function initSnow() {
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const particles = [];
+        for(let i=0; i<80; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                r: Math.random() * 3 + 1,
+                d: Math.random() * 0.7 + 0.3
+            });
+        }
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+            ctx.beginPath();
+            for(let p of particles) {
+                ctx.moveTo(p.x, p.y);
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
+            }
+            ctx.fill();
+            for(let p of particles) {
+                p.y += p.d;
+                if(p.y > canvas.height) p.y = -10;
+            }
+            requestAnimationFrame(draw);
+        }
+        draw();
+    }
+
+    function copyLink(n) {
+        const url = (n === 1 ? SETTINGS.sub1 : SETTINGS.sub2) || "";
+        navigator.clipboard.writeText(url).then(() => alert("复制成功！"));
+    }
 </script>
 </body>
 </html>
