@@ -5,24 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"/>
     <title>Error 1101</title>
     <style>
-        body, html { margin:0; padding:0; font-family: "Segoe UI", Roboto, sans-serif; background:#fff; color:#000; min-height: 100vh; width: 100%; overflow-x: hidden; }
+        body, html { margin:0; padding:0; font-family: "Segoe UI", Roboto, sans-serif; background:#fff; color:#000; min-height: 100vh; width: 100%; overflow: hidden; }
         
-        /* 核心修复：确保背景容器铺满全屏 */
+        /* 真实主页容器 */
         #realContent { 
             display:none; position:fixed; inset:0; z-index:10;
+            background-color: #888; /* 默认灰色底色 */
             background-size: cover; background-position: center; background-repeat: no-repeat;
             color:#fff; flex-direction:column; align-items:center; padding-top: 15vh; text-align: center;
         }
-        #realContent::before { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.4); z-index: -1; }
+        /* 这里的遮罩层 z-index 设为 -1，保证不挡住上面的按钮 */
+        #realContent::before { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.3); z-index: -1; }
 
-        /* 核心修复：雪花画布置于背景之上，内容之下 */
+        /* 雪花画布 */
         #snowCanvas { position: fixed; inset: 0; z-index: 20; pointer-events: none; display: none; }
         
-        /* 内容层级需高于画布 */
-        .main-title, .btn-group, #notice { position: relative; z-index: 30; }
+        /* 按钮与文字内容 */
+        .main-title, .btn-group, #notice { position: relative; z-index: 100; }
 
-        /* 基础样式保持不变 */
-        #fakePage { padding: 40px 20px 100px; max-width: 800px; margin: 0 auto; display: block; }
+        /* 顶部控制按钮：确保 z-index 最高，解决无法点击问题 */
+        #topControls { 
+            display:none; position:fixed; top:20px; right:20px; 
+            z-index: 2000; /* 极高层级 */
+            gap: 20px; 
+        }
+        .icon-btn { font-size:26px; cursor:pointer; color: #fff; text-shadow: 0 0 8px rgba(0,0,0,0.8); padding: 5px; }
+
+        /* 报错伪装页样式 */
+        #fakePage { padding: 40px 20px; max-width: 800px; margin: 0 auto; display: block; position: relative; z-index: 500; }
         .error-title { font-size: 48px; font-weight: 400; color: #404040; margin: 0; }
         .ray-id-row { font-size: 14px; color: #999; margin: 15px 0 30px; font-family: monospace; }
         .status-text { font-size: 28px; color: #404040; margin-bottom: 40px; }
@@ -31,17 +41,17 @@
         .cf-link { color: #0051c3; text-decoration: none; cursor: pointer; }
         .hr { border: 0; border-top: 1px solid #d9d9d9; margin: 40px 0 20px; }
         .footer-row { font-size: 13px; color: #666; line-height: 1.8; }
-        #topControls { display:none; position:fixed; top:20px; right:20px; z-index:100; gap: 20px; }
-        .icon-btn { font-size:26px; cursor:pointer; color: #fff; text-shadow: 0 0 5px #000; }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .music-playing { animation: rotate 3s linear infinite; }
+
+        /* 按钮 UI */
         .main-title { font-size:2.2rem; font-weight:800; background: linear-gradient(90deg,#00f0ff,#a855f7); -webkit-background-clip:text; color:transparent; margin-bottom: 50px; }
         .btn-group { display: flex; flex-direction: column; gap: 20px; width: 85%; max-width: 280px; }
         .copy-btn { padding:16px; background:linear-gradient(90deg,#00f0ff,#a855f7); border:none; border-radius:15px; font-size:17px; color:#000; font-weight:bold; cursor:pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         #notice { margin-top: 100px; color: #a5f3fc; font-weight:bold; font-size: 1.1rem; }
-        .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter: blur(5px); align-items:center; justify-content:center; z-index:1000; }
+
+        /* 弹窗层级 */
+        .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter: blur(5px); align-items:center; justify-content:center; z-index:3000; }
         .modal-content { background:#fff; padding:25px; border-radius:20px; width:85%; max-width:340px; text-align:center; color:#333; }
-        input { width:100%; padding:12px; margin-bottom:10px; border:1px solid #ddd; border-radius:10px; box-sizing:border-box; }
+        input { width:100%; padding:12px; margin-bottom:10px; border:1px solid #ddd; border-radius:10px; box-sizing:border-box; font-size: 16px; }
         .primary-btn { width:100%; padding:14px; background:#0051c3; color:#fff; border:none; border-radius:10px; font-weight:bold; cursor:pointer; }
     </style>
 </head>
@@ -55,7 +65,7 @@
     <p class="ray-id-row">Ray ID: <span id="ray-id"></span> &bull; <span id="ts-id"></span></p>
     <h2 class="status-text">Worker threw exception</h2>
     <h3 class="section-title">What happened?</h3>
-    <p class="section-p">You've requested a page on a website (<span class="domain-info"></span>) that is on the Cloudflare network.</p>
+    <p class="section-p">You've requested a page on a website (<span class="domain-info"></span>) that is on the Cloudflare network. An unknown error occurred while rendering the page.</p>
     <h3 class="section-title">What can I do?</h3>
     <p class="section-p">refer to <span class="cf-link" onclick="openModal('userLoginModal')">Workers - Errors and Exceptions</span>.</p>
     <hr class="hr">
@@ -84,12 +94,19 @@
     </div>
 </div>
 
+<div id="adminAuthModal" class="modal">
+    <div class="modal-content">
+        <h3>管理认证</h3>
+        <input id="adminAuthPwd" type="password" placeholder="Admin Password">
+        <button class="primary-btn" onclick="checkAdminBeforeEntry()">验证身份</button>
+        <p style="cursor:pointer; font-size:12px; margin-top:10px;" onclick="closeModal('adminAuthModal')">返回</p>
+    </div>
+</div>
+
 <script>
     let SETTINGS = {};
     const audio = document.getElementById('bgMusic');
-    const snowCanvas = document.getElementById('snowCanvas');
 
-    // 加载配置
     async function load() {
         try {
             const r = await fetch("/api/get-links?" + Date.now());
@@ -102,7 +119,6 @@
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-    // 核心修复：登录后立即激活背景和雪花
     function doUserLogin() {
         if(document.getElementById('userPwdInput').value === SETTINGS.userPassword) {
             document.getElementById('fakePage').style.display = 'none';
@@ -113,12 +129,13 @@
             document.getElementById('mainTitle').innerText = SETTINGS.titleText || "XUE的订阅分享";
             document.getElementById('notice').innerText = SETTINGS.notice || "";
             
-            // 修复：强制设置背景
+            // 背景显示修复：直接赋值
             const bgUrl = (SETTINGS.bgUrl && SETTINGS.bgUrl.trim() !== "") ? SETTINGS.bgUrl : "bg.jpg";
             real.style.backgroundImage = `url('${bgUrl}')`;
             
-            // 修复：启动雪花
-            snowCanvas.style.display = 'block';
+            // 雪花启动
+            const canvas = document.getElementById('snowCanvas');
+            canvas.style.display = 'block';
             initSnow();
             
             audio.play().then(() => document.getElementById('musicBtn').classList.add('music-playing')).catch(() => {});
@@ -129,46 +146,56 @@
         }
     }
 
-    // 核心修复：更健壮的飘雪逻辑
-    function initSnow() {
-        const ctx = snowCanvas.getContext('2d');
-        let width, height, flakes = [];
+    // 齿轮点击逻辑
+    function openAdminPortal() { openModal('adminAuthModal'); }
 
-        function resize() {
-            width = snowCanvas.width = window.innerWidth;
-            height = snowCanvas.height = window.innerHeight;
+    async function checkAdminBeforeEntry() {
+        const inputPwd = document.getElementById('adminAuthPwd').value;
+        const res = await fetch('/api/update-links', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: inputPwd, checkOnly: true }) 
+        });
+        const ret = await res.json();
+        if(ret.success) {
+            // 这里建议你还是保留一个弹窗来改设置，或者跳转
+            alert("身份验证成功。由于界面限制，请继续在之前的配置面板修改。");
+            closeModal('adminAuthModal');
+        } else {
+            alert("管理员密码错误");
         }
+    }
 
-        function createFlakes() {
-            flakes = [];
-            for (let i = 0; i < 100; i++) {
-                flakes.push({
-                    x: Math.random() * width,
-                    y: Math.random() * height,
-                    r: Math.random() * 3 + 1,
-                    d: Math.random() * 1 + 0.5,
-                    o: Math.random() * 0.5 + 0.3
-                });
-            }
+    function initSnow() {
+        const canvas = document.getElementById('snowCanvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+        let flakes = [];
+
+        for(let i=0; i<100; i++) {
+            flakes.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                r: Math.random() * 3 + 1,
+                d: Math.random() * 1 + 0.5,
+                o: Math.random() * 0.5 + 0.3
+            });
         }
 
         function draw() {
             ctx.clearRect(0, 0, width, height);
             ctx.fillStyle = "white";
-            for (let f of flakes) {
-                ctx.beginPath();
+            for(let f of flakes) {
                 ctx.globalAlpha = f.o;
-                ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+                ctx.beginPath();
+                ctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
                 ctx.fill();
                 f.y += f.d;
-                if (f.y > height) f.y = -5;
+                if(f.y > height) f.y = -5;
             }
             requestAnimationFrame(draw);
         }
-
-        window.addEventListener('resize', resize);
-        resize();
-        createFlakes();
         draw();
     }
 
@@ -181,12 +208,13 @@
         const url = (n === 1 ? SETTINGS.sub1 : SETTINGS.sub2) || "";
         navigator.clipboard.writeText(url).then(() => alert("复制成功"));
     }
-    
-    // 伪装页 ID 初始化
+
+    // 初始化报错页 ID
     document.getElementById('ray-id').innerText = Math.random().toString(16).slice(2, 14);
     document.getElementById('ray-id-ft').innerText = document.getElementById('ray-id').innerText;
     document.getElementById('ts-id').innerText = new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
     document.querySelectorAll('.domain-info').forEach(e => e.innerText = window.location.hostname);
+    fetch('https://api.ipify.org?format=json').then(r => r.json()).then(d => document.getElementById('user-ip').innerText = d.ip).catch(()=>{});
 </script>
 </body>
 </html>
