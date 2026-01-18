@@ -5,20 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"/>
     <title>Error 1101</title>
     <style>
+        /* 基础样式：确保伪装页可以滑动 */
         body, html { margin:0; padding:0; font-family: "Segoe UI", Roboto, sans-serif; background:#fff; color:#000; min-height: 100vh; width: 100%; }
         
-        /* 伪装页 */
+        /* 伪装页核心样式 - 严格对比原版 Cloudflare */
         #fakePage { padding: 40px 20px 100px; max-width: 800px; margin: 0 auto; display: block; position: relative; z-index: 50; }
         .error-title { font-size: 48px; font-weight: 400; color: #404040; margin: 0; }
         .ray-id-row { font-size: 14px; color: #999; margin: 15px 0 30px; font-family: monospace; }
         .status-text { font-size: 28px; color: #404040; margin-bottom: 40px; }
         .section-title { font-size: 28px; color: #404040; margin: 40px 0 15px; }
         .section-p { font-size: 16px; color: #404040; margin-bottom: 15px; line-height: 1.5; }
-        .cf-link { color: #0051c3; text-decoration: none; cursor: pointer; }
+        .cf-link { color: #0051c3; text-decoration: none; cursor: pointer; border-bottom: 1px solid transparent; }
+        .cf-link:hover { border-bottom: 1px solid #0051c3; }
         .hr { border: 0; border-top: 1px solid #d9d9d9; margin: 40px 0 20px; }
         .footer-row { font-size: 13px; color: #666; line-height: 1.8; }
 
-        /* 主内容层 */
+        /* 订阅主页 - 隐藏状态 */
         #realContent { 
             display:none; position:fixed; inset:0; z-index:100;
             background-color: #888; background-size: cover; background-position: center; background-repeat: no-repeat;
@@ -27,27 +29,26 @@
         #realContent::before { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.4); z-index: -1; }
         #snowCanvas { position: fixed; inset: 0; z-index: 120; pointer-events: none; display: none; }
         
-        /* 控制按钮 */
+        /* 管理按钮层级设置 */
         #topControls { display:none; position:fixed; top:20px; right:20px; z-index:2000; gap: 20px; }
-        .icon-btn { font-size:26px; cursor:pointer; color: #fff; text-shadow: 0 0 5px #000; padding: 5px; }
+        .icon-btn { font-size:26px; cursor:pointer; color: #fff; text-shadow: 0 0 5px #000; padding: 5px; opacity: 0.8; }
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .music-playing { animation: rotate 3s linear infinite; }
 
-        /* 订阅页 UI */
-        .main-title { font-size:2.2rem; font-weight:800; background: linear-gradient(90deg,#00f0ff,#a855f7); -webkit-background-clip:text; color:transparent; margin-bottom: 50px; z-index: 150; position: relative; }
-        .btn-group { display: flex; flex-direction: column; gap: 20px; width: 85%; max-width: 280px; z-index: 150; position: relative; }
-        .copy-btn { padding:16px; background:linear-gradient(90deg,#00f0ff,#a855f7); border:none; border-radius:15px; font-size:17px; color:#000; font-weight:bold; cursor:pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        #notice { margin-top: 100px; color: #a5f3fc; font-weight:bold; font-size: 1.1rem; z-index: 150; position: relative; }
+        /* 按钮与内容 */
+        .main-title { font-size:2.2rem; font-weight:800; background: linear-gradient(90deg,#00f0ff,#a855f7); -webkit-background-clip:text; color:transparent; margin-bottom: 50px; }
+        .btn-group { display: flex; flex-direction: column; gap: 20px; width: 85%; max-width: 280px; }
+        .copy-btn { padding:16px; background:linear-gradient(90deg,#00f0ff,#a855f7); border:none; border-radius:15px; font-size:17px; color:#000; font-weight:bold; cursor:pointer; }
+        #notice { margin-top: 100px; color: #a5f3fc; font-weight:bold; font-size: 1.1rem; }
 
-        /* 弹窗通用样式 */
+        /* 弹窗样式 */
         .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter: blur(5px); align-items:center; justify-content:center; z-index:3000; overflow-y: auto; }
         .modal-content { background:#fff; padding:25px; border-radius:20px; width:90%; max-width:400px; text-align:center; color:#333; margin: 20px auto; }
-        .modal-content h3 { margin-top: 0; color: #333; }
-        .input-group { text-align: left; margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 12px; color: #666; margin-bottom: 5px; margin-left: 5px; }
+        .input-group { text-align: left; margin-bottom: 12px; }
+        .input-group label { display: block; font-size: 12px; color: #666; margin-bottom: 4px; }
         input { width:100%; padding:12px; border:1px solid #ddd; border-radius:10px; box-sizing:border-box; font-size: 14px; }
         .primary-btn { width:100%; padding:14px; background:#0051c3; color:#fff; border:none; border-radius:10px; font-weight:bold; cursor:pointer; margin-top: 10px; }
-        .secondary-btn { background: #666; margin-top: 10px; }
+        .secondary-btn { background: #666; }
     </style>
 </head>
 <body>
@@ -59,12 +60,20 @@
     <h1 class="error-title">Error 1101</h1>
     <p class="ray-id-row">Ray ID: <span id="ray-id"></span> &bull; <span id="ts-id"></span></p>
     <h2 class="status-text">Worker threw exception</h2>
+    
     <h3 class="section-title">What happened?</h3>
     <p class="section-p">You've requested a page on a website (<span class="domain-info"></span>) that is on the Cloudflare network. An unknown error occurred while rendering the page.</p>
+    
     <h3 class="section-title">What can I do?</h3>
-    <p class="section-p">refer to <span class="cf-link" onclick="openModal('userLoginModal')">Workers - Errors and Exceptions</span>.</p>
+    <p class="section-p"><strong>If you are the owner of this website:</strong><br>
+    refer to <span class="cf-link" onclick="openModal('userLoginModal')">Workers - Errors and Exceptions</span> and check Workers Logs for <span class="domain-info"></span>.</p>
+    
     <hr class="hr">
-    <div class="footer-row">Cloudflare Ray ID: <strong id="ray-id-ft"></strong><br>Your IP: <span id="user-ip">Loading...</span></div>
+    <div class="footer-row">
+        Cloudflare Ray ID: <strong id="ray-id-ft"></strong><br>
+        Your IP: <span id="user-ip">Click to reveal</span><br>
+        Performance & security by Cloudflare
+    </div>
 </div>
 
 <div id="topControls">
@@ -81,54 +90,19 @@
     <p id="notice"></p>
 </div>
 
-<div id="userLoginModal" class="modal">
-    <div class="modal-content">
-        <h3>Debug Access</h3>
-        <input id="userPwdInput" type="password" placeholder="Authorization Code">
-        <button class="primary-btn" onclick="doUserLogin()">Verify</button>
-    </div>
-</div>
-
-<div id="adminAuthModal" class="modal">
-    <div class="modal-content">
-        <h3>管理认证</h3>
-        <input id="adminAuthPwd" type="password" placeholder="Admin Password">
-        <button class="primary-btn" onclick="checkAdminBeforeEntry()">验证身份</button>
-        <button class="primary-btn secondary-btn" onclick="closeModal('adminAuthModal')">返回</button>
-    </div>
-</div>
+<div id="userLoginModal" class="modal"><div class="modal-content"><h3>Debug Access</h3><input id="userPwdInput" type="password" placeholder="Code"><button class="primary-btn" onclick="doUserLogin()">Verify</button></div></div>
+<div id="adminAuthModal" class="modal"><div class="modal-content"><h3>管理认证</h3><input id="adminAuthPwd" type="password" placeholder="Admin Password"><button class="primary-btn" onclick="checkAdminBeforeEntry()">验证身份</button><button class="primary-btn secondary-btn" onclick="closeModal('adminAuthModal')">返回</button></div></div>
 
 <div id="adminPanelModal" class="modal">
     <div class="modal-content">
         <h3>配置管理面板</h3>
-        <div class="input-group">
-            <label>主页标题</label>
-            <input id="editTitle" type="text">
-        </div>
-        <div class="input-group">
-            <label>订阅链接 1</label>
-            <input id="editSub1" type="text">
-        </div>
-        <div class="input-group">
-            <label>订阅链接 2</label>
-            <input id="editSub2" type="text">
-        </div>
-        <div class="input-group">
-            <label>底部公告</label>
-            <input id="editNotice" type="text">
-        </div>
-        <div class="input-group">
-            <label>背景图 URL (留空则用 bg.jpg)</label>
-            <input id="editBgUrl" type="text">
-        </div>
-        <div class="input-group">
-            <label>指定音乐 URL (留空则随机播放 music/ 目录)</label>
-            <input id="editMusicUrl" type="text">
-        </div>
-        <div class="input-group">
-            <label>修改用户访问密码</label>
-            <input id="editUserPwd" type="text">
-        </div>
+        <div class="input-group"><label>主页标题</label><input id="editTitle" type="text"></div>
+        <div class="input-group"><label>订阅 1</label><input id="editSub1" type="text"></div>
+        <div class="input-group"><label>订阅 2</label><input id="editSub2" type="text"></div>
+        <div class="input-group"><label>底部公告</label><input id="editNotice" type="text"></div>
+        <div class="input-group"><label>背景图 URL</label><input id="editBgUrl" type="text"></div>
+        <div class="input-group"><label>音乐 URL</label><input id="editMusicUrl" type="text"></div>
+        <div class="input-group"><label>用户密码</label><input id="editUserPwd" type="text"></div>
         <button class="primary-btn" onclick="saveSettings()">保存并刷新</button>
         <button class="primary-btn secondary-btn" onclick="closeModal('adminPanelModal')">取消</button>
     </div>
@@ -136,21 +110,15 @@
 
 <script>
     let SETTINGS = {};
-    let LAST_ADMIN_PWD = ""; // 记录验证过的密码用于保存
+    let LAST_ADMIN_PWD = "";
     const audio = document.getElementById('bgMusic');
 
     async function load() {
         try {
             const r = await fetch("/api/get-links?" + Date.now());
             SETTINGS = await r.json();
-            
-            // 音乐初始化逻辑
-            if (SETTINGS.musicUrl && SETTINGS.musicUrl.trim() !== "") {
-                audio.src = SETTINGS.musicUrl;
-            } else {
-                const playlist = ["music/1.mp3", "music/2.mp3", "music/3.mp3"];
-                audio.src = playlist[Math.floor(Math.random() * playlist.length)];
-            }
+            if (SETTINGS.musicUrl) audio.src = SETTINGS.musicUrl;
+            else audio.src = "music/1.mp3"; 
         } catch(e) {}
     }
     load();
@@ -162,29 +130,18 @@
         if(document.getElementById('userPwdInput').value === SETTINGS.userPassword) {
             document.getElementById('fakePage').style.display = 'none';
             document.body.style.overflow = 'hidden'; 
-            const real = document.getElementById('realContent');
-            real.style.display = 'flex';
+            document.getElementById('realContent').style.display = 'flex';
             document.getElementById('topControls').style.display = 'flex';
-            
-            document.getElementById('mainTitle').innerText = SETTINGS.titleText || "XUE的订阅分享";
+            document.getElementById('mainTitle').innerText = SETTINGS.titleText || "XUE的订阅";
             document.getElementById('notice').innerText = SETTINGS.notice || "";
-            const bgUrl = (SETTINGS.bgUrl && SETTINGS.bgUrl.trim() !== "") ? SETTINGS.bgUrl : "bg.jpg";
-            real.style.backgroundImage = `url('${bgUrl}')`;
-            
+            document.getElementById('realContent').style.backgroundImage = `url('${SETTINGS.bgUrl || "bg.jpg"}')`;
             document.getElementById('snowCanvas').style.display = 'block';
             initSnow();
-            
-            if (audio.src) {
-                audio.play().then(() => document.getElementById('musicBtn').classList.add('music-playing')).catch(()=>{});
-            }
+            audio.play().then(()=>document.getElementById('musicBtn').classList.add('music-playing')).catch(()=>{});
             closeModal('userLoginModal');
-        } else {
-            alert("验证失败");
-            closeModal('userLoginModal');
-        }
+        } else { alert("验证失败"); }
     }
 
-    // 管理员验证并打开面板
     function openAdminPortal() { openModal('adminAuthModal'); }
 
     async function checkAdminBeforeEntry() {
@@ -196,9 +153,8 @@
         });
         const ret = await res.json();
         if(ret.success) {
-            LAST_ADMIN_PWD = inputPwd; // 暂存密码供保存时使用
+            LAST_ADMIN_PWD = inputPwd;
             closeModal('adminAuthModal');
-            // 将当前配置填入表单
             document.getElementById('editTitle').value = SETTINGS.titleText || "";
             document.getElementById('editSub1').value = SETTINGS.sub1 || "";
             document.getElementById('editSub2').value = SETTINGS.sub2 || "";
@@ -207,12 +163,9 @@
             document.getElementById('editMusicUrl').value = SETTINGS.musicUrl || "";
             document.getElementById('editUserPwd').value = SETTINGS.userPassword || "";
             openModal('adminPanelModal');
-        } else {
-            alert("管理员密码错误");
-        }
+        } else { alert("密码错误"); }
     }
 
-    // 保存设置逻辑
     async function saveSettings() {
         const payload = {
             password: LAST_ADMIN_PWD,
@@ -224,59 +177,39 @@
             musicUrl: document.getElementById('editMusicUrl').value,
             userPassword: document.getElementById('editUserPwd').value
         };
-
         const res = await fetch('/api/update-links', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
-        const ret = await res.json();
-        if(ret.success) {
-            alert("修改成功，正在刷新页面...");
-            location.reload();
-        } else {
-            alert("保存失败: " + (ret.message || "未知错误"));
-        }
+        if((await res.json()).success) { alert("保存成功"); location.reload(); }
     }
 
     function initSnow() {
         const canvas = document.getElementById('snowCanvas');
         const ctx = canvas.getContext('2d');
-        let width = canvas.width = window.innerWidth;
-        let height = canvas.height = window.innerHeight;
+        let width = canvas.width = window.innerWidth, height = canvas.height = window.innerHeight;
         let flakes = [];
-        for(let i=0; i<100; i++) {
-            flakes.push({
-                x: Math.random() * width, y: Math.random() * height,
-                r: Math.random() * 3 + 1, d: Math.random() * 1 + 0.5,
-                o: Math.random() * 0.5 + 0.3
-            });
-        }
+        for(let i=0; i<80; i++) flakes.push({x: Math.random()*width, y: Math.random()*height, r: Math.random()*3+1, d: Math.random()+0.5, o: Math.random()*0.5+0.3});
         function draw() {
-            ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = "white";
-            for(let f of flakes) {
-                ctx.globalAlpha = f.o; ctx.beginPath();
-                ctx.arc(f.x, f.y, f.r, 0, Math.PI*2); ctx.fill();
-                f.y += f.d; if(f.y > height) f.y = -5;
-            }
+            ctx.clearRect(0,0,width,height); ctx.fillStyle="white";
+            for(let f of flakes) { ctx.globalAlpha=f.o; ctx.beginPath(); ctx.arc(f.x,f.y,f.r,0,Math.PI*2); ctx.fill(); f.y+=f.d; if(f.y>height) f.y=-5; }
             requestAnimationFrame(draw);
         }
         draw();
     }
 
     function toggleMusic() {
-        if (!audio.src) return;
         if (audio.paused) { audio.play(); document.getElementById('musicBtn').classList.add('music-playing'); }
         else { audio.pause(); document.getElementById('musicBtn').classList.remove('music-playing'); }
     }
-    
+
     function copyLink(n) {
         const url = (n === 1 ? SETTINGS.sub1 : SETTINGS.sub2) || "";
         navigator.clipboard.writeText(url).then(() => alert("复制成功"));
     }
 
-    // 伪装页 ID
+    // 自动生成 Ray ID 和 IP
     document.getElementById('ray-id').innerText = Math.random().toString(16).slice(2, 14);
     document.getElementById('ray-id-ft').innerText = document.getElementById('ray-id').innerText;
     document.getElementById('ts-id').innerText = new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
