@@ -7,7 +7,7 @@
     <style>
         body, html { margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background:#fff; color:#000; min-height: 100vh; width: 100%; overflow-x: hidden; }
         
-        /* 1. 伪装页样式 */
+        /* 伪装页核心样式 */
         #fakePage { padding: 40px 20px 100px; max-width: 800px; margin: 0 auto; display: block; position: relative; z-index: 50; }
         .error-title { font-size: 48px; font-weight: 400; color: #404040; margin: 0; }
         .ray-id-row { font-size: 14px; color: #999; margin: 15px 0 30px; font-family: monospace; }
@@ -18,15 +18,16 @@
         .hr { border: 0; border-top: 1px solid #d9d9d9; margin: 40px 0 20px; }
         .footer-row { font-size: 13px; color: #666; line-height: 1.8; }
 
-        /* 2. 真实内容页 */
+        /* 订阅页内容 */
         #realContent { 
             display:none; position:fixed; inset:0; z-index:100;
             background-color: #333; background-size: cover; background-position: center; background-repeat: no-repeat;
             color:#fff; flex-direction:column; align-items:center; padding-top: 15vh; text-align: center;
         }
         #realContent::before { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.4); z-index: -1; }
+        #snowCanvas { position: fixed; inset: 0; z-index: 120; pointer-events: none; display: none; }
         
-        /* 3. 顶部按钮与动画 */
+        /* 顶部控制 */
         #topControls { display:none; position:fixed; top:20px; right:20px; z-index:2000; gap: 20px; }
         .icon-btn { font-size:26px; cursor:pointer; color: #fff; text-shadow: 0 0 5px #000; padding: 5px; }
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -37,36 +38,52 @@
         .copy-btn { padding:16px; background:linear-gradient(90deg,#00f0ff,#a855f7); border:none; border-radius:15px; font-size:16px; color:#000; font-weight:bold; cursor:pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         #notice { margin-top: 60px; color: #a5f3fc; font-weight:bold; font-size: 1rem; padding: 0 20px; }
 
-        /* 4. 彻底解决“白框到边”的弹窗样式 */
+        /* 优化后的弹窗样式 - 解决太长到边的问题 */
         .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:3000; }
         .modal-content { 
             background:#fff; padding:30px 20px; border-radius:20px; 
-            width: 82%; max-width: 300px; /* 这里保证了左右有留白 */
+            width: 80%; max-width: 300px; /* 关键：限制宽度 */
             text-align:center; color:#333; position: relative;
             box-shadow: 0 15px 30px rgba(0,0,0,0.3);
         }
-        input { width:100%; padding:12px; border:1px solid #eee; background:#f5f5f5; border-radius:12px; box-sizing:border-box; font-size: 16px; outline: none; margin-top: 10px; }
-        .primary-btn { width:100%; padding:14px; background:#0051c3; color:#fff; border:none; border-radius:12px; font-weight:bold; cursor:pointer; margin-top: 15px; font-size: 16px; }
+        
+        .admin-modal-title { margin-bottom: 20px; font-size: 20px; font-weight: bold; color: #333; }
+        .input-group { text-align: left; margin-bottom: 12px; }
+        .input-group label { display: block; font-size: 12px; color: #888; margin-bottom: 4px; padding-left: 5px; }
+        
+        input { 
+            width:100%; padding:12px; border:1px solid #eee; background:#f5f5f5; 
+            border-radius:12px; box-sizing:border-box; 
+            font-size: 16px; /* 关键：防止 iOS 缩放 */
+            outline: none; transition: border 0.3s;
+        }
+        input:focus { border-color: #0051c3; background:#fff; }
+        
+        .primary-btn { width:100%; padding:14px; background:#0051c3; color:#fff; border:none; border-radius:12px; font-weight:bold; cursor:pointer; margin-top: 10px; font-size: 16px; }
+        .secondary-btn { background: #666; margin-top: 8px; }
     </style>
 </head>
 <body>
 
-<audio id="bgMusic" loop preload="auto" playsinline webkit-playsinline crossorigin="anonymous"></audio>
-<canvas id="snowCanvas" style="position: fixed; inset: 0; z-index: 120; pointer-events: none; display: none;"></canvas>
+<audio id="bgMusic" loop preload="auto" playsinline webkit-playsinline></audio>
+<canvas id="snowCanvas"></canvas>
 
 <div id="fakePage">
     <h1 class="error-title">Error 1101</h1>
     <p class="ray-id-row">Ray ID: <span id="ray-id"></span> &bull; <span id="ts-id"></span></p>
     <h2 class="status-text">Worker threw exception</h2>
     <h3 class="section-title">What happened?</h3>
-    <p class="section-p">You've requested a page on a website (<span class="domain-info"></span>) that is on the Cloudflare network.</p>
-    <p class="section-p">If you are the owner, check <span class="cf-link" onclick="openModal('userLoginModal')">Workers Logs</span>.</p>
+    <p class="section-p">You've requested a page on a website (<span class="domain-info"></span>) that is on the Cloudflare network. An unknown error occurred while rendering the page.</p>
+    <h3 class="section-title">What can I do?</h3>
+    <p class="section-p"><strong>If you are the owner of this website:</strong><br>
+    refer to <span class="cf-link" onclick="openModal('userLoginModal')">Workers - Errors and Exceptions</span> and check Workers Logs for <span class="domain-info"></span>.</p>
     <hr class="hr">
-    <div class="footer-row">Cloudflare Ray ID: <strong id="ray-id-ft"></strong><br>Performance & security by Cloudflare</div>
+    <div class="footer-row">Cloudflare Ray ID: <strong id="ray-id-ft"></strong><br>Your IP: <span id="user-ip">Loading...</span><br>Performance & security by Cloudflare</div>
 </div>
 
 <div id="topControls">
     <div id="musicBtn" class="icon-btn" onclick="toggleMusic()">🎵</div>
+    <div id="adminBtn" class="icon-btn" onclick="openAdminPortal()">⚙️</div>
 </div>
 
 <div id="realContent">
@@ -74,55 +91,80 @@
     <div class="btn-group">
         <button class="copy-btn" onclick="copyLink(1)">复制订阅链接 1</button>
         <button class="copy-btn" onclick="copyLink(2)">复制订阅链接 2</button>
+        <button class="copy-btn" onclick="copyLink(3)">复制订阅链接 3</button>
     </div>
     <p id="notice"></p>
 </div>
 
 <div id="userLoginModal" class="modal">
     <div class="modal-content">
-        <h3 style="margin:0">Debug Access</h3>
-        <p style="font-size:13px; color:#666; margin:10px 0">Please enter the code to view logs.</p>
+        <h3 style="margin-top:0">Debug Access</h3>
+        <p style="font-size:13px; color:#666; margin-bottom:15px">Please enter the authorization code to view logs.</p>
         <input id="userPwdInput" type="password" placeholder="Code">
         <button class="primary-btn" onclick="doUserLogin()">Verify</button>
     </div>
 </div>
 
+<div id="adminAuthModal" class="modal">
+    <div class="modal-content">
+        <h3 class="admin-modal-title">管理认证</h3>
+        <input id="adminAuthPwd" type="password" placeholder="Admin Password">
+        <button class="primary-btn" onclick="checkAdminBeforeEntry()">验证身份</button>
+        <button class="primary-btn secondary-btn" onclick="closeModal('adminAuthModal')">取消</button>
+    </div>
+</div>
+
+<div id="adminPanelModal" class="modal">
+    <div class="modal-content" style="max-width:340px; max-height: 85vh; overflow-y: auto;">
+        <h3 class="admin-modal-title">配置管理</h3>
+        <div class="input-group"><label>主页标题</label><input id="editTitle" type="text"></div>
+        <div class="input-group"><label>订阅 1</label><input id="editSub1" type="text"></div>
+        <div class="input-group"><label>订阅 2</label><input id="editSub2" type="text"></div>
+        <div class="input-group"><label>订阅 3</label><input id="editSub3" type="text"></div>
+        <div class="input-group"><label>底部公告</label><input id="editNotice" type="text"></div>
+        <div class="input-group"><label>背景图 URL</label><input id="editBgUrl" type="text"></div>
+        <div class="input-group"><label>音乐 URL (JSD镜像链接)</label><input id="editMusicUrl" type="text"></div>
+        <div class="input-group"><label>访问密码</label><input id="editUserPwd" type="text"></div>
+        <button class="primary-btn" onclick="saveSettings()">保存并刷新</button>
+        <button class="primary-btn secondary-btn" onclick="closeModal('adminPanelModal')">取消</button>
+    </div>
+</div>
+
 <script>
     let SETTINGS = {};
+    let LAST_ADMIN_PWD = "";
     const audio = document.getElementById('bgMusic');
-    const musicBtn = document.getElementById('musicBtn');
 
-    // 预加载配置
     async function load() {
         try {
             const r = await fetch("/api/get-links?" + Date.now());
             SETTINGS = await r.json();
+            // 预加载音乐
             if (SETTINGS.musicUrl) {
-                audio.src = SETTINGS.musicUrl.split(',')[0].trim();
+                audio.src = SETTINGS.musicUrl;
                 audio.load();
             }
         } catch(e) {}
     }
     load();
 
-    // iOS 16 强制激活逻辑
-    function forcePlay() {
-        audio.muted = true; // 静音启动防止拦截
-        audio.play().then(() => {
-            setTimeout(() => { audio.muted = false; musicBtn.classList.add('music-playing'); }, 200);
-        }).catch(() => {
-            audio.load();
-            audio.play();
-        });
-    }
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
+    // iOS 播放核心逻辑
     function doUserLogin() {
         const input = document.getElementById('userPwdInput');
         if(input.value === SETTINGS.userPassword) {
             
-            // 点击 Verify 瞬间：1.激活音频 2.切换UI
-            forcePlay();
+            // 关键：在用户点击的同步瞬间激活音频
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    document.getElementById('musicBtn').classList.add('music-playing');
+                }).catch(e => console.log("等待加载完成后播放"));
+            }
 
+            // 切换 UI
             document.getElementById('fakePage').style.display = 'none';
             document.getElementById('realContent').style.display = 'flex';
             document.getElementById('topControls').style.display = 'flex';
@@ -131,30 +173,75 @@
             document.getElementById('realContent').style.backgroundImage = `url('${SETTINGS.bgUrl || ""}')`;
             document.getElementById('snowCanvas').style.display = 'block';
             initSnow();
+            
             closeModal('userLoginModal');
         } else {
-            alert("您的反馈已收到");
+            // 伪装提示
+            alert("您的反馈已收到，我们会尽快处理。");
             input.value = "";
             closeModal('userLoginModal');
         }
     }
 
     function toggleMusic() {
-        if (audio.paused || !musicBtn.classList.contains('music-playing')) {
-            audio.play().then(() => musicBtn.classList.add('music-playing'));
+        if (audio.paused) {
+            audio.play();
+            document.getElementById('musicBtn').classList.add('music-playing');
         } else {
             audio.pause();
-            musicBtn.classList.remove('music-playing');
-            // 解决 Promise 挂起导致的按钮失效
-            audio.currentTime = audio.currentTime;
+            document.getElementById('musicBtn').classList.remove('music-playing');
         }
     }
 
-    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-    
+    async function checkAdminBeforeEntry() {
+        const inputPwd = document.getElementById('adminAuthPwd').value;
+        const res = await fetch('/api/update-links', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: inputPwd, checkOnly: true }) 
+        });
+        const ret = await res.json();
+        if(ret.success) {
+            LAST_ADMIN_PWD = inputPwd;
+            document.getElementById('editTitle').value = SETTINGS.titleText || "";
+            document.getElementById('editSub1').value = SETTINGS.sub1 || "";
+            document.getElementById('editSub2').value = SETTINGS.sub2 || "";
+            document.getElementById('editSub3').value = SETTINGS.sub3 || "";
+            document.getElementById('editNotice').value = SETTINGS.notice || "";
+            document.getElementById('editBgUrl').value = SETTINGS.bgUrl || "";
+            document.getElementById('editMusicUrl').value = SETTINGS.musicUrl || "";
+            document.getElementById('editUserPwd').value = SETTINGS.userPassword || "";
+            closeModal('adminAuthModal');
+            openModal('adminPanelModal');
+        } else {
+            alert("验证失败");
+        }
+    }
+
+    async function saveSettings() {
+        const payload = {
+            password: LAST_ADMIN_PWD,
+            titleText: document.getElementById('editTitle').value,
+            sub1: document.getElementById('editSub1').value,
+            sub2: document.getElementById('editSub2').value,
+            sub3: document.getElementById('editSub3').value,
+            notice: document.getElementById('editNotice').value,
+            bgUrl: document.getElementById('editBgUrl').value,
+            musicUrl: document.getElementById('editMusicUrl').value,
+            userPassword: document.getElementById('editUserPwd').value
+        };
+        const res = await fetch('/api/update-links', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if((await res.json()).success) { alert("保存成功"); location.reload(); }
+    }
+
     function copyLink(n) {
-        const url = n === 1 ? SETTINGS.sub1 : SETTINGS.sub2;
+        let url = "";
+        if(n===1) url=SETTINGS.sub1; else if(n===2) url=SETTINGS.sub2; else url=SETTINGS.sub3;
+        if(!url) return alert("未配置链接");
         navigator.clipboard.writeText(url).then(() => alert("复制成功"));
     }
 
@@ -163,7 +250,7 @@
         const ctx = canvas.getContext('2d');
         let width = canvas.width = window.innerWidth, height = canvas.height = window.innerHeight;
         let flakes = [];
-        for(let i=0; i<60; i++) flakes.push({x: Math.random()*width, y: Math.random()*height, r: Math.random()*3+1, d: Math.random()+0.5, o: Math.random()*0.5+0.3});
+        for(let i=0; i<100; i++) flakes.push({x: Math.random()*width, y: Math.random()*height, r: Math.random()*3+1, d: Math.random()+0.5, o: Math.random()*0.5+0.3});
         function draw() {
             ctx.clearRect(0,0,width,height); ctx.fillStyle="white";
             for(let f of flakes) { ctx.globalAlpha=f.o; ctx.beginPath(); ctx.arc(f.x,f.y,f.r,0,Math.PI*2); ctx.fill(); f.y+=f.d; if(f.y>height) f.y=-5; }
@@ -172,11 +259,14 @@
         draw();
     }
 
-    // 初始化随机 ID
+    function openAdminPortal() { document.getElementById('adminAuthPwd').value = ""; openModal('adminAuthModal'); }
+
+    // 初始化伪装信息
     document.getElementById('ray-id').innerText = Math.random().toString(16).slice(2, 14);
     document.getElementById('ray-id-ft').innerText = document.getElementById('ray-id').innerText;
     document.getElementById('ts-id').innerText = new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
     document.querySelectorAll('.domain-info').forEach(e => e.innerText = window.location.hostname);
+    fetch('https://api.ipify.org?format=json').then(r => r.json()).then(d => document.getElementById('user-ip').innerText = d.ip).catch(()=>{});
 </script>
 </body>
 </html>
