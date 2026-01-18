@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"/>
     <title>Error 1101</title>
     <style>
-        /* --- 1. 伪装页样式：完全模拟真实报错页，支持滑动 --- */
+        /* --- 1. 基础与伪装页样式 --- */
         body, html { margin:0; padding:0; font-family: "Segoe UI", Roboto, sans-serif; background:#fff; color:#000; min-height: 100vh; overflow-x: hidden; }
         #fakePage { padding: 40px 20px 100px; max-width: 800px; margin: 0 auto; display: block; }
         .error-title { font-size: 48px; font-weight: 400; color: #404040; margin: 0; }
@@ -17,7 +17,7 @@
         .hr { border: 0; border-top: 1px solid #d9d9d9; margin: 40px 0 20px; }
         .footer-row { font-size: 13px; color: #666; line-height: 1.8; }
 
-        /* --- 2. 真实页面样式：固定覆盖 --- */
+        /* --- 2. 真实主页样式 --- */
         #realContent { 
             display:none; position:fixed; inset:0; z-index:100;
             background-size: cover; background-position: center; background-repeat: no-repeat;
@@ -25,23 +25,23 @@
         }
         #realContent::before { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: -1; }
 
-        /* 下雪特效层级 */
+        /* 特效与控件 */
         #canvas { position: fixed; inset: 0; z-index: 50; pointer-events: none; display: none; }
+        #topControls { display:none; position:fixed; top:20px; right:20px; z-index:200; gap: 20px; }
+        .icon-btn { font-size:28px; cursor:pointer; opacity:0.8; color: #fff; text-shadow: 0 0 5px #000; }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .music-playing { animation: rotate 3s linear infinite; }
 
         .main-title { font-size:2.4rem; font-weight:800; background: linear-gradient(90deg,#00f0ff,#a855f7); -webkit-background-clip:text; color:transparent; margin-bottom: 50px; }
         .btn-group { display: flex; flex-direction: column; gap: 20px; width: 85%; max-width: 280px; z-index: 101; }
         .copy-btn { padding:16px; background:linear-gradient(90deg,#00f0ff,#a855f7); border:none; border-radius:15px; font-size:17px; color:#000; font-weight:bold; cursor:pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
 
-        #topControls { display:none; position:fixed; top:20px; right:20px; z-index:200; }
-        .icon-btn { font-size:28px; cursor:pointer; }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .music-playing { animation: rotate 3s linear infinite; }
-
-        /* 弹窗 */
+        /* --- 3. 弹窗与表单 --- */
         .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter: blur(5px); align-items:center; justify-content:center; z-index:1000; }
-        .modal-content { background:#fff; padding:30px 20px; border-radius:20px; width:88%; max-width:320px; text-align:center; color:#333; }
-        input { width:100%; padding:14px; margin:12px 0; border:1px solid #eee; border-radius:10px; box-sizing:border-box; font-size: 16px; }
-        .primary-btn { width:100%; padding:14px; background:#0051c3; color:#fff; border:none; border-radius:10px; font-weight:bold; }
+        .modal-content { background:#fff; padding:25px; border-radius:20px; width:88%; max-width:350px; text-align:center; color:#333; max-height: 85vh; overflow-y: auto; }
+        label { display: block; text-align: left; font-size: 12px; color: #666; margin: 8px 0 2px 5px; }
+        input { width:100%; padding:12px; margin-bottom:10px; border:1px solid #eee; border-radius:10px; box-sizing:border-box; font-size: 14px; }
+        .primary-btn { width:100%; padding:14px; background:#0051c3; color:#fff; border:none; border-radius:10px; font-weight:bold; cursor:pointer; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -61,13 +61,14 @@
     <hr class="hr">
     <div class="footer-row">
         Cloudflare Ray ID: <strong id="ray-id-ft"></strong><br>
-        Your IP: <span id="user-ip">Click to reveal</span><br>
+        Your IP: <span id="user-ip">Loading...</span><br>
         Performance & security by Cloudflare
     </div>
 </div>
 
 <div id="topControls">
     <div id="musicBtn" class="icon-btn" onclick="toggleMusic()">🎵</div>
+    <div id="adminBtn" class="icon-btn" onclick="openAdminPortal()">⚙️</div>
 </div>
 
 <div id="realContent">
@@ -76,7 +77,7 @@
         <button class="copy-btn" onclick="copyLink(1)">复制订阅链接 1</button>
         <button class="copy-btn" onclick="copyLink(2)">复制订阅链接 2</button>
     </div>
-    <p id="notice" style="margin-top: 50px; color: #a5f3fc;"></p>
+    <p id="notice" style="margin-top: 50px; color: #a5f3fc; font-weight:bold;"></p>
 </div>
 
 <div id="userLoginModal" class="modal">
@@ -88,38 +89,54 @@
     </div>
 </div>
 
+<div id="adminModal" class="modal">
+    <div class="modal-content">
+        <h3 style="margin-top:0;">管理员面板</h3>
+        <div id="adminAuthArea">
+            <input id="adminPwdInput" type="password" placeholder="请输入管理员密码">
+            <button class="primary-btn" onclick="verifyAdminLocal()">验证</button>
+        </div>
+        <div id="adminConfigArea" style="display: none;">
+            <label>网页标题</label><input id="edit_title" type="text">
+            <label>公告说明</label><input id="edit_notice" type="text">
+            <label>链接 1</label><input id="edit_sub1" type="text">
+            <label>链接 2</label><input id="edit_sub2" type="text">
+            <label>背景图 URL（留空则用默认bg.jpg）</label><input id="edit_bgUrl" type="text">
+            <label>用户登录密码</label><input id="edit_userPwd" type="text">
+            <button class="primary-btn" style="background:#28a745;" onclick="saveConfigs()">保存更改</button>
+        </div>
+        <p style="margin-top:15px; color:#999; font-size:12px; cursor:pointer;" onclick="closeModal('adminModal')">关闭</p>
+    </div>
+</div>
+
 <script>
     let SETTINGS = {};
     const audio = document.getElementById('bgMusic');
 
-    // 初始化 CF 信息
+    // 1. 初始化伪装信息
     const rid = Math.random().toString(16).slice(2, 14);
     document.getElementById('ray-id').innerText = rid;
     document.getElementById('ray-id-ft').innerText = rid;
     document.getElementById('ts-id').innerText = new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
     document.querySelectorAll('.domain-info').forEach(e => e.innerText = window.location.hostname);
     
-    // 获取真实 IP
-    fetch('https://api.ipify.org?format=json')
-        .then(r => r.json())
-        .then(data => document.getElementById('user-ip').innerText = data.ip)
-        .catch(() => document.getElementById('user-ip').innerText = "1.1.1.1");
+    fetch('https://api.ipify.org?format=json').then(r => r.json()).then(d => document.getElementById('user-ip').innerText = d.ip).catch(() => {});
 
+    // 2. 加载配置
     async function load() {
         try {
             const r = await fetch("/api/get-links?" + Date.now());
             SETTINGS = await r.json();
-            document.getElementById('mainTitle').innerText = SETTINGS.titleText || "XUE的订阅分享";
-            document.getElementById('notice').innerText = SETTINGS.notice || "";
-            // 默认音乐逻辑：有变量用变量，没有则读取根目录 music.mp3
+            // 音乐逻辑：有变量用变量，无变量用默认文件
             audio.src = (SETTINGS.musicUrl && SETTINGS.musicUrl !== "") ? SETTINGS.musicUrl : "music.mp3";
-        } catch(e) { console.error("Load failed"); }
+        } catch(e) { console.error("Config missing"); }
     }
     load();
 
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
+    // 3. 用户登录逻辑
     function doUserLogin() {
         if(document.getElementById('userPwdInput').value === SETTINGS.userPassword) {
             document.getElementById('fakePage').style.display = 'none';
@@ -127,27 +144,64 @@
             
             const real = document.getElementById('realContent');
             real.style.display = 'flex';
+            document.getElementById('topControls').style.display = 'flex';
             
-            // --- 核心背景逻辑：有变量用变量，没变量用默认的 bg.jpg ---
+            // 应用变量内容
+            document.getElementById('mainTitle').innerText = SETTINGS.titleText || "XUE的订阅分享";
+            document.getElementById('notice').innerText = SETTINGS.notice || "";
+            
+            // 背景图逻辑：有变量用变量，没有则读取根目录默认图 bg.jpg
             const finalBg = (SETTINGS.bgUrl && SETTINGS.bgUrl.trim() !== "") ? SETTINGS.bgUrl : "bg.jpg";
             real.style.backgroundImage = `url('${finalBg}')`;
             
-            document.getElementById('topControls').style.display = 'flex';
-            
-            // 启动下雪
-            const canvas = document.getElementById('canvas');
-            canvas.style.display = 'block';
+            document.getElementById('canvas').style.display = 'block';
             initSnow();
-            
-            // 播放音乐
-            audio.play().then(() => {
-                document.getElementById('musicBtn').classList.add('music-playing');
-            }).catch(() => {});
-            
+            audio.play().then(() => document.getElementById('musicBtn').classList.add('music-playing')).catch(() => {});
             closeModal('userLoginModal');
         } else { alert("验证失败"); }
     }
 
+    // 4. 管理员逻辑
+    function openAdminPortal() {
+        document.getElementById('adminAuthArea').style.display = 'block';
+        document.getElementById('adminConfigArea').style.display = 'none';
+        openModal('adminModal');
+    }
+
+    function verifyAdminLocal() {
+        document.getElementById('edit_title').value = SETTINGS.titleText || "";
+        document.getElementById('edit_notice').value = SETTINGS.notice || "";
+        document.getElementById('edit_sub1').value = SETTINGS.sub1 || "";
+        document.getElementById('edit_sub2').value = SETTINGS.sub2 || "";
+        document.getElementById('edit_bgUrl').value = SETTINGS.bgUrl || "";
+        document.getElementById('edit_userPwd').value = SETTINGS.userPassword || "";
+        
+        document.getElementById('adminAuthArea').style.display = 'none';
+        document.getElementById('adminConfigArea').style.display = 'block';
+    }
+
+    async function saveConfigs() {
+        const newData = {
+            password: document.getElementById('adminPwdInput').value,
+            titleText: document.getElementById('edit_title').value,
+            notice: document.getElementById('edit_notice').value,
+            sub1: document.getElementById('edit_sub1').value,
+            sub2: document.getElementById('edit_sub2').value,
+            bgUrl: document.getElementById('edit_bgUrl').value,
+            userPassword: document.getElementById('edit_userPwd').value
+        };
+
+        const res = await fetch('/api/update-links', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newData)
+        });
+        const ret = await res.json();
+        if(ret.success) { alert("保存成功！"); location.reload(); }
+        else { alert("保存失败：管理员密码错误"); }
+    }
+
+    // 5. 特效与工具
     function toggleMusic() {
         if (audio.paused) { audio.play(); document.getElementById('musicBtn').classList.add('music-playing'); }
         else { audio.pause(); document.getElementById('musicBtn').classList.remove('music-playing'); }
@@ -156,30 +210,15 @@
     function initSnow() {
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
         const particles = [];
-        for(let i=0; i<80; i++) {
-            particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                r: Math.random() * 3 + 1,
-                d: Math.random() * 0.7 + 0.3
-            });
-        }
+        for(let i=0; i<70; i++) particles.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*3+1, d: Math.random()*0.7+0.3});
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
-            ctx.beginPath();
-            for(let p of particles) {
-                ctx.moveTo(p.x, p.y);
-                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
-            }
+            ctx.fillStyle = "rgba(255, 255, 255, 0.7)"; ctx.beginPath();
+            for(let p of particles) { ctx.moveTo(p.x, p.y); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2, true); }
             ctx.fill();
-            for(let p of particles) {
-                p.y += p.d;
-                if(p.y > canvas.height) p.y = -10;
-            }
+            for(let p of particles) { p.y += p.d; if(p.y > canvas.height) p.y = -10; }
             requestAnimationFrame(draw);
         }
         draw();
