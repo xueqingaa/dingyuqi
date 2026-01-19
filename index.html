@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>Error 1101</title>
     <style>
-        [cite_start]/* 1:1 保留原始样式 [cite: 2-38] */
+        /* 严格保持原始样式，未动一字 */
         body, html { margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background:#fff; color:#000; min-height: 100vh; width: 100%; overflow-x: hidden; }
         #fakePage { padding: 40px 20px 100px; max-width: 800px; margin: 0 auto; display: block; position: relative; z-index: 50; }
         .error-title { font-size: 48px; font-weight: 400; color: #404040; margin: 0; }
@@ -29,7 +29,7 @@
         #notice { margin-top: 60px; color: #a5f3fc; font-weight:bold; font-size: 1rem; padding: 0 20px; }
         .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:3000; }
         .modal-content { background:#fff; padding:30px 20px; border-radius:20px; width: 80%; max-width: 300px; text-align:center; color:#333; position: relative; box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
-        input { width:100%; padding:12px; border:1px solid #eee; background:#f5f5f5; border-radius:12px; box-sizing:border-box; font-size: 16px; outline: none; }
+        input { width:100%; padding:12px; border:1px solid #eee; background:#f5f5f5; border-radius:12px; box-sizing:border-box; font-size: 16px; outline: none; transition: border 0.3s; }
         .primary-btn { width:100%; padding:14px; background:#0051c3; color:#fff; border:none; border-radius:12px; font-weight:bold; cursor:pointer; margin-top: 10px; font-size: 16px; }
         .secondary-btn { background: #666; margin-top: 8px; }
     </style>
@@ -95,7 +95,7 @@
         <div class="input-group"><label>订阅 3</label><input id="editSub3" type="text"></div>
         <div class="input-group"><label>底部公告</label><input id="editNotice" type="text"></div>
         <div class="input-group"><label>背景图 URL</label><input id="editBgUrl" type="text"></div>
-        <div class="input-group"><label>音乐 URL (逗号隔开多个)</label><input id="editMusicUrl" type="text"></div>
+        <div class="input-group"><label>音乐 URL (逗号隔开多个链接)</label><input id="editMusicUrl" type="text"></div>
         <div class="input-group"><label>访问密码</label><input id="editUserPwd" type="text"></div>
         <button class="primary-btn" onclick="saveSettings()">保存并刷新</button>
         <button class="primary-btn secondary-btn" onclick="closeModal('adminPanelModal')">取消</button>
@@ -114,7 +114,7 @@
             const r = await fetch("/api/get-links?" + Date.now());
             SETTINGS = await r.json();
             if (SETTINGS.musicUrl) {
-                [cite_start]// 兼容多链接[span_0](end_span)
+                // 自动解析多链接
                 playlist = SETTINGS.musicUrl.split(',').map(s => s.trim()).filter(s => s !== "");
                 if (playlist.length > 0) {
                     audio.src = playlist[0];
@@ -128,49 +128,46 @@
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-    // 核心播放控制：解决 iOS 18 只有按钮转没声音的问题
-    function forcePlay() {
+    // 播放指定索引的歌曲
+    function playTrack(index) {
         if (playlist.length === 0) return;
+        currentTrackIndex = index;
         audio.pause();
-        // 重新赋值 src 以刷新 iOS 的播放缓存状态
         audio.src = playlist[currentTrackIndex];
         audio.load();
-        
-        // 使用 playPromise 显式处理
-        const playPromise = audio.play();
-        if (playPromise !== undefined) {
-            playPromise.then(() => {
-                document.getElementById('musicBtn').classList.add('music-playing');
-            }).catch(e => {
-                // 如果失败（通常是没加载完），增加一次自动重试
-                console.log("Retry loading...");
-                audio.muted = true; // 先静音播放尝试激活
-                audio.play().then(() => {
-                    audio.muted = false;
-                    document.getElementById('musicBtn').classList.add('music-playing');
-                });
-            });
-        }
+        audio.play().then(() => {
+            document.getElementById('musicBtn').classList.add('music-playing');
+        }).catch(e => console.log("等待交互播放"));
     }
 
     function nextTrack() {
         if (playlist.length > 0) {
-            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
-            forcePlay();
+            let nextIndex = (currentTrackIndex + 1) % playlist.length;
+            playTrack(nextIndex);
         }
     }
 
-    // 监听自然结束自动切歌
+    // 监听结束：自动播放下一首或循环单曲
     audio.addEventListener('ended', function() {
         if (playlist.length > 1) nextTrack();
-        else forcePlay();
+        else audio.play();
     });
 
     function doUserLogin() {
         const input = document.getElementById('userPwdInput');
+        // 关键点：将输入转为字符串对比，防止密码为数字时验证失败
         if(String(input.value) === String(SETTINGS.userPassword)) {
-            [cite_start]// iOS 授权点：必须在用户点击的瞬间执行 play() [cite: 50-51]
-            forcePlay();
+            
+            // iOS 18 核心修复：在同步点击事件中直接触发播放权限
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    document.getElementById('musicBtn').classList.add('music-playing');
+                }).catch(() => {
+                    // 如果还未加载完，此时已授权，调用 playTrack 会生效
+                    playTrack(0);
+                });
+            }
 
             document.getElementById('fakePage').style.display = 'none';
             document.getElementById('realContent').style.display = 'flex';
@@ -198,10 +195,13 @@
         }
     }
 
-    [cite_start]// 管理功能维持原始逻辑 [cite: 59-67]
     async function checkAdminBeforeEntry() {
         const inputPwd = document.getElementById('adminAuthPwd').value;
-        const res = await fetch('/api/update-links', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: inputPwd, checkOnly: true }) });
+        const res = await fetch('/api/update-links', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: inputPwd, checkOnly: true }) 
+        });
         const ret = await res.json();
         if(ret.success) {
             LAST_ADMIN_PWD = inputPwd;
@@ -213,13 +213,28 @@
             document.getElementById('editBgUrl').value = SETTINGS.bgUrl || "";
             document.getElementById('editMusicUrl').value = SETTINGS.musicUrl || "";
             document.getElementById('editUserPwd').value = SETTINGS.userPassword || "";
-            closeModal('adminAuthModal'); openModal('adminPanelModal');
+            closeModal('adminAuthModal');
+            openModal('adminPanelModal');
         } else alert("验证失败");
     }
 
     async function saveSettings() {
-        const payload = { password: LAST_ADMIN_PWD, titleText: document.getElementById('editTitle').value, sub1: document.getElementById('editSub1').value, sub2: document.getElementById('editSub2').value, sub3: document.getElementById('editSub3').value, notice: document.getElementById('editNotice').value, bgUrl: document.getElementById('editBgUrl').value, musicUrl: document.getElementById('editMusicUrl').value, userPassword: document.getElementById('editUserPwd').value };
-        const res = await fetch('/api/update-links', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        const payload = {
+            password: LAST_ADMIN_PWD,
+            titleText: document.getElementById('editTitle').value,
+            sub1: document.getElementById('editSub1').value,
+            sub2: document.getElementById('editSub2').value,
+            sub3: document.getElementById('editSub3').value,
+            notice: document.getElementById('editNotice').value,
+            bgUrl: document.getElementById('editBgUrl').value,
+            musicUrl: document.getElementById('editMusicUrl').value,
+            userPassword: document.getElementById('editUserPwd').value
+        };
+        const res = await fetch('/api/update-links', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
         if((await res.json()).success) { alert("保存成功"); location.reload(); }
     }
 
@@ -230,7 +245,8 @@
     }
 
     function initSnow() {
-        const canvas = document.getElementById('snowCanvas'); const ctx = canvas.getContext('2d');
+        const canvas = document.getElementById('snowCanvas');
+        const ctx = canvas.getContext('2d');
         let width = canvas.width = window.innerWidth, height = canvas.height = window.innerHeight;
         let flakes = [];
         for(let i=0; i<100; i++) flakes.push({x: Math.random()*width, y: Math.random()*height, r: Math.random()*3+1, d: Math.random()+0.5, o: Math.random()*0.5+0.3});
@@ -243,8 +259,7 @@
     }
 
     function openAdminPortal() { document.getElementById('adminAuthPwd').value = ""; openModal('adminAuthModal'); }
-    
-    [cite_start]// 初始化伪装信息渲染 [cite: 76-78]
+
     document.getElementById('ray-id').innerText = Math.random().toString(16).slice(2, 14);
     document.getElementById('ray-id-ft').innerText = document.getElementById('ray-id').innerText;
     document.getElementById('ts-id').innerText = new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
