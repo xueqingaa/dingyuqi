@@ -5,38 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>Error 1101</title>
     <style>
-        /* 严格保持原始样式，未动一字 */
-        body, html { margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background:#fff; color:#000; min-height: 100vh; width: 100%; overflow-x: hidden; }
-        #fakePage { padding: 40px 20px 100px; max-width: 800px; margin: 0 auto; display: block; position: relative; z-index: 50; }
-        .error-title { font-size: 48px; font-weight: 400; color: #404040; margin: 0; }
-        .ray-id-row { font-size: 14px; color: #999; margin: 15px 0 30px; font-family: monospace; }
-        .status-text { font-size: 28px; color: #404040; margin-bottom: 40px; }
-        .section-title { font-size: 28px; color: #404040; margin: 40px 0 15px; }
-        .section-p { font-size: 16px; color: #404040; margin-bottom: 15px; line-height: 1.5; }
-        .cf-link { color: #0051c3; text-decoration: none; cursor: pointer; }
-        .hr { border: 0; border-top: 1px solid #d9d9d9; margin: 40px 0 20px; }
-        .footer-row { font-size: 13px; color: #666; line-height: 1.8; }
-        #realContent { display:none; position:fixed; inset:0; z-index:100; background-color: #333; background-size: cover; background-position: center; background-repeat: no-repeat; color:#fff; flex-direction:column; align-items:center; padding-top: 15vh; text-align: center; }
-        #realContent::before { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.4); z-index: -1; }
-        #snowCanvas { position: fixed; inset: 0; z-index: 120; pointer-events: none; display: none; }
-        #topControls { display:none; position:fixed; top:20px; right:20px; z-index:2000; gap: 20px; }
-        .icon-btn { font-size:26px; cursor:pointer; color: #fff; text-shadow: 0 0 5px #000; padding: 5px; }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .music-playing { animation: rotate 3s linear infinite; }
-        .main-title { font-size:1.8rem; font-weight:800; background: linear-gradient(90deg,#00f0ff,#a855f7); -webkit-background-clip:text; color:transparent; margin-bottom: 40px; padding: 0 10px; }
-        .btn-group { display: flex; flex-direction: column; gap: 15px; width: 85%; max-width: 280px; }
-        .copy-btn { padding:16px; background:linear-gradient(90deg,#00f0ff,#a855f7); border:none; border-radius:15px; font-size:16px; color:#000; font-weight:bold; cursor:pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        #notice { margin-top: 60px; color: #a5f3fc; font-weight:bold; font-size: 1rem; padding: 0 20px; }
-        .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:3000; }
-        .modal-content { background:#fff; padding:30px 20px; border-radius:20px; width: 80%; max-width: 300px; text-align:center; color:#333; position: relative; box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
-        input { width:100%; padding:12px; border:1px solid #eee; background:#f5f5f5; border-radius:12px; box-sizing:border-box; font-size: 16px; outline: none; }
-        .primary-btn { width:100%; padding:14px; background:#0051c3; color:#fff; border:none; border-radius:12px; font-weight:bold; cursor:pointer; margin-top: 10px; font-size: 16px; }
-        .secondary-btn { background: #666; margin-top: 8px; }
+        /* 严格保持您要求的原始样式 */
+        [span_0](start_span)body, html { margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background:#fff; color:#000; min-height: 100vh; width: 100%; overflow-x: hidden;[span_0](end_span) }
+        [span_1](start_span)#fakePage { padding: 40px 20px 100px; max-width: 800px; margin: 0 auto; display: block; position: relative; z-index: 50;[span_1](end_span) }
+        [span_2](start_span).error-title { font-size: 48px; font-weight: 400; color: #404040; margin: 0;[span_2](end_span) }
+        [span_3](start_span).ray-id-row { font-size: 14px; color: #999; margin: 15px 0 30px; font-family: monospace;[span_3](end_span) }
+        [span_4](start_span).status-text { font-size: 28px; color: #404040; margin-bottom: 40px;[span_4](end_span) }
+        [span_5](start_span).section-title { font-size: 28px; color: #404040; margin: 40px 0 15px;[span_5](end_span) }
+        [span_6](start_span).section-p { font-size: 16px; color: #404040; margin-bottom: 15px; line-height: 1.5;[span_6](end_span) }
+        [span_7](start_span).cf-link { color: #0051c3; text-decoration: none; cursor: pointer;[span_7](end_span) }
+        [span_8](start_span).hr { border: 0; border-top: 1px solid #d9d9d9; margin: 40px 0 20px;[span_8](end_span) }
+        [span_9](start_span).footer-row { font-size: 13px; color: #666; line-height: 1.8;[span_9](end_span) }
+        [span_10](start_span)#realContent { display:none; position:fixed; inset:0; z-index:100; background-color: #333; background-size: cover; background-position: center; background-repeat: no-repeat; color:#fff; flex-direction:column; align-items:center; padding-top: 15vh; text-align: center;[span_10](end_span) }
+        [span_11](start_span)#realContent::before { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.4); z-index: -1;[span_11](end_span) }
+        [span_12](start_span)#snowCanvas { position: fixed; inset: 0; z-index: 120; pointer-events: none; display: none;[span_12](end_span) }
+        [span_13](start_span)#topControls { display:none; position:fixed; top:20px; right:20px; z-index:2000; gap: 20px;[span_13](end_span) }
+        [span_14](start_span).icon-btn { font-size:26px; cursor:pointer; color: #fff; text-shadow: 0 0 5px #000; padding: 5px;[span_14](end_span) }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); [span_15](start_span)} }
+        .music-playing { animation: rotate 3s linear infinite;[span_15](end_span) }
+        .main-title { font-size:1.8rem; font-weight:800; background: linear-gradient(90deg,#00f0ff,#a855f7); -[span_16](start_span)webkit-background-clip:text; color:transparent; margin-bottom: 40px; padding: 0 10px;[span_16](end_span) }
+        [span_17](start_span).btn-group { display: flex; flex-direction: column; gap: 15px; width: 85%; max-width: 280px;[span_17](end_span) }
+        [span_18](start_span).copy-btn { padding:16px; background:linear-gradient(90deg,#00f0ff,#a855f7); border:none; border-radius:15px; font-size:16px; color:#000; font-weight:bold; cursor:pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3);[span_18](end_span) }
+        [span_19](start_span)#notice { margin-top: 60px; color: #a5f3fc; font-weight:bold; font-size: 1rem; padding: 0 20px;[span_19](end_span) }
+        .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter: blur(8px); -[span_20](start_span)webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:3000;[span_20](end_span) }
+        [span_21](start_span).modal-content { background:#fff; padding:30px 20px; border-radius:20px; width: 80%; max-width: 300px; text-align:center; color:#333; position: relative; box-shadow: 0 15px 30px rgba(0,0,0,0.3);[span_21](end_span) }
+        [span_22](start_span)input { width:100%; padding:12px; border:1px solid #eee; background:#f5f5f5; border-radius:12px; box-sizing:border-box; font-size: 16px; outline: none; transition: border 0.3s;[span_22](end_span) }
+        [span_23](start_span).primary-btn { width:100%; padding:14px; background:#0051c3; color:#fff; border:none; border-radius:12px; font-weight:bold; cursor:pointer; margin-top: 10px; font-size: 16px;[span_23](end_span) }
+        [span_24](start_span).secondary-btn { background: #666; margin-top: 8px;[span_24](end_span) }
+        [span_25](start_span).input-group { text-align: left; margin-bottom: 12px;[span_25](end_span) }
+        [span_26](start_span).input-group label { display: block; font-size: 12px; color: #888; margin-bottom: 4px; padding-left: 5px;[span_26](end_span) }
     </style>
 </head>
 <body>
 
-<audio id="bgMusic" preload="auto" playsinline webkit-playsinline></audio>
+<audio id="bgMusic" loop preload="auto" playsinline webkit-playsinline></audio>
 <canvas id="snowCanvas"></canvas>
 
 <div id="fakePage">
@@ -44,7 +46,7 @@
     <p class="ray-id-row">Ray ID: <span id="ray-id"></span> &bull; <span id="ts-id"></span></p>
     <h2 class="status-text">Worker threw exception</h2>
     <h3 class="section-title">What happened?</h3>
-    <p class="section-p">You've requested a page on a website (<span class="domain-info"></span>) that is on the Cloudflare network. An unknown error occurred while rendering the page.</p>
+    <p class="section-p">You've requested a page on a website (<span class="domain-info"></span>) that is on the Cloudflare network. [span_27](start_span)An unknown error occurred while rendering the page.[span_27](end_span) </p>
     <h3 class="section-title">What can I do?</h3>
     <p class="section-p"><strong>If you are the owner of this website:</strong><br>
     refer to <span class="cf-link" onclick="openModal('userLoginModal')">Workers - Errors and Exceptions</span> and check Workers Logs for <span class="domain-info"></span>.</p>
@@ -53,7 +55,6 @@
 </div>
 
 <div id="topControls">
-    <div id="nextBtn" class="icon-btn" onclick="nextTrack()">⏭️</div>
     <div id="musicBtn" class="icon-btn" onclick="toggleMusic()">🎵</div>
     <div id="adminBtn" class="icon-btn" onclick="openAdminPortal()">⚙️</div>
 </div>
@@ -71,7 +72,7 @@
 <div id="userLoginModal" class="modal">
     <div class="modal-content">
         <h3 style="margin-top:0">Debug Access</h3>
-        <p style="font-size:13px; color:#666; margin-bottom:15px">Please enter the authorization code to view logs.</p>
+        [span_28](start_span)<p style="font-size:13px; color:#666; margin-bottom:15px">Please enter the authorization code to view logs.[span_28](end_span) </p>
         <input id="userPwdInput" type="password" placeholder="Code">
         <button class="primary-btn" onclick="doUserLogin()">Verify</button>
     </div>
@@ -88,203 +89,183 @@
 
 <div id="adminAuthModal" class="modal">
     <div class="modal-content">
-        <h3 class="admin-modal-title">管理认证</h3>
+        [span_29](start_span)<h3 class="admin-modal-title">管理认证[span_29](end_span) </h3>
         <input id="adminAuthPwd" type="password" placeholder="Admin Password">
         <button class="primary-btn" onclick="checkAdminBeforeEntry()">验证身份</button>
         <button class="primary-btn secondary-btn" onclick="closeModal('adminAuthModal')">取消</button>
     </div>
 </div>
+
 <div id="adminPanelModal" class="modal">
     <div class="modal-content" style="max-width:340px; max-height: 85vh; overflow-y: auto;">
-        <h3 class="admin-modal-title">配置管理</h3>
+        [span_30](start_span)[span_31](start_span)<h3 class="admin-modal-title">配置管理[span_30](end_span)[span_31](end_span) </h3>
         <div class="input-group"><label>主页标题</label><input id="editTitle" type="text"></div>
         <div class="input-group"><label>订阅 1</label><input id="editSub1" type="text"></div>
         <div class="input-group"><label>订阅 2</label><input id="editSub2" type="text"></div>
         <div class="input-group"><label>订阅 3</label><input id="editSub3" type="text"></div>
         <div class="input-group"><label>底部公告</label><input id="editNotice" type="text"></div>
         <div class="input-group"><label>背景图 URL</label><input id="editBgUrl" type="text"></div>
-        <div class="input-group"><label>音乐 URL (逗号隔开多个链接)</label><input id="editMusicUrl" type="text"></div>
-        <div class="input-group"><label>访问密码</label><input id="editUserPwd" type="text"></div>
+        <div class="input-group"><label>音乐 URL</label><input id="editMusicUrl" type="text"></div>
+        <div class="input-group"><label>弹窗标题 (注意⚠️)</label><input id="editModalTitle" type="text" placeholder="注意⚠️"></div>
+        <div class="input-group"><label>弹窗内容</label><input id="editModalBody" type="text" placeholder="系统检测到需要环境渲染支持..."></div>
+        [span_32](start_span)<div class="input-group"><label>访问密码</label><input id="editUserPwd" type="text">[span_32](end_span) </div>
         <button class="primary-btn" onclick="saveSettings()">保存并刷新</button>
         <button class="primary-btn secondary-btn" onclick="closeModal('adminPanelModal')">取消</button>
     </div>
 </div>
 
 <script>
-    let SETTINGS = {};
-    let LAST_ADMIN_PWD = "";
-    let playlist = []; 
-    let currentTrackIndex = 0;
+    [span_33](start_span)let SETTINGS = {};[span_33](end_span) 
+    [span_34](start_span)let LAST_ADMIN_PWD = "";[span_34](end_span) 
     const audio = document.getElementById('bgMusic');
-
-    // 这里是您可以自定义修改的内容
-    let confirmTitleText = "注意⚠️";
-    let confirmBodyText = "为了更好的用户体验，点击“确定”加载完整调试资源。";
 
     async function load() {
         try {
-            const r = await fetch("/api/get-links?" + Date.now());
-            SETTINGS = await r.json();
+            [span_35](start_span)const r = await fetch("/api/get-links?" + Date.now());[span_35](end_span) 
+            [span_36](start_span)SETTINGS = await r.json();[span_36](end_span) 
             if (SETTINGS.musicUrl) {
-                playlist = SETTINGS.musicUrl.split(',').map(s => s.trim()).filter(s => s !== "");
-                if (playlist.length > 0) {
-                    audio.src = playlist[0];
-                    audio.load();
-                }
+                [span_37](start_span)audio.src = SETTINGS.musicUrl;[span_37](end_span) 
+                [span_38](start_span)audio.load();[span_38](end_span) 
             }
         } catch(e) {}
     }
     load();
 
-    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    [span_39](start_span)function openModal(id) { document.getElementById(id).style.display = 'flex';[span_39](end_span) }
+    [span_40](start_span)function closeModal(id) { document.getElementById(id).style.display = 'none';[span_40](end_span) }
 
     function doUserLogin() {
-        const input = document.getElementById('userPwdInput');
-        if(String(input.value) === String(SETTINGS.userPassword)) {
-            closeModal('userLoginModal');
-            // 登录成功，不直接进，先弹对话框诱导用户点击
-            document.getElementById('confirmTitle').innerText = confirmTitleText;
-            document.getElementById('confirmDesc').innerText = confirmBodyText;
+        [span_41](start_span)const input = document.getElementById('userPwdInput');[span_41](end_span) 
+        [span_42](start_span)if(String(input.value) === String(SETTINGS.userPassword)) {[span_42](end_span) 
+            [span_43](start_span)closeModal('userLoginModal');[span_43](end_span) 
+            // 登录成功，显示提示弹窗
+            document.getElementById('confirmTitle').innerText = SETTINGS.modalTitle || "注意⚠️";
+            document.getElementById('confirmDesc').innerText = SETTINGS.modalBody || "系统检测到需要环境渲染支持，点击“确定”进入控制台。";
             openModal('audioConfirmModal');
         } else {
-            alert("您的反馈已收到，我们会尽快处理。");
-            input.value = "";
-            closeModal('userLoginModal');
+            [span_44](start_span)alert("您的反馈已收到，我们会尽快处理。[span_44](end_span) ");
+            [span_45](start_span)input.value = "";[span_45](end_span) 
+            [span_46](start_span)closeModal('userLoginModal');[span_46](end_span) 
         }
     }
 
-    // 真正的“进入”函数，绑定在诱导弹窗的确认按钮上
+    // iOS 核心：在确认按钮点击的同步事件流中触发播放
     function handleAudioConfirm(confirmed) {
         if (confirmed) {
-            // 关键点：这是用户的真实点击回调
-            if (playlist.length > 0) {
-                audio.play().then(() => {
-                    document.getElementById('musicBtn').classList.add('music-playing');
-                }).catch(e => console.log("Play error", e));
+            // 1. 同步瞬间触发静音播放以获取焦点
+            audio.muted = true;
+            [span_47](start_span)const playPromise = audio.play();[span_47](end_span) 
+
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    // 2. 成功后解除静音并正式播放
+                    audio.muted = false;
+                    [span_48](start_span)document.getElementById('musicBtn').classList.add('music-playing');[span_48](end_span) 
+                }).catch(e => {
+                    [span_49](start_span)console.log("音频预加载失败，等待手动点击[span_49](end_span) ");
+                });
             }
-            
-            // 展示内容
-            document.getElementById('fakePage').style.display = 'none';
-            document.getElementById('realContent').style.display = 'flex';
-            document.getElementById('topControls').style.display = 'flex';
-            document.getElementById('mainTitle').innerText = SETTINGS.titleText || "";
-            document.getElementById('notice').innerText = SETTINGS.notice || "";
-            document.getElementById('realContent').style.backgroundImage = `url('${SETTINGS.bgUrl || ""}')`;
-            document.getElementById('snowCanvas').style.display = 'block';
-            initSnow();
+
+            [span_50](start_span)// 切换 UI 状态[span_50](end_span) 
+            [span_51](start_span)document.getElementById('fakePage').style.display = 'none';[span_51](end_span) 
+            [span_52](start_span)document.getElementById('realContent').style.display = 'flex';[span_52](end_span) 
+            [span_53](start_span)document.getElementById('topControls').style.display = 'flex';[span_53](end_span) 
+            document.getElementById('mainTitle').innerText = SETTINGS.titleText || [span_54](start_span)"";[span_54](end_span) 
+            document.getElementById('notice').innerText = SETTINGS.notice || [span_55](start_span)"";[span_55](end_span) 
+            [span_56](start_span)document.getElementById('realContent').style.backgroundImage = `url('${SETTINGS.bgUrl || ""}')`;[span_56](end_span) 
+            [span_57](start_span)document.getElementById('snowCanvas').style.display = 'block';[span_57](end_span) 
+            [span_58](start_span)initSnow();[span_58](end_span) 
             closeModal('audioConfirmModal');
         } else {
-            // 点击取消，刷新回伪装页，就像退出了
-            location.reload();
+            location.reload(); // 点击取消则刷新
         }
     }
 
     function toggleMusic() {
         if (audio.paused) {
-            audio.play();
-            document.getElementById('musicBtn').classList.add('music-playing');
+            [span_59](start_span)audio.play();[span_59](end_span) 
+            [span_60](start_span)document.getElementById('musicBtn').classList.add('music-playing');[span_60](end_span) 
         } else {
-            audio.pause();
-            document.getElementById('musicBtn').classList.remove('music-playing');
+            [span_61](start_span)audio.pause();[span_61](end_span) 
+            [span_62](start_span)document.getElementById('musicBtn').classList.remove('music-playing');[span_62](end_span) 
         }
     }
 
-    function playTrack(index) {
-        if (playlist.length === 0) return;
-        currentTrackIndex = index;
-        audio.pause();
-        audio.src = playlist[currentTrackIndex];
-        audio.load();
-        audio.play().then(() => {
-            document.getElementById('musicBtn').classList.add('music-playing');
-        });
-    }
-
-    function nextTrack() {
-        if (playlist.length > 0) {
-            let nextIndex = (currentTrackIndex + 1) % playlist.length;
-            playTrack(nextIndex);
-        }
-    }
-
-    audio.addEventListener('ended', function() {
-        if (playlist.length > 1) nextTrack();
-        else audio.play();
-    });
-
-    // 管理端逻辑保持不变...
     async function checkAdminBeforeEntry() {
-        const inputPwd = document.getElementById('adminAuthPwd').value;
-        const res = await fetch('/api/update-links', {
+        [span_63](start_span)const inputPwd = document.getElementById('adminAuthPwd').value;[span_63](end_span) 
+        [span_64](start_span)const res = await fetch('/api/update-links', {[span_64](end_span) 
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ password: inputPwd, checkOnly: true }) 
         });
-        const ret = await res.json();
+        [span_65](start_span)const ret = await res.json();[span_65](end_span) 
         if(ret.success) {
-            LAST_ADMIN_PWD = inputPwd;
-            document.getElementById('editTitle').value = SETTINGS.titleText || "";
-            document.getElementById('editSub1').value = SETTINGS.sub1 || "";
-            document.getElementById('editSub2').value = SETTINGS.sub2 || "";
-            document.getElementById('editSub3').value = SETTINGS.sub3 || "";
-            document.getElementById('editNotice').value = SETTINGS.notice || "";
-            document.getElementById('editBgUrl').value = SETTINGS.bgUrl || "";
-            document.getElementById('editMusicUrl').value = SETTINGS.musicUrl || "";
-            document.getElementById('editUserPwd').value = SETTINGS.userPassword || "";
-            closeModal('adminAuthModal');
-            openModal('adminPanelModal');
-        } else alert("验证失败");
+            [span_66](start_span)LAST_ADMIN_PWD = inputPwd;[span_66](end_span) 
+            document.getElementById('editTitle').value = SETTINGS.titleText || [span_67](start_span)"";[span_67](end_span) 
+            document.getElementById('editSub1').value = SETTINGS.sub1 || [span_68](start_span)"";[span_68](end_span) 
+            document.getElementById('editSub2').value = SETTINGS.sub2 || [span_69](start_span)"";[span_69](end_span) 
+            document.getElementById('editSub3').value = SETTINGS.sub3 || [span_70](start_span)"";[span_70](end_span) 
+            document.getElementById('editNotice').value = SETTINGS.notice || [span_71](start_span)"";[span_71](end_span) 
+            document.getElementById('editBgUrl').value = SETTINGS.bgUrl || [span_72](start_span)"";[span_72](end_span) 
+            document.getElementById('editMusicUrl').value = SETTINGS.musicUrl || [span_73](start_span)"";[span_73](end_span) 
+            document.getElementById('editModalTitle').value = SETTINGS.modalTitle || "";
+            document.getElementById('editModalBody').value = SETTINGS.modalBody || "";
+            document.getElementById('editUserPwd').value = SETTINGS.userPassword || [span_74](start_span)"";[span_74](end_span) 
+            [span_75](start_span)closeModal('adminAuthModal');[span_75](end_span) 
+            [span_76](start_span)openModal('adminPanelModal');[span_76](end_span) 
+        [span_77](start_span)} else { alert("验证失败");[span_77](end_span) }
     }
 
     async function saveSettings() {
         const payload = {
-            password: LAST_ADMIN_PWD,
-            titleText: document.getElementById('editTitle').value,
-            sub1: document.getElementById('editSub1').value,
-            sub2: document.getElementById('editSub2').value,
-            sub3: document.getElementById('editSub3').value,
-            notice: document.getElementById('editNotice').value,
-            bgUrl: document.getElementById('editBgUrl').value,
-            musicUrl: document.getElementById('editMusicUrl').value,
-            userPassword: document.getElementById('editUserPwd').value
+            [span_78](start_span)password: LAST_ADMIN_PWD,[span_78](end_span) 
+            [span_79](start_span)titleText: document.getElementById('editTitle').value,[span_79](end_span) 
+            [span_80](start_span)sub1: document.getElementById('editSub1').value,[span_80](end_span) 
+            [span_81](start_span)sub2: document.getElementById('editSub2').value,[span_81](end_span) 
+            [span_82](start_span)sub3: document.getElementById('editSub3').value,[span_82](end_span) 
+            [span_83](start_span)notice: document.getElementById('editNotice').value,[span_83](end_span) 
+            [span_84](start_span)bgUrl: document.getElementById('editBgUrl').value,[span_84](end_span) 
+            [span_85](start_span)musicUrl: document.getElementById('editMusicUrl').value,[span_85](end_span) 
+            modalTitle: document.getElementById('editModalTitle').value,
+            modalBody: document.getElementById('editModalBody').value,
+            [span_86](start_span)userPassword: document.getElementById('editUserPwd').value[span_86](end_span) 
         };
-        const res = await fetch('/api/update-links', {
+        [span_87](start_span)const res = await fetch('/api/update-links', {[span_87](end_span) 
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
-        if((await res.json()).success) { alert("保存成功"); location.reload(); }
+        [span_88](start_span)if((await res.json()).success) { alert("保存成功"); location.reload();[span_88](end_span) }
     }
 
     function copyLink(n) {
-        let url = (n===1) ? SETTINGS.sub1 : (n===2) ? SETTINGS.sub2 : SETTINGS.sub3;
-        if(!url) return alert("未配置链接");
-        navigator.clipboard.writeText(url).then(() => alert("复制成功"));
+        [span_89](start_span)let url = "";[span_89](end_span) 
+        [span_90](start_span)if(n===1) url=SETTINGS.sub1; else if(n===2) url=SETTINGS.sub2; else url=SETTINGS.sub3;[span_90](end_span) 
+        [span_91](start_span)if(!url) return alert("未配置链接");[span_91](end_span) 
+        [span_92](start_span)navigator.clipboard.writeText(url).then(() => alert("复制成功"));[span_92](end_span) 
     }
 
     function initSnow() {
-        const canvas = document.getElementById('snowCanvas');
-        const ctx = canvas.getContext('2d');
-        let width = canvas.width = window.innerWidth, height = canvas.height = window.innerHeight;
-        let flakes = [];
-        for(let i=0; i<100; i++) flakes.push({x: Math.random()*width, y: Math.random()*height, r: Math.random()*3+1, d: Math.random()+0.5, o: Math.random()*0.5+0.3});
+        [span_93](start_span)const canvas = document.getElementById('snowCanvas');[span_93](end_span) 
+        [span_94](start_span)const ctx = canvas.getContext('2d');[span_94](end_span) 
+        [span_95](start_span)let width = canvas.width = window.innerWidth, height = canvas.height = window.innerHeight;[span_95](end_span) 
+        [span_96](start_span)let flakes = [];[span_96](end_span) 
+        [span_97](start_span)for(let i=0; i<100; i++) flakes.push({x: Math.random()*width, y: Math.random()*height, r: Math.random()*3+1, d: Math.random()+0.5, o: Math.random()*0.5+0.3});[span_97](end_span) 
         function draw() {
-            ctx.clearRect(0,0,width,height); ctx.fillStyle="white";
-            for(let f of flakes) { ctx.globalAlpha=f.o; ctx.beginPath(); ctx.arc(f.x,f.y,f.r,0,Math.PI*2); ctx.fill(); f.y+=f.d; if(f.y>height) f.y=-5; }
-            requestAnimationFrame(draw);
+            [span_98](start_span)ctx.clearRect(0,0,width,height); ctx.fillStyle="white";[span_98](end_span) 
+            [span_99](start_span)for(let f of flakes) { ctx.globalAlpha=f.o; ctx.beginPath(); ctx.arc(f.x,f.y,f.r,0,Math.PI*2); ctx.fill(); f.y+=f.d; if(f.y>height) f.y=-5;[span_99](end_span) }
+            [span_100](start_span)requestAnimationFrame(draw);[span_100](end_span) 
         }
-        draw();
+        [span_101](start_span)draw();[span_101](end_span) 
     }
 
-    function openAdminPortal() { document.getElementById('adminAuthPwd').value = ""; openModal('adminAuthModal'); }
+    [span_102](start_span)function openAdminPortal() { document.getElementById('adminAuthPwd').value = ""; openModal('adminAuthModal');[span_102](end_span) }
 
-    // 初始化渲染
-    document.getElementById('ray-id').innerText = Math.random().toString(16).slice(2, 14);
-    document.getElementById('ray-id-ft').innerText = document.getElementById('ray-id').innerText;
-    document.getElementById('ts-id').innerText = new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
-    document.querySelectorAll('.domain-info').forEach(e => e.innerText = window.location.hostname);
-    fetch('https://api.ipify.org?format=json').then(r => r.json()).then(d => document.getElementById('user-ip').innerText = d.ip).catch(()=>{});
+    [span_103](start_span)document.getElementById('ray-id').innerText = Math.random().toString(16).slice(2, 14);[span_103](end_span) 
+    [span_104](start_span)document.getElementById('ray-id-ft').innerText = document.getElementById('ray-id').innerText;[span_104](end_span) 
+    [span_105](start_span)document.getElementById('ts-id').innerText = new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';[span_105](end_span) 
+    [span_106](start_span)document.querySelectorAll('.domain-info').forEach(e => e.innerText = window.location.hostname);[span_106](end_span) 
+    [span_107](start_span)fetch('https://api.ipify.org?format=json').then(r => r.json()).then(d => document.getElementById('user-ip').innerText = d.ip).catch(()=>{});[span_107](end_span) 
 </script>
 </body>
 </html>
