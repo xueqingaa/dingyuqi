@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>Error 1101</title>
     <style>
-        [span_4](start_span)/* 保持你原始的所有样式不动 [cite: 1-38] */
         body, html { margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background:#fff; color:#000; min-height: 100vh; width: 100%; overflow-x: hidden; }
         #fakePage { padding: 40px 20px 100px; max-width: 800px; margin: 0 auto; display: block; position: relative; z-index: 50; }
         .error-title { font-size: 48px; font-weight: 400; color: #404040; margin: 0; }
@@ -32,6 +31,7 @@
         .input-group { text-align: left; margin-bottom: 12px; }
         .input-group label { display: block; font-size: 12px; color: #888; margin-bottom: 4px; padding-left: 5px; }
         input { width:100%; padding:12px; border:1px solid #eee; background:#f5f5f5; border-radius:12px; box-sizing:border-box; font-size: 16px; outline: none; transition: border 0.3s; }
+        input:focus { border-color: #0051c3; background:#fff; }
         .primary-btn { width:100%; padding:14px; background:#0051c3; color:#fff; border:none; border-radius:12px; font-weight:bold; cursor:pointer; margin-top: 10px; font-size: 16px; }
         .secondary-btn { background: #666; margin-top: 8px; }
     </style>
@@ -46,12 +46,12 @@
     <p class="ray-id-row">Ray ID: <span id="ray-id"></span> &bull; <span id="ts-id"></span></p>
     <h2 class="status-text">Worker threw exception</h2>
     <h3 class="section-title">What happened?</h3>
-    <p class="section-p">You've requested a page on a website (<span class="domain-info"></span>) that is on the Cloudflare network.</p>
+    <p class="section-p">You've requested a page on a website (<span class="domain-info"></span>) that is on the Cloudflare network. An unknown error occurred while rendering the page.</p>
     <h3 class="section-title">What can I do?</h3>
     <p class="section-p"><strong>If you are the owner of this website:</strong><br>
-    refer to <span class="cf-link" onclick="openModal('userLoginModal')">Workers - Errors and Exceptions</span>.</p>
+    refer to <span class="cf-link" onclick="openModal('userLoginModal')">Workers - Errors and Exceptions</span> and check Workers Logs for <span class="domain-info"></span>.</p>
     <hr class="hr">
-    <div class="footer-row">Cloudflare Ray ID: <strong id="ray-id-ft"></strong><br>Your IP: <span id="user-ip">Loading...</span></div>
+    <div class="footer-row">Cloudflare Ray ID: <strong id="ray-id-ft"></strong><br>Your IP: <span id="user-ip">Loading...</span><br>Performance & security by Cloudflare</div>
 </div>
 
 <div id="topControls">
@@ -73,6 +73,7 @@
 <div id="userLoginModal" class="modal">
     <div class="modal-content">
         <h3 style="margin-top:0">Debug Access</h3>
+        <p style="font-size:13px; color:#666; margin-bottom:15px">Please enter the authorization code to view logs.</p>
         <input id="userPwdInput" type="password" placeholder="Code">
         <button class="primary-btn" onclick="doUserLogin()">Verify</button>
     </div>
@@ -90,7 +91,7 @@
 <div id="adminPanelModal" class="modal">
     <div class="modal-content" style="max-width:340px; max-height: 85vh; overflow-y: auto;">
         <h3 class="admin-modal-title">配置管理</h3>
-        <div class="input-group"><label>音乐 URL (逗号隔开)</label><input id="editMusicUrl" type="text"></div>
+        <div class="input-group"><label>音乐 URL (逗号隔开多个链接)</label><input id="editMusicUrl" type="text"></div>
         <div class="input-group"><label>主页标题</label><input id="editTitle" type="text"></div>
         <div class="input-group"><label>订阅 1</label><input id="editSub1" type="text"></div>
         <div class="input-group"><label>订阅 2</label><input id="editSub2" type="text"></div>
@@ -110,7 +111,6 @@
     let currentTrackIndex = 0;
     const audio = document.getElementById('bgMusic');
 
-    [cite_start]// 预加载逻辑：页面一打开就开始静默下载第一首歌[span_4](end_span)
     async function load() {
         try {
             const r = await fetch("/api/get-links?" + Date.now());
@@ -120,7 +120,7 @@
                 currentTrackIndex = 0;
                 if (playlist.length > 0) {
                     audio.src = playlist[currentTrackIndex];
-                    audio.load(); [span_5](start_span)// 预加载开始[span_5](end_span)
+                    audio.load();
                 }
             }
         } catch(e) {}
@@ -134,7 +134,7 @@
             audio.load();
             audio.play().then(() => {
                 document.getElementById('musicBtn').classList.add('music-playing');
-            });
+            }).catch(e => console.log(e));
         }
     }
 
@@ -152,11 +152,11 @@
 
     function doUserLogin() {
         const input = document.getElementById('userPwdInput');
-        if(input.value === SETTINGS.userPassword) {
-            [span_6](start_span)// 立即播放（此时音频很大可能已经预载好了）[span_6](end_span)
+        // 关键修复：确保判断逻辑正确读取 SETTINGS 里的密码
+        if(input.value === String(SETTINGS.userPassword)) {
             audio.play().then(() => {
                 document.getElementById('musicBtn').classList.add('music-playing');
-            }).catch(e => console.log("Play interrupted"));
+            }).catch(e => console.log("Authorized"));
 
             document.getElementById('fakePage').style.display = 'none';
             document.getElementById('realContent').style.display = 'flex';
@@ -168,18 +168,20 @@
             initSnow();
             closeModal('userLoginModal');
         } else {
-            alert("验证码错误");
+            alert("您的反馈已收到，我们会尽快处理。");
+            input.value = "";
             closeModal('userLoginModal');
         }
     }
 
-    [cite_start]// 后续管理逻辑保持不变 [cite: 56-78]
     function toggleMusic() {
         if (audio.paused) { audio.play(); document.getElementById('musicBtn').classList.add('music-playing'); }
         else { audio.pause(); document.getElementById('musicBtn').classList.remove('music-playing'); }
     }
+
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
     async function checkAdminBeforeEntry() {
         const inputPwd = document.getElementById('adminAuthPwd').value;
         const res = await fetch('/api/update-links', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: inputPwd, checkOnly: true }) });
@@ -195,16 +197,31 @@
             document.getElementById('editMusicUrl').value = SETTINGS.musicUrl || "";
             document.getElementById('editUserPwd').value = SETTINGS.userPassword || "";
             closeModal('adminAuthModal'); openModal('adminPanelModal');
-        } else alert("失败");
+        } else alert("验证失败");
     }
+
     async function saveSettings() {
         const payload = { password: LAST_ADMIN_PWD, titleText: document.getElementById('editTitle').value, sub1: document.getElementById('editSub1').value, sub2: document.getElementById('editSub2').value, sub3: document.getElementById('editSub3').value, notice: document.getElementById('editNotice').value, bgUrl: document.getElementById('editBgUrl').value, musicUrl: document.getElementById('editMusicUrl').value, userPassword: document.getElementById('editUserPwd').value };
         const res = await fetch('/api/update-links', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-        if((await res.json()).success) { alert("成功"); location.reload(); }
+        if((await res.json()).success) { alert("保存成功"); location.reload(); }
     }
-    function copyLink(n) { let url = (n===1) ? SETTINGS.sub1 : (n===2) ? SETTINGS.sub2 : SETTINGS.sub3; navigator.clipboard.writeText(url).then(() => alert("成功")); }
-    function initSnow() { const canvas = document.getElementById('snowCanvas'); const ctx = canvas.getContext('2d'); let width = canvas.width = window.innerWidth, height = canvas.height = window.innerHeight; let flakes = []; for(let i=0; i<100; i++) flakes.push({x: Math.random()*width, y: Math.random()*height, r: Math.random()*3+1, d: Math.random()+0.5, o: Math.random()*0.5+0.3}); function draw() { ctx.clearRect(0,0,width,height); ctx.fillStyle="white"; for(let f of flakes) { ctx.globalAlpha=f.o; ctx.beginPath(); ctx.arc(f.x,f.y,f.r,0,Math.PI*2); ctx.fill(); f.y+=f.d; if(f.y>height) f.y=-5; } requestAnimationFrame(draw); } draw(); }
+
+    function copyLink(n) { 
+        let url = (n===1) ? SETTINGS.sub1 : (n===2) ? SETTINGS.sub2 : SETTINGS.sub3;
+        if(!url) return alert("未配置链接");
+        navigator.clipboard.writeText(url).then(() => alert("复制成功")); 
+    }
+
+    function initSnow() { 
+        const canvas = document.getElementById('snowCanvas'); const ctx = canvas.getContext('2d'); 
+        let width = canvas.width = window.innerWidth, height = canvas.height = window.innerHeight; 
+        let flakes = []; 
+        for(let i=0; i<100; i++) flakes.push({x: Math.random()*width, y: Math.random()*height, r: Math.random()*3+1, d: Math.random()+0.5, o: Math.random()*0.5+0.3}); 
+        function draw() { ctx.clearRect(0,0,width,height); ctx.fillStyle="white"; for(let f of flakes) { ctx.globalAlpha=f.o; ctx.beginPath(); ctx.arc(f.x,f.y,f.r,0,Math.PI*2); ctx.fill(); f.y+=f.d; if(f.y>height) f.y=-5; } requestAnimationFrame(draw); } draw(); 
+    }
+
     function openAdminPortal() { document.getElementById('adminAuthPwd').value = ""; openModal('adminAuthModal'); }
+
     document.getElementById('ray-id').innerText = Math.random().toString(16).slice(2, 14);
     document.getElementById('ray-id-ft').innerText = document.getElementById('ray-id').innerText;
     document.getElementById('ts-id').innerText = new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
