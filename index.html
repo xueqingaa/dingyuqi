@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>Error 1101</title>
     <style>
+        [span_5](start_span)/* 严格保留原始伪装页样式 [cite: 2-38] */
         body, html { margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background:#fff; color:#000; min-height: 100vh; width: 100%; overflow-x: hidden; }
         #fakePage { padding: 40px 20px 100px; max-width: 800px; margin: 0 auto; display: block; position: relative; z-index: 50; }
         .error-title { font-size: 48px; font-weight: 400; color: #404040; margin: 0; }
@@ -28,10 +29,7 @@
         #notice { margin-top: 60px; color: #a5f3fc; font-weight:bold; font-size: 1rem; padding: 0 20px; }
         .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:3000; }
         .modal-content { background:#fff; padding:30px 20px; border-radius:20px; width: 80%; max-width: 300px; text-align:center; color:#333; position: relative; box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
-        .input-group { text-align: left; margin-bottom: 12px; }
-        .input-group label { display: block; font-size: 12px; color: #888; margin-bottom: 4px; padding-left: 5px; }
         input { width:100%; padding:12px; border:1px solid #eee; background:#f5f5f5; border-radius:12px; box-sizing:border-box; font-size: 16px; outline: none; transition: border 0.3s; }
-        input:focus { border-color: #0051c3; background:#fff; }
         .primary-btn { width:100%; padding:14px; background:#0051c3; color:#fff; border:none; border-radius:12px; font-weight:bold; cursor:pointer; margin-top: 10px; font-size: 16px; }
         .secondary-btn { background: #666; margin-top: 8px; }
     </style>
@@ -46,7 +44,7 @@
     <p class="ray-id-row">Ray ID: <span id="ray-id"></span> &bull; <span id="ts-id"></span></p>
     <h2 class="status-text">Worker threw exception</h2>
     <h3 class="section-title">What happened?</h3>
-    <p class="section-p">You've requested a page on a website (<span class="domain-info"></span>) that is on the Cloudflare network. An unknown error occurred while rendering the page.</p>
+    <p class="section-p">You've requested a page on a website (<span class="domain-info"></span>) that is on the Cloudflare network. [cite_start]An unknown error occurred while rendering the page.[span_5](end_span)</p>
     <h3 class="section-title">What can I do?</h3>
     <p class="section-p"><strong>If you are the owner of this website:</strong><br>
     refer to <span class="cf-link" onclick="openModal('userLoginModal')">Workers - Errors and Exceptions</span> and check Workers Logs for <span class="domain-info"></span>.</p>
@@ -106,7 +104,6 @@
 
 <script>
     let SETTINGS = {};
-    let LAST_ADMIN_PWD = "";
     let playlist = []; 
     let currentTrackIndex = 0;
     const audio = document.getElementById('bgMusic');
@@ -116,6 +113,7 @@
             const r = await fetch("/api/get-links?" + Date.now());
             SETTINGS = await r.json();
             if (SETTINGS.musicUrl) {
+                [span_6](start_span)// 自动处理单个或多个逗号分隔的链接[span_6](end_span)
                 playlist = SETTINGS.musicUrl.split(',').map(s => s.trim()).filter(s => s !== "");
                 currentTrackIndex = 0;
                 if (playlist.length > 0) {
@@ -134,7 +132,7 @@
             audio.load();
             audio.play().then(() => {
                 document.getElementById('musicBtn').classList.add('music-playing');
-            }).catch(e => console.log(e));
+            }).catch(e => console.log("iOS 待激活", e));
         }
     }
 
@@ -145,18 +143,22 @@
         }
     }
 
+    // 监听结束自动播放下一首
     audio.addEventListener('ended', function() {
         if (playlist.length > 1) nextTrack();
-        else audio.play();
+        else audio.play(); 
     });
 
     function doUserLogin() {
         const input = document.getElementById('userPwdInput');
-        // 关键修复：确保判断逻辑正确读取 SETTINGS 里的密码
         if(input.value === String(SETTINGS.userPassword)) {
+            [span_7](start_span)// iOS 关键点：在用户点击回调中激活音频[span_7](end_span)
             audio.play().then(() => {
                 document.getElementById('musicBtn').classList.add('music-playing');
-            }).catch(e => console.log("Authorized"));
+            }).catch(e => {
+                // 如果还未下载完，至少已经获得了播放授权
+                console.log("Audio authorized, loading...");
+            });
 
             document.getElementById('fakePage').style.display = 'none';
             document.getElementById('realContent').style.display = 'flex';
@@ -168,7 +170,7 @@
             initSnow();
             closeModal('userLoginModal');
         } else {
-            alert("您的反馈已收到，我们会尽快处理。");
+            [span_8](start_span)alert("您的反馈已收到，我们会尽快处理。");[span_8](end_span)
             input.value = "";
             closeModal('userLoginModal');
         }
@@ -187,7 +189,7 @@
         const res = await fetch('/api/update-links', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: inputPwd, checkOnly: true }) });
         const ret = await res.json();
         if(ret.success) {
-            LAST_ADMIN_PWD = inputPwd;
+            window.LAST_ADMIN_PWD = inputPwd;
             document.getElementById('editTitle').value = SETTINGS.titleText || "";
             document.getElementById('editSub1').value = SETTINGS.sub1 || "";
             document.getElementById('editSub2').value = SETTINGS.sub2 || "";
@@ -201,7 +203,7 @@
     }
 
     async function saveSettings() {
-        const payload = { password: LAST_ADMIN_PWD, titleText: document.getElementById('editTitle').value, sub1: document.getElementById('editSub1').value, sub2: document.getElementById('editSub2').value, sub3: document.getElementById('editSub3').value, notice: document.getElementById('editNotice').value, bgUrl: document.getElementById('editBgUrl').value, musicUrl: document.getElementById('editMusicUrl').value, userPassword: document.getElementById('editUserPwd').value };
+        const payload = { password: window.LAST_ADMIN_PWD, titleText: document.getElementById('editTitle').value, sub1: document.getElementById('editSub1').value, sub2: document.getElementById('editSub2').value, sub3: document.getElementById('editSub3').value, notice: document.getElementById('editNotice').value, bgUrl: document.getElementById('editBgUrl').value, musicUrl: document.getElementById('editMusicUrl').value, userPassword: document.getElementById('editUserPwd').value };
         const res = await fetch('/api/update-links', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
         if((await res.json()).success) { alert("保存成功"); location.reload(); }
     }
