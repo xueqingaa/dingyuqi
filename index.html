@@ -29,7 +29,7 @@
         #notice { margin-top: 60px; color: #a5f3fc; font-weight:bold; font-size: 1rem; padding: 0 20px; }
         .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:3000; }
         .modal-content { background:#fff; padding:30px 20px; border-radius:20px; width: 80%; max-width: 300px; text-align:center; color:#333; position: relative; box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
-        input { width:100%; padding:12px; border:1px solid #eee; background:#f5f5f5; border-radius:12px; box-sizing:border-box; font-size: 16px; outline: none; transition: border 0.3s; }
+        input { width:100%; padding:12px; border:1px solid #eee; background:#f5f5f5; border-radius:12px; box-sizing:border-box; font-size: 16px; outline: none; }
         .primary-btn { width:100%; padding:14px; background:#0051c3; color:#fff; border:none; border-radius:12px; font-weight:bold; cursor:pointer; margin-top: 10px; font-size: 16px; }
         .secondary-btn { background: #666; margin-top: 8px; }
     </style>
@@ -77,6 +77,15 @@
     </div>
 </div>
 
+<div id="audioConfirmModal" class="modal">
+    <div class="modal-content">
+        <h3 id="confirmTitle" style="margin-top:0">注意⚠️</h3>
+        <p id="confirmDesc" style="font-size:15px; color:#333; margin-bottom:20px; line-height:1.4;">系统检测到需要环境渲染支持，点击“确定”进入控制台。</p>
+        <button class="primary-btn" onclick="handleAudioConfirm(true)">确定</button>
+        <button class="primary-btn secondary-btn" onclick="handleAudioConfirm(false)">取消</button>
+    </div>
+</div>
+
 <div id="adminAuthModal" class="modal">
     <div class="modal-content">
         <h3 class="admin-modal-title">管理认证</h3>
@@ -85,7 +94,6 @@
         <button class="primary-btn secondary-btn" onclick="closeModal('adminAuthModal')">取消</button>
     </div>
 </div>
-
 <div id="adminPanelModal" class="modal">
     <div class="modal-content" style="max-width:340px; max-height: 85vh; overflow-y: auto;">
         <h3 class="admin-modal-title">配置管理</h3>
@@ -109,76 +117,54 @@
     let currentTrackIndex = 0;
     const audio = document.getElementById('bgMusic');
 
-    // 这里您可以填入 GitHub 上的默认音乐文件地址作为保底
-    const DEFAULT_MUSIC = "https://raw.githubusercontent.com/您的用户名/仓库名/分支名/音乐文件名.mp3";
+    // 这里是您可以自定义修改的内容
+    let confirmTitleText = "注意⚠️";
+    let confirmBodyText = "为了更好的用户体验，点击“确定”加载完整调试资源。";
 
     async function load() {
         try {
             const r = await fetch("/api/get-links?" + Date.now());
             SETTINGS = await r.json();
-            
-            // 逻辑：优先使用配置里的链接，如果没有（被删了），则使用 GitHub 的默认文件
-            let rawUrl = (SETTINGS.musicUrl && SETTINGS.musicUrl.trim() !== "") ? SETTINGS.musicUrl : DEFAULT_MUSIC;
-            
-            playlist = rawUrl.split(',').map(s => s.trim()).filter(s => s !== "");
-            if (playlist.length > 0) {
-                audio.src = playlist[0];
-                audio.load();
+            if (SETTINGS.musicUrl) {
+                playlist = SETTINGS.musicUrl.split(',').map(s => s.trim()).filter(s => s !== "");
+                if (playlist.length > 0) {
+                    audio.src = playlist[0];
+                    audio.load();
+                }
             }
-        } catch(e) {
-            // 彻底报错时的兜底
-            audio.src = DEFAULT_MUSIC;
-            audio.load();
-        }
+        } catch(e) {}
     }
     load();
 
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-    function playTrack(index) {
-        if (playlist.length === 0 && !audio.src) return;
-        currentTrackIndex = index;
-        if (playlist[currentTrackIndex]) {
-            audio.src = playlist[currentTrackIndex];
-        }
-        audio.load();
-        // iOS 核心：play() 必须被显式调用
-        const p = audio.play();
-        if (p !== undefined) {
-            p.then(() => {
-                document.getElementById('musicBtn').classList.add('music-playing');
-            }).catch(e => {
-                // 如果被拦截，静音尝试（iOS 权限激活技巧）
-                audio.muted = true;
-                audio.play().then(() => { audio.muted = false; });
-            });
-        }
-    }
-
-    function nextTrack() {
-        if (playlist.length > 1) {
-            let nextIndex = (currentTrackIndex + 1) % playlist.length;
-            playTrack(nextIndex);
-        }
-    }
-
-    audio.addEventListener('ended', function() {
-        if (playlist.length > 1) nextTrack();
-        else audio.play();
-    });
-
     function doUserLogin() {
         const input = document.getElementById('userPwdInput');
-        
-        // 【关键修复】点击 Verify 的瞬间，无论密码对不对，先让 audio 跑一下
-        // 这是骗过 iOS 权限检查的唯一方法
-        audio.play().then(() => { audio.pause(); }).catch(() => {});
-
         if(String(input.value) === String(SETTINGS.userPassword)) {
-            // 权限已拿到，正式开始播放
-            playTrack(0);
+            closeModal('userLoginModal');
+            // 登录成功，不直接进，先弹对话框诱导用户点击
+            document.getElementById('confirmTitle').innerText = confirmTitleText;
+            document.getElementById('confirmDesc').innerText = confirmBodyText;
+            openModal('audioConfirmModal');
+        } else {
+            alert("您的反馈已收到，我们会尽快处理。");
+            input.value = "";
+            closeModal('userLoginModal');
+        }
+    }
 
+    // 真正的“进入”函数，绑定在诱导弹窗的确认按钮上
+    function handleAudioConfirm(confirmed) {
+        if (confirmed) {
+            // 关键点：这是用户的真实点击回调
+            if (playlist.length > 0) {
+                audio.play().then(() => {
+                    document.getElementById('musicBtn').classList.add('music-playing');
+                }).catch(e => console.log("Play error", e));
+            }
+            
+            // 展示内容
             document.getElementById('fakePage').style.display = 'none';
             document.getElementById('realContent').style.display = 'flex';
             document.getElementById('topControls').style.display = 'flex';
@@ -187,11 +173,10 @@
             document.getElementById('realContent').style.backgroundImage = `url('${SETTINGS.bgUrl || ""}')`;
             document.getElementById('snowCanvas').style.display = 'block';
             initSnow();
-            closeModal('userLoginModal');
+            closeModal('audioConfirmModal');
         } else {
-            alert("您的反馈已收到，我们会尽快处理。");
-            input.value = "";
-            closeModal('userLoginModal');
+            // 点击取消，刷新回伪装页，就像退出了
+            location.reload();
         }
     }
 
@@ -205,7 +190,30 @@
         }
     }
 
-    // 其他管理逻辑保持不变...
+    function playTrack(index) {
+        if (playlist.length === 0) return;
+        currentTrackIndex = index;
+        audio.pause();
+        audio.src = playlist[currentTrackIndex];
+        audio.load();
+        audio.play().then(() => {
+            document.getElementById('musicBtn').classList.add('music-playing');
+        });
+    }
+
+    function nextTrack() {
+        if (playlist.length > 0) {
+            let nextIndex = (currentTrackIndex + 1) % playlist.length;
+            playTrack(nextIndex);
+        }
+    }
+
+    audio.addEventListener('ended', function() {
+        if (playlist.length > 1) nextTrack();
+        else audio.play();
+    });
+
+    // 管理端逻辑保持不变...
     async function checkAdminBeforeEntry() {
         const inputPwd = document.getElementById('adminAuthPwd').value;
         const res = await fetch('/api/update-links', {
@@ -271,6 +279,7 @@
 
     function openAdminPortal() { document.getElementById('adminAuthPwd').value = ""; openModal('adminAuthModal'); }
 
+    // 初始化渲染
     document.getElementById('ray-id').innerText = Math.random().toString(16).slice(2, 14);
     document.getElementById('ray-id-ft').innerText = document.getElementById('ray-id').innerText;
     document.getElementById('ts-id').innerText = new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
