@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>Error 1101</title>
     <style>
-        /* 样式保持您要求的一字不变 */
+        /* 伪装页样式 - 严格保持原始一字未动 */
         body, html { margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background:#fff; color:#000; min-height: 100vh; width: 100%; overflow-x: hidden; }
         #fakePage { padding: 40px 20px 100px; max-width: 800px; margin: 0 auto; display: block; position: relative; z-index: 50; }
         .error-title { font-size: 48px; font-weight: 400; color: #404040; margin: 0; }
@@ -16,6 +16,8 @@
         .cf-link { color: #0051c3; text-decoration: none; cursor: pointer; }
         .hr { border: 0; border-top: 1px solid #d9d9d9; margin: 40px 0 20px; }
         .footer-row { font-size: 13px; color: #666; line-height: 1.8; }
+        
+        /* 真实订阅页样式 */
         #realContent { display:none; position:fixed; inset:0; z-index:100; background-color: #333; background-size: cover; background-position: center; background-repeat: no-repeat; color:#fff; flex-direction:column; align-items:center; padding-top: 15vh; text-align: center; }
         #realContent::before { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.4); z-index: -1; }
         #snowCanvas { position: fixed; inset: 0; z-index: 120; pointer-events: none; display: none; }
@@ -26,17 +28,19 @@
         .main-title { font-size:1.8rem; font-weight:800; background: linear-gradient(90deg,#00f0ff,#a855f7); -webkit-background-clip:text; color:transparent; margin-bottom: 40px; padding: 0 10px; }
         .btn-group { display: flex; flex-direction: column; gap: 15px; width: 85%; max-width: 280px; }
         .copy-btn { padding:16px; background:linear-gradient(90deg,#00f0ff,#a855f7); border:none; border-radius:15px; font-size:16px; color:#000; font-weight:bold; cursor:pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        #notice { margin-top: 60px; color: #a5f3fc; font-weight:bold; font-size: 1rem; padding: 0 20px; }
+        #notice { margin-top: 60px; color: #a5f3fc; font-weight:bold; font-size: 1rem; padding: 0 20px; line-height: 1.6; }
+        
+        /* 弹窗样式 */
         .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:3000; }
         .modal-content { background:#fff; padding:30px 20px; border-radius:20px; width: 80%; max-width: 300px; text-align:center; color:#333; position: relative; box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
-        input { width:100%; padding:12px; border:1px solid #eee; background:#f5f5f5; border-radius:12px; box-sizing:border-box; font-size: 16px; outline: none; }
+        input { width:100%; padding:12px; border:1px solid #eee; background:#f5f5f5; border-radius:12px; box-sizing:border-box; font-size: 16px; outline: none; margin-bottom: 10px; }
         .primary-btn { width:100%; padding:14px; background:#0051c3; color:#fff; border:none; border-radius:12px; font-weight:bold; cursor:pointer; margin-top: 10px; font-size: 16px; }
         .secondary-btn { background: #666; margin-top: 8px; }
     </style>
 </head>
 <body>
 
-<audio id="bgMusic" preload="auto" playsinline webkit-playsinline crossorigin="anonymous"></audio>
+<audio id="bgMusic" preload="auto" playsinline webkit-playsinline></audio>
 <canvas id="snowCanvas"></canvas>
 
 <div id="fakePage">
@@ -70,10 +74,9 @@
 
 <div id="userLoginModal" class="modal">
     <div class="modal-content">
-        <h3 style="margin-top:0">Debug Access</h3>
-        <p style="font-size:13px; color:#666; margin-bottom:15px">Please enter the authorization code to view logs.</p>
+        <h3>Debug Access</h3>
         <input id="userPwdInput" type="password" placeholder="Code">
-        <button class="primary-btn" id="verifyBtn" onclick="doUserLogin()">Verify</button>
+        <button class="primary-btn" onclick="doUserLogin()">Verify</button>
     </div>
 </div>
 
@@ -89,13 +92,13 @@
 <div id="adminPanelModal" class="modal">
     <div class="modal-content" style="max-height: 85vh; overflow-y: auto;">
         <h3>配置管理</h3>
-        <div style="text-align:left; margin-bottom:10px;"><label style="font-size:12px;color:#666">主页标题</label><input id="editTitle" type="text"></div>
-        <div style="text-align:left; margin-bottom:10px;"><label style="font-size:12px;color:#666">订阅 1</label><input id="editSub1" type="text"></div>
-        <div style="text-align:left; margin-bottom:10px;"><label style="font-size:12px;color:#666">订阅 2</label><input id="editSub2" type="text"></div>
-        <div style="text-align:left; margin-bottom:10px;"><label style="font-size:12px;color:#666">订阅 3</label><input id="editSub3" type="text"></div>
-        <div style="text-align:left; margin-bottom:10px;"><label style="font-size:12px;color:#666">底部说明文字</label><input id="editNotice" type="text"></div>
-        <div style="text-align:left; margin-bottom:10px;"><label style="font-size:12px;color:#666">背景图 URL</label><input id="editBgUrl" type="text"></div>
-        <div style="text-align:left; margin-bottom:10px;"><label style="font-size:12px;color:#666">访问密码</label><input id="editUserPwd" type="text"></div>
+        <div style="text-align:left;"><label style="font-size:11px;color:#999">主页标题</label><input id="editTitle" type="text"></div>
+        <div style="text-align:left;"><label style="font-size:11px;color:#999">订阅 1</label><input id="editSub1" type="text"></div>
+        <div style="text-align:left;"><label style="font-size:11px;color:#999">订阅 2</label><input id="editSub2" type="text"></div>
+        <div style="text-align:left;"><label style="font-size:11px;color:#999">订阅 3</label><input id="editSub3" type="text"></div>
+        <div style="text-align:left;"><label style="font-size:11px;color:#999">主页底部公告 (notice)</label><input id="editNotice" type="text"></div>
+        <div style="text-align:left;"><label style="font-size:11px;color:#999">背景图 URL</label><input id="editBgUrl" type="text"></div>
+        <div style="text-align:left;"><label style="font-size:11px;color:#999">访问密码</label><input id="editUserPwd" type="text"></div>
         <button class="primary-btn" onclick="saveSettings()">保存并刷新</button>
         <button class="primary-btn secondary-btn" onclick="closeModal('adminPanelModal')">取消</button>
     </div>
@@ -104,14 +107,9 @@
 <script>
     let SETTINGS = {};
     let LAST_ADMIN_PWD = "";
-    
-    // 【修改建议】：GitHub Raw 链接有时会被拦截，建议使用 jsDelivr 加速
-    // 格式：https://fastly.jsdelivr.net/gh/用户名/仓库名@main/music/
-    const GITHUB_USER = "您的用户名";
-    const GITHUB_REPO = "您的仓库名";
-    const musicBase = `https://fastly.jsdelivr.net/gh/${GITHUB_USER}/${GITHUB_REPO}@main/music/`;
-    
-    const playlist = [musicBase+"1.mp3", musicBase+"2.mp3", musicBase+"3.mp3"];
+
+    // 针对 CF Pages 部署，直接使用相对路径调用同仓库下的 music 目录
+    const playlist = ["./music/1.mp3", "./music/2.mp3", "./music/3.mp3"];
     let currentTrackIndex = 0;
     const audio = document.getElementById('bgMusic');
 
@@ -119,34 +117,19 @@
         try {
             const r = await fetch("/api/get-links?" + Date.now());
             SETTINGS = await r.json();
-            // 预设第一首歌
+            // 初始化第一首歌的路径
             audio.src = playlist[0];
-        } catch(e) { console.error("Load settings failed"); }
+            audio.load();
+        } catch(e) {}
     }
     load();
 
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-    // iOS 核心：在用户点击 Verify 瞬间，无论密码对错，都尝试触发一次静音播放，获取权限
     function doUserLogin() {
-        // --- 强制激活音频上下文 ---
-        audio.muted = true; 
-        audio.play().then(() => {
-            console.log("Audio Context Activated");
-        }).catch(e => console.log("Activation failed", e));
-        // -----------------------
-
         const input = document.getElementById('userPwdInput');
         if(String(input.value) === String(SETTINGS.userPassword)) {
-            // 验证通过，取消静音并播放
-            audio.muted = false;
-            audio.play().then(() => {
-                document.getElementById('musicBtn').classList.add('music-playing');
-            }).catch(err => {
-                console.error("Play failed after auth", err);
-            });
-
             document.getElementById('fakePage').style.display = 'none';
             document.getElementById('realContent').style.display = 'flex';
             document.getElementById('topControls').style.display = 'flex';
@@ -163,10 +146,14 @@
         }
     }
 
+    // 核心播放逻辑：点击🎵触发
     function toggleMusic() {
         if (audio.paused) {
-            audio.play();
-            document.getElementById('musicBtn').classList.add('music-playing');
+            audio.play().then(() => {
+                document.getElementById('musicBtn').classList.add('music-playing');
+            }).catch(e => {
+                alert("播放失败：请确保仓库中存在 music 文件夹及 1.mp3/2.mp3/3.mp3");
+            });
         } else {
             audio.pause();
             document.getElementById('musicBtn').classList.remove('music-playing');
@@ -177,7 +164,8 @@
         currentTrackIndex = index;
         audio.src = playlist[currentTrackIndex];
         audio.load();
-        audio.play().catch(e => console.error("Track play failed", e));
+        audio.play().catch(()=>{});
+        document.getElementById('musicBtn').classList.add('music-playing');
     }
 
     function nextTrack() {
@@ -187,7 +175,6 @@
 
     audio.addEventListener('ended', nextTrack);
 
-    // 管理端逻辑
     async function checkAdminBeforeEntry() {
         const inputPwd = document.getElementById('adminAuthPwd').value;
         const res = await fetch('/api/update-links', {
@@ -251,7 +238,7 @@
 
     function openAdminPortal() { document.getElementById('adminAuthPwd').value = ""; openModal('adminAuthModal'); }
 
-    // 初始化伪装信息
+    // 动态填充伪装页信息
     document.getElementById('ray-id').innerText = Math.random().toString(16).slice(2, 14);
     document.getElementById('ray-id-ft').innerText = document.getElementById('ray-id').innerText;
     document.getElementById('ts-id').innerText = new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
