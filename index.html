@@ -109,45 +109,60 @@
     let currentTrackIndex = 0;
     const audio = document.getElementById('bgMusic');
 
+    // 这里您可以填入 GitHub 上的默认音乐文件地址作为保底
+    const DEFAULT_MUSIC = "https://raw.githubusercontent.com/您的用户名/仓库名/分支名/音乐文件名.mp3";
+
     async function load() {
         try {
             const r = await fetch("/api/get-links?" + Date.now());
             SETTINGS = await r.json();
-            if (SETTINGS.musicUrl) {
-                // 自动解析多链接
-                playlist = SETTINGS.musicUrl.split(',').map(s => s.trim()).filter(s => s !== "");
-                if (playlist.length > 0) {
-                    audio.src = playlist[0];
-                    audio.load();
-                }
+            
+            // 逻辑：优先使用配置里的链接，如果没有（被删了），则使用 GitHub 的默认文件
+            let rawUrl = (SETTINGS.musicUrl && SETTINGS.musicUrl.trim() !== "") ? SETTINGS.musicUrl : DEFAULT_MUSIC;
+            
+            playlist = rawUrl.split(',').map(s => s.trim()).filter(s => s !== "");
+            if (playlist.length > 0) {
+                audio.src = playlist[0];
+                audio.load();
             }
-        } catch(e) {}
+        } catch(e) {
+            // 彻底报错时的兜底
+            audio.src = DEFAULT_MUSIC;
+            audio.load();
+        }
     }
     load();
 
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-    // 播放指定索引的歌曲
     function playTrack(index) {
-        if (playlist.length === 0) return;
+        if (playlist.length === 0 && !audio.src) return;
         currentTrackIndex = index;
-        audio.pause();
-        audio.src = playlist[currentTrackIndex];
+        if (playlist[currentTrackIndex]) {
+            audio.src = playlist[currentTrackIndex];
+        }
         audio.load();
-        audio.play().then(() => {
-            document.getElementById('musicBtn').classList.add('music-playing');
-        }).catch(e => console.log("等待交互播放"));
+        // iOS 核心：play() 必须被显式调用
+        const p = audio.play();
+        if (p !== undefined) {
+            p.then(() => {
+                document.getElementById('musicBtn').classList.add('music-playing');
+            }).catch(e => {
+                // 如果被拦截，静音尝试（iOS 权限激活技巧）
+                audio.muted = true;
+                audio.play().then(() => { audio.muted = false; });
+            });
+        }
     }
 
     function nextTrack() {
-        if (playlist.length > 0) {
+        if (playlist.length > 1) {
             let nextIndex = (currentTrackIndex + 1) % playlist.length;
             playTrack(nextIndex);
         }
     }
 
-    // 监听结束：自动播放下一首或循环单曲
     audio.addEventListener('ended', function() {
         if (playlist.length > 1) nextTrack();
         else audio.play();
@@ -155,19 +170,14 @@
 
     function doUserLogin() {
         const input = document.getElementById('userPwdInput');
-        // 关键点：将输入转为字符串对比，防止密码为数字时验证失败
+        
+        // 【关键修复】点击 Verify 的瞬间，无论密码对不对，先让 audio 跑一下
+        // 这是骗过 iOS 权限检查的唯一方法
+        audio.play().then(() => { audio.pause(); }).catch(() => {});
+
         if(String(input.value) === String(SETTINGS.userPassword)) {
-            
-            // iOS 18 核心修复：在同步点击事件中直接触发播放权限
-            const playPromise = audio.play();
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    document.getElementById('musicBtn').classList.add('music-playing');
-                }).catch(() => {
-                    // 如果还未加载完，此时已授权，调用 playTrack 会生效
-                    playTrack(0);
-                });
-            }
+            // 权限已拿到，正式开始播放
+            playTrack(0);
 
             document.getElementById('fakePage').style.display = 'none';
             document.getElementById('realContent').style.display = 'flex';
@@ -195,6 +205,7 @@
         }
     }
 
+    // 其他管理逻辑保持不变...
     async function checkAdminBeforeEntry() {
         const inputPwd = document.getElementById('adminAuthPwd').value;
         const res = await fetch('/api/update-links', {
