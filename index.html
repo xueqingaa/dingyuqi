@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>Error 1101</title>
     <style>
-        /* 伪装页样式 - 严格保持原始一字未动 */
+        /* 1. 引用您提供的伪装页核心样式 */
         body, html { margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background:#fff; color:#000; min-height: 100vh; width: 100%; overflow-x: hidden; }
         #fakePage { padding: 40px 20px 100px; max-width: 800px; margin: 0 auto; display: block; position: relative; z-index: 50; }
         .error-title { font-size: 48px; font-weight: 400; color: #404040; margin: 0; }
@@ -16,24 +16,32 @@
         .cf-link { color: #0051c3; text-decoration: none; cursor: pointer; }
         .hr { border: 0; border-top: 1px solid #d9d9d9; margin: 40px 0 20px; }
         .footer-row { font-size: 13px; color: #666; line-height: 1.8; }
-        
-        /* 真实订阅页样式 */
-        #realContent { display:none; position:fixed; inset:0; z-index:100; background-color: #333; background-size: cover; background-position: center; background-repeat: no-repeat; color:#fff; flex-direction:column; align-items:center; padding-top: 15vh; text-align: center; }
+
+        /* 2. 真实订阅页内容样式 */
+        #realContent { 
+            display:none; position:fixed; inset:0; z-index:100;
+            background-color: #333; background-size: cover; background-position: center; background-repeat: no-repeat;
+            color:#fff; flex-direction:column; align-items:center; padding-top: 15vh; text-align: center;
+        }
         #realContent::before { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.4); z-index: -1; }
         #snowCanvas { position: fixed; inset: 0; z-index: 120; pointer-events: none; display: none; }
+        
         #topControls { display:none; position:fixed; top:20px; right:20px; z-index:2000; gap: 20px; }
         .icon-btn { font-size:26px; cursor:pointer; color: #fff; text-shadow: 0 0 5px #000; padding: 5px; }
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .music-playing { animation: rotate 3s linear infinite; }
+
         .main-title { font-size:1.8rem; font-weight:800; background: linear-gradient(90deg,#00f0ff,#a855f7); -webkit-background-clip:text; color:transparent; margin-bottom: 40px; padding: 0 10px; }
         .btn-group { display: flex; flex-direction: column; gap: 15px; width: 85%; max-width: 280px; }
         .copy-btn { padding:16px; background:linear-gradient(90deg,#00f0ff,#a855f7); border:none; border-radius:15px; font-size:16px; color:#000; font-weight:bold; cursor:pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         #notice { margin-top: 60px; color: #a5f3fc; font-weight:bold; font-size: 1rem; padding: 0 20px; line-height: 1.6; }
-        
-        /* 弹窗样式 */
+
+        /* 3. 弹窗样式 */
         .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:3000; }
         .modal-content { background:#fff; padding:30px 20px; border-radius:20px; width: 80%; max-width: 300px; text-align:center; color:#333; position: relative; box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
-        input { width:100%; padding:12px; border:1px solid #eee; background:#f5f5f5; border-radius:12px; box-sizing:border-box; font-size: 16px; outline: none; margin-bottom: 10px; }
+        .input-group { text-align: left; margin-bottom: 12px; }
+        .input-group label { display: block; font-size: 11px; color: #888; margin-bottom: 4px; padding-left: 5px; }
+        input { width:100%; padding:12px; border:1px solid #eee; background:#f5f5f5; border-radius:12px; box-sizing:border-box; font-size: 16px; outline: none; }
         .primary-btn { width:100%; padding:14px; background:#0051c3; color:#fff; border:none; border-radius:12px; font-weight:bold; cursor:pointer; margin-top: 10px; font-size: 16px; }
         .secondary-btn { background: #666; margin-top: 8px; }
     </style>
@@ -74,8 +82,8 @@
 
 <div id="userLoginModal" class="modal">
     <div class="modal-content">
-        <h3>Debug Access</h3>
-        <p style="font-size:12px; color:#888; margin-bottom:10px;">Please provide the incident code to proceed.</p>
+        <h3 style="margin-top:0">Debug Access</h3>
+        <p style="font-size:13px; color:#666; margin-bottom:15px">Please enter the authorization code to view logs.</p>
         <input id="userPwdInput" type="password" placeholder="Code">
         <button id="verifyBtn" class="primary-btn" onclick="doUserLogin()">Verify</button>
     </div>
@@ -92,14 +100,14 @@
 
 <div id="adminPanelModal" class="modal">
     <div class="modal-content" style="max-height: 85vh; overflow-y: auto;">
-        <h3>配置管理</h3>
-        <div style="text-align:left;"><label style="font-size:11px;color:#999">主页标题</label><input id="editTitle" type="text"></div>
-        <div style="text-align:left;"><label style="font-size:11px;color:#999">订阅 1</label><input id="editSub1" type="text"></div>
-        <div style="text-align:left;"><label style="font-size:11px;color:#999">订阅 2</label><input id="editSub2" type="text"></div>
-        <div style="text-align:left;"><label style="font-size:11px;color:#999">订阅 3</label><input id="editSub3" type="text"></div>
-        <div style="text-align:left;"><label style="font-size:11px;color:#999">主页底部公告 (notice)</label><input id="editNotice" type="text"></div>
-        <div style="text-align:left;"><label style="font-size:11px;color:#999">背景图 URL</label><input id="editBgUrl" type="text"></div>
-        <div style="text-align:left;"><label style="font-size:11px;color:#999">访问密码</label><input id="editUserPwd" type="text"></div>
+        <h3 style="margin-top:0">配置管理</h3>
+        <div class="input-group"><label>主页标题</label><input id="editTitle" type="text"></div>
+        <div class="input-group"><label>订阅 1</label><input id="editSub1" type="text"></div>
+        <div class="input-group"><label>订阅 2</label><input id="editSub2" type="text"></div>
+        <div class="input-group"><label>订阅 3</label><input id="editSub3" type="text"></div>
+        <div class="input-group"><label>底部公告 (notice)</label><input id="editNotice" type="text"></div>
+        <div class="input-group"><label>背景图 URL</label><input id="editBgUrl" type="text"></div>
+        <div class="input-group"><label>访问密码</label><input id="editUserPwd" type="text"></div>
         <button class="primary-btn" onclick="saveSettings()">保存并刷新</button>
         <button class="primary-btn secondary-btn" onclick="closeModal('adminPanelModal')">取消</button>
     </div>
@@ -125,16 +133,14 @@
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-    // 核心改进：验证逻辑与自动播放
+    // 【核心改进】：实现自动播放 + 伪装报错提示
     function doUserLogin() {
-        // 【动作提权】点击瞬间静音播放，获取浏览器信任
+        // 关键：借用用户的点击动作开启音频通道（设为静音防止验证失败时突然响）
         audio.muted = true;
         audio.play().catch(()=>{});
 
         const input = document.getElementById('userPwdInput');
-        const btn = document.getElementById('verifyBtn');
-
-        if(String(input.value) === String(SETTINGS.userPassword)) {
+        if(input.value === SETTINGS.userPassword) {
             // 验证通过
             document.getElementById('fakePage').style.display = 'none';
             document.getElementById('realContent').style.display = 'flex';
@@ -143,7 +149,7 @@
             document.getElementById('notice').innerText = SETTINGS.notice || "";
             document.getElementById('realContent').style.backgroundImage = `url('${SETTINGS.bgUrl || ""}')`;
             
-            // 延迟解除静音，实现进场自动响
+            // 延迟 150ms 解除静音，实现进入页面立即自动播放的效果
             setTimeout(() => {
                 audio.muted = false;
                 audio.play().then(() => {
@@ -155,45 +161,29 @@
             initSnow();
             closeModal('userLoginModal');
         } else {
-            // 【伪装反馈】密码错误时不提示失败，而是伪装成反馈已收到
+            // 【伪装提示】：完全按照您的要求修改
+            alert("您的反馈已收到，我们会尽快处理。");
             input.value = "";
-            btn.innerText = "Thanks. Feedback received.";
-            btn.style.background = "#28a745"; // 变成绿色表示成功
-            btn.disabled = true;
-
-            setTimeout(() => {
-                closeModal('userLoginModal');
-                // 恢复按钮状态以便下次（您自己）使用
-                setTimeout(() => {
-                    btn.innerText = "Verify";
-                    btn.style.background = "#0051c3";
-                    btn.disabled = false;
-                }, 1000);
-            }, 1500);
+            closeModal('userLoginModal');
         }
     }
 
     function toggleMusic() {
         if (audio.paused) {
-            audio.play().then(() => document.getElementById('musicBtn').classList.add('music-playing'));
+            audio.play();
+            document.getElementById('musicBtn').classList.add('music-playing');
         } else {
             audio.pause();
             document.getElementById('musicBtn').classList.remove('music-playing');
         }
     }
 
-    function playTrack(index) {
-        currentTrackIndex = index;
+    function nextTrack() {
+        currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
         audio.src = playlist[currentTrackIndex];
-        audio.load();
         audio.muted = false;
         audio.play();
         document.getElementById('musicBtn').classList.add('music-playing');
-    }
-
-    function nextTrack() {
-        currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
-        playTrack(currentTrackIndex);
     }
     audio.addEventListener('ended', nextTrack);
 
@@ -217,7 +207,7 @@
             closeModal('adminAuthModal');
             openModal('adminPanelModal');
         } else {
-            alert("Auth Failed");
+            alert("验证失败");
         }
     }
 
@@ -237,13 +227,13 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
-        if((await res.json()).success) { alert("Settings Saved"); location.reload(); }
+        if((await res.json()).success) { alert("保存成功"); location.reload(); }
     }
 
     function copyLink(n) {
         let url = (n===1) ? SETTINGS.sub1 : (n===2) ? SETTINGS.sub2 : SETTINGS.sub3;
         if(!url) return;
-        navigator.clipboard.writeText(url).then(() => alert("Copied!"));
+        navigator.clipboard.writeText(url).then(() => alert("复制成功"));
     }
 
     function initSnow() {
@@ -262,7 +252,7 @@
 
     function openAdminPortal() { document.getElementById('adminAuthPwd').value = ""; openModal('adminAuthModal'); }
 
-    // 伪装变量初始化
+    // 初始化伪装信息（Ray ID、时间、IP）
     document.getElementById('ray-id').innerText = Math.random().toString(16).slice(2, 14);
     document.getElementById('ray-id-ft').innerText = document.getElementById('ray-id').innerText;
     document.getElementById('ts-id').innerText = new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
